@@ -54,11 +54,11 @@ class ChartBox extends StatelessWidget {
                   ],
                 ),
               ),
-              Container(
-                padding: EdgeInsets.all(5),
-                height: constraints.maxHeight * 0.6,
-                width: constraints.maxWidth * 1,
-              ),
+              // Container( // 
+              //   padding: EdgeInsets.all(5),
+              //   height: constraints.maxHeight * 0.6,
+              //   width: constraints.maxWidth * 1,
+              // ),
             ],
             alignment: AlignmentDirectional.topStart,
           ),

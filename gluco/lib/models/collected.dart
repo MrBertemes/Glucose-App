@@ -3,11 +3,11 @@
 import 'package:flutter/foundation.dart';
 
 class Collected {
-  final int saturacao;
-  final int batimento;
-  final double glicose;
-  final double temperatura;
-  final DateTime data;
+   int saturacao;
+   int batimento;
+   double glicose;
+   double temperatura;
+   DateTime data;
 
   Collected({
     required this.saturacao,

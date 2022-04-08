@@ -1,4 +1,4 @@
-// ignore_for_file: use_key_in_widget_constructors, prefer_const_constructors, prefer_const_literals_to_create_immutables, avoid_unnecessary_containers, deprecated_member_use, unused_import, avoid_print, sized_box_for_whitespace, non_constant_identifier_names, unused_local_variable, unused_field
+// ignore_for_file: use_key_in_widget_constructors, prefer_const_constructors, prefer_const_literals_to_create_immutables, avoid_unnecessary_containers, deprecated_member_use, unused_import, avoid_print, sized_box_for_whitespace, non_constant_identifier_names, unused_local_variable, unused_field, prefer_final_fields
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -6,6 +6,8 @@ import 'package:gluco/widgets/chartbox.dart';
 import 'package:gluco/widgets/valuecard.dart';
 import 'package:flutter_blue/flutter_blue.dart';
 import './models/collected.dart';
+import 'dart:math';
+
 
 void main() => runApp(MaterialApp(
       home: Main(),
@@ -17,7 +19,7 @@ class Main extends StatefulWidget {
 }
 
 class _MainState extends State<Main> {
-  final Collected _dataCollected = Collected(
+    Collected _dataCollected = Collected(
     batimento: 78,
     data: DateTime.now(),
     saturacao: 98,
@@ -25,11 +27,21 @@ class _MainState extends State<Main> {
     temperatura: 36.8,
   );
 
-  List<int> valor = [70, 67, 60, 66, 93, 72, 90, 96, 91, 87];
-  var i = 0;
+  // List<int> valor = [70, 67, 60, 66, 93, 72, 90, 96, 91, 87];
+  // var i = 0;
   FlutterBlue bluetooth = FlutterBlue.instance;
+  Random random =  Random();// from 0 upto 99 included
 
-  void ScanBluetooth(FlutterBlue bluetooth) async {
+  void readData(FlutterBlue bluetooth){ // Temporario somente - Depois será a chamada de funcao
+  // que mantem contato e recebe os dados.
+    _dataCollected.batimento = random.nextInt(110) + 60; 
+    _dataCollected.data = DateTime.now();
+    _dataCollected.glicose = (((random.nextInt(110) + 60)+ random.nextDouble())*100).truncateToDouble()/ 100;
+    _dataCollected.saturacao = random.nextInt(101) + 96;
+    _dataCollected.temperatura = (((random.nextInt(38) + 35)+ random.nextDouble())*100).truncateToDouble() /100;
+}
+
+  void scanBluetooth(FlutterBlue bluetooth) async {
     if (await bluetooth.isAvailable) {
       bluetooth.startScan(timeout: Duration(seconds: 10));
 
@@ -125,18 +137,13 @@ class _MainState extends State<Main> {
                       ),
                     ),
                   ),
-                  onPressed: () {
-                    setState(() {
-                      if (i >= 9) {
-                        i = 0;
-                      } else {
-                        i = i + 1;
-                        ScanBluetooth(bluetooth);
-                      }
-                    });
-                  },
-                  child: Text('SCAN',
-                      style: Theme.of(context).textTheme.headline6),
+                  onPressed: (){setState(() {
+                    readData(bluetooth);
+                  });},
+                  child: Text(
+                    'SCAN',
+                    style: Theme.of(context).textTheme.headline6,
+                  ),
                 ),
               ),
             ],
