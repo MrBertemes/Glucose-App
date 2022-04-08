@@ -19,7 +19,7 @@ class ChartBox extends StatelessWidget {
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(4),
           border: Border.all(
-            color: Theme.of(context).primaryColor,
+            color: Theme.of(context).accentColor,
             width: 4,
           ),
         ),

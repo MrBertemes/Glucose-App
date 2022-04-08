@@ -25,7 +25,7 @@ class ValuesCard extends StatelessWidget {
             alignment: AlignmentDirectional.center,
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(5),
-              border: Border.all(color: Theme.of(context).primaryColor, width: 3),
+              border: Border.all(color: Theme.of(context).accentColor, width: 3),
             ),
             child: FittedBox(
               child: Text(
