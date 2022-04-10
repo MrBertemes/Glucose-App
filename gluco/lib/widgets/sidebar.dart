@@ -1,8 +1,15 @@
-// ignore_for_file: avoid_unnecessary_containers, prefer_const_constructors, use_key_in_widget_constructors, must_be_immutable, prefer_const_literals_to_create_immutables, sized_box_for_whitespace
+// ignore_for_file: avoid_unnecessary_containers, prefer_const_constructors, use_key_in_widget_constructors, must_be_immutable, prefer_const_literals_to_create_immutables, sized_box_for_whitespace, prefer_final_fields, unused_element
 
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class SideBar extends StatelessWidget {
+
+  final String _url = 'https://www.google.com/';
+
+  void _launchURL() async {
+    if (!await launch(_url)) throw 'Could not launch $_url';
+  }
   @override
   Widget build(BuildContext context) {
     return Drawer(
@@ -40,6 +47,7 @@ class SideBar extends StatelessWidget {
               // Update the state of the app
               // ...
               // Then close the drawer
+              _launchURL();
               Navigator.pop(context);
             },
           ),
