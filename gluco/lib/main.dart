@@ -3,11 +3,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:gluco/widgets/chartbox.dart';
+import 'package:gluco/widgets/firstpage.dart';
 import 'package:gluco/widgets/sidebar.dart';
 import 'package:gluco/widgets/valuecard.dart';
 import 'package:flutter_blue/flutter_blue.dart';
 import './models/collected.dart';
-import 'dart:math';
 
 void main() => runApp(MaterialApp(
       home: Main(),
@@ -30,23 +30,9 @@ class _MainState extends State<Main> {
   // List<int> valor = [70, 67, 60, 66, 93, 72, 90, 96, 91, 87];
   // var i = 0;
   FlutterBlue bluetooth = FlutterBlue.instance;
-  Random random = Random(); // from 0 upto 99 included
+ // from 0 upto 99 included
 
-  void readData(FlutterBlue bluetooth) {
-    // Temporario somente - Depois será a chamada de funcao
-    // que mantem contato e recebe os dados.
-    _dataCollected.batimento = random.nextInt(110) + 60;
-    _dataCollected.data = DateTime.now();
-    _dataCollected.glicose =
-        (((random.nextInt(110) + 60) + random.nextDouble()) * 100)
-                .truncateToDouble() /
-            100;
-    _dataCollected.saturacao = random.nextInt(101) + 96;
-    _dataCollected.temperatura =
-        (((random.nextInt(38) + 35) + random.nextDouble()) * 100)
-                .truncateToDouble() /
-            100;
-  }
+  
 
   void scanBluetooth(FlutterBlue bluetooth) async {
     if (await bluetooth.isAvailable) {
@@ -87,81 +73,34 @@ class _MainState extends State<Main> {
     );
 
     return MaterialApp(
-      theme: ThemeData(
-        primarySwatch: Colors.green,
-        accentColor: Colors.red,
-        errorColor: Colors.purple[900],
-        fontFamily: 'Quicksand',
-        textTheme: ThemeData.light().textTheme.copyWith(
-            headline6: TextStyle(
-              color: Colors.black,
-              fontFamily: 'OpenSans',
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-            ),
-            button: TextStyle(color: Colors.white)),
-        appBarTheme: AppBarTheme(
+        theme: ThemeData(
+          primarySwatch: Colors.green,
+          accentColor: Colors.red,
+          errorColor: Colors.purple[900],
+          fontFamily: 'Quicksand',
           textTheme: ThemeData.light().textTheme.copyWith(
-                headline6: TextStyle(
-                  color: Colors.white,
-                  fontFamily: 'OpenSans',
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                ),
+              headline6: TextStyle(
+                color: Colors.black,
+                fontFamily: 'OpenSans',
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
               ),
-        ),
-      ),
-      home: Scaffold(
-        appBar: appBar,
-        drawer: SideBar(),
-        body: SingleChildScrollView(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: <Widget>[
-              Container(
-                height: (MediaQuery.of(context).size.height -
-                        MediaQuery.of(context).padding.top -
-                        appBar.preferredSize.height) *
-                    0.7,
-                child: Card(
-                  child: ChartBox(collectedData: _dataCollected),
-                  elevation: 2,
-                ),
-              ),
-              Container(
-                padding: EdgeInsets.all(10),
-                width: MediaQuery.of(context).size.width * 0.7,
-                height: (MediaQuery.of(context).size.height -
-                        MediaQuery.of(context).padding.top -
-                        appBar.preferredSize.height) *
-                    0.3,
-                child: ElevatedButton(
-                  style: ButtonStyle(
-                    shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                      RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(100),
-                        side: BorderSide(
-                          color: Theme.of(context).accentColor,
-                        ),
-                      ),
-                    ),
-                  ),
-                  onPressed: () {
-                    setState(() {
-                      readData(bluetooth);
-                    });
-                  },
-                  child: Text(
-                    'SCAN',
-                    style: Theme.of(context).textTheme.headline6,
+              button: TextStyle(color: Colors.white)),
+          appBarTheme: AppBarTheme(
+            textTheme: ThemeData.light().textTheme.copyWith(
+                  headline6: TextStyle(
+                    color: Colors.white,
+                    fontFamily: 'OpenSans',
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
                   ),
                 ),
-              ),
-            ],
           ),
         ),
-      ),
-    );
+        home: FirstPage(
+          appBar: appBar,
+          dataCollected: _dataCollected,
+          bluetooth: bluetooth,
+        ));
   }
 }

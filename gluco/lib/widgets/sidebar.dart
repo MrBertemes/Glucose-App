@@ -5,7 +5,7 @@ import 'package:url_launcher/url_launcher.dart';
 
 class SideBar extends StatelessWidget {
 
-  final String _url = 'https://www.google.com/';
+  final String _url = 'https://www.udesc.br/cct/home/';
 
   void _launchURL() async {
     if (!await launch(_url)) throw 'Could not launch $_url';
@@ -19,7 +19,7 @@ class SideBar extends StatelessWidget {
         children: [
           DrawerHeader(
             decoration: BoxDecoration(
-              color: Colors.green,
+              color: Theme.of(context).primaryColor
             ),
             child: Text(
               'E-Glico',
