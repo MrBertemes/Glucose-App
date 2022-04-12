@@ -3,7 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:gluco/widgets/chartbox.dart';
-import 'package:gluco/widgets/firstpage.dart';
+import 'package:gluco/pages/homepage.dart';
 import 'package:gluco/widgets/sidebar.dart';
 import 'package:gluco/widgets/valuecard.dart';
 import 'package:flutter_blue/flutter_blue.dart';
@@ -49,22 +49,14 @@ class _MainState extends State<Main> {
       print('Device doesn\'t have bluetooth');
     }
   }
-
+  GlobalKey<ScaffoldState> _globalKey = GlobalKey();
   @override
   Widget build(BuildContext context) {
     final AppBar appBar = AppBar(
-      // leading: IconButton(
-      //   color: Colors.black,
-      //   alignment: Alignment.center,
-      //   onPressed: () {},
-      //   icon: Icon(
-      //     Icons.view_list_rounded,
-      //   ),
-      // ),
       elevation: 4,
       centerTitle: true,
       title: Text(
-        "E-Glico",
+        "E-Gluco",
         textAlign: TextAlign.center,
         style: TextStyle(
             // fontSize: Theme.of(context).appBarTheme.textTheme.headline6.fontSize
@@ -97,7 +89,7 @@ class _MainState extends State<Main> {
                 ),
           ),
         ),
-        home: FirstPage(
+        home: HomePage(
           appBar: appBar,
           dataCollected: _dataCollected,
           bluetooth: bluetooth,
