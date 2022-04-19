@@ -1,7 +1,8 @@
-// ignore_for_file: use_key_in_widget_constructors, must_be_immutable, prefer_const_constructors, deprecated_member_use, sized_box_for_whitespace, prefer_final_fields
+// ignore_for_file: use_key_in_widget_constructors, must_be_immutable, prefer_const_constructors, deprecated_member_use, sized_box_for_whitespace, prefer_final_fields, unused_import
 
 import 'package:flutter/material.dart';
 import 'package:flutter_blue/flutter_blue.dart';
+import 'package:async_button_builder/async_button_builder.dart';
 import '../widgets/sidebar.dart';
 import '../models/collected.dart';
 import '../widgets/chartbox.dart';
@@ -21,7 +22,6 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-
   GlobalKey<ScaffoldState> _globalKey = GlobalKey();
   Random random = Random();
   @override
@@ -54,27 +54,52 @@ class _HomePageState extends State<HomePage> {
                       MediaQuery.of(context).padding.top -
                       widget.appBar.preferredSize.height) *
                   0.3,
-              child: ElevatedButton(
-                style: ButtonStyle(
-                  shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                    RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(100),
-                      side: BorderSide(
-                        color: Theme.of(context).accentColor,
-                      ),
-                    ),
-                  ),
-                ),
-                onPressed: () {
+              child: AsyncButtonBuilder(
+                child: Text('MEDIR'),
+                onPressed: () async {
                   setState(() {
                     readData(widget.bluetooth);
                   });
                 },
-                child: Text(
-                  'SCAN',
-                  style: Theme.of(context).textTheme.headline6,
-                ),
+                builder: (context, child, callback, _) {
+                  return ElevatedButton(
+                    style: ButtonStyle(
+                      shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                        RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(100),
+                          side: BorderSide(
+                            color: Theme.of(context).accentColor,
+                          ),
+                        )
+                      ),
+                    ),
+                    onPressed: callback,
+                    child: child,
+                  );
+                },
               ),
+              // child: ElevatedButton(
+                // style: ButtonStyle(
+                //   shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                //     RoundedRectangleBorder(
+                //       borderRadius: BorderRadius.circular(100),
+                //       side: BorderSide(
+                //         color: Theme.of(context).accentColor,
+                //       ),
+                //     ),
+                //   ),
+              //   ),
+              //   onPressed: () {
+              //     setState(() {
+              //       readData(widget.bluetooth);
+              //     });
+              //   },
+
+              //   child: Text(
+              //     'SCAN',
+              //     style: Theme.of(context).textTheme.headline6,
+              //   ),
+              // ),
             ),
           ],
         ),
@@ -82,7 +107,7 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  void readData(FlutterBlue bluetooth) {
+  void readData(FlutterBlue bluetooth){
     // Temporario somente - Depois será a chamada de funcao
     // que mantem contato e recebe os dados.
     widget.dataCollected.batimento = random.nextInt(110) + 60;

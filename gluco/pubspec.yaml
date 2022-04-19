@@ -39,6 +39,7 @@ dependencies:
   url_launcher: ^6.0.20
   http: ^0.13.4
   sqflite: ^2.0.2
+  async_button_builder: ^2.2.0+1
 
 dev_dependencies:
   flutter_test:
