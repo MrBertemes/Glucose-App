@@ -1,8 +1,9 @@
-// ignore_for_file: use_key_in_widget_constructors, must_be_immutable, prefer_const_constructors, deprecated_member_use, sized_box_for_whitespace, prefer_final_fields, unused_import
+// ignore_for_file: use_key_in_widget_constructors, must_be_immutable, prefer_const_constructors, deprecated_member_use, sized_box_for_whitespace, prefer_final_fields, unused_import, unused_local_variable, avoid_print
 
 import 'package:flutter/material.dart';
 import 'package:flutter_blue/flutter_blue.dart';
 import 'package:async_button_builder/async_button_builder.dart';
+import 'package:flutter_blue/gen/flutterblue.pb.dart' as pb;
 import '../widgets/sidebar.dart';
 import '../models/collected.dart';
 import '../widgets/chartbox.dart';
@@ -58,7 +59,8 @@ class _HomePageState extends State<HomePage> {
                 child: Text('MEDIR'),
                 onPressed: () async {
                   setState(() {
-                    readData(widget.bluetooth);
+                    scanBluetooth(widget.bluetooth);
+                    // readData(widget.bluetooth);
                   });
                 },
                 builder: (context, child, callback, _) {
@@ -78,28 +80,6 @@ class _HomePageState extends State<HomePage> {
                   );
                 },
               ),
-              // child: ElevatedButton(
-                // style: ButtonStyle(
-                //   shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                //     RoundedRectangleBorder(
-                //       borderRadius: BorderRadius.circular(100),
-                //       side: BorderSide(
-                //         color: Theme.of(context).accentColor,
-                //       ),
-                //     ),
-                //   ),
-              //   ),
-              //   onPressed: () {
-              //     setState(() {
-              //       readData(widget.bluetooth);
-              //     });
-              //   },
-
-              //   child: Text(
-              //     'SCAN',
-              //     style: Theme.of(context).textTheme.headline6,
-              //   ),
-              // ),
             ),
           ],
         ),
@@ -107,7 +87,23 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
+  void scanBluetooth(FlutterBlue bluetooth) async {
+    if (await bluetooth.isOn) {
+      bluetooth.startScan(timeout: Duration(seconds: 10));
+
+      var subscriptions = bluetooth.scanResults.listen((results) {
+        for (ScanResult r in results) {
+          print('${r.device.name} found! rssi: ${r.rssi}');
+        }
+      });
+      bluetooth.stopScan();
+    } else {
+      print('Bluetooth está desligado');
+    }
+  }
+
   void readData(FlutterBlue bluetooth){
+    
     // Temporario somente - Depois será a chamada de funcao
     // que mantem contato e recebe os dados.
     widget.dataCollected.batimento = random.nextInt(110) + 60;
