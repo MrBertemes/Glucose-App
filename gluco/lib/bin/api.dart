@@ -9,3 +9,9 @@ Future<Map> fetch() async{
   var json = jsonDecode(reponse.body);
   return json;
 }
+
+Future<int> postTable() async{
+  int success=0;
+
+  return success;
+}

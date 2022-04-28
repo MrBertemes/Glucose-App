@@ -27,28 +27,8 @@ class _MainState extends State<Main> {
     temperatura: 36.8,
   );
 
-  // List<int> valor = [70, 67, 60, 66, 93, 72, 90, 96, 91, 87];
-  // var i = 0;
   FlutterBlue bluetooth = FlutterBlue.instance;
- // from 0 upto 99 included
 
-  
-
-  void scanBluetooth(FlutterBlue bluetooth) async {
-    if (await bluetooth.isAvailable) {
-      bluetooth.startScan(timeout: Duration(seconds: 10));
-
-      var subscriptions = bluetooth.scanResults.listen((results) {
-        for (ScanResult r in results) {
-          print('${r.device.name} found! rssi: ${r.rssi}');
-        }
-      });
-
-      bluetooth.stopScan();
-    } else {
-      print('Device doesn\'t have bluetooth');
-    }
-  }
   GlobalKey<ScaffoldState> _globalKey = GlobalKey();
   @override
   Widget build(BuildContext context) {
@@ -58,9 +38,7 @@ class _MainState extends State<Main> {
       title: Text(
         "E-Gluco",
         textAlign: TextAlign.center,
-        style: TextStyle(
-            // fontSize: Theme.of(context).appBarTheme.textTheme.headline6.fontSize
-            ),
+        style: Theme.of(context).appBarTheme.titleTextStyle
       ),
     );
 
