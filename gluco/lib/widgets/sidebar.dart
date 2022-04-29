@@ -1,13 +1,16 @@
 // ignore_for_file: avoid_unnecessary_containers, prefer_const_constructors, use_key_in_widget_constructors, must_be_immutable, prefer_const_literals_to_create_immutables, sized_box_for_whitespace, prefer_final_fields, unused_element, prefer_const_constructors_in_immutables
 
 import 'package:flutter/material.dart';
+import 'package:flutter_blue/flutter_blue.dart';
+import 'package:gluco/pages/devicepage.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../pages/historypage.dart';
 
 class SideBar extends StatefulWidget {
   final AppBar appBar;
+  final FlutterBlue blue;
 
-  SideBar({required this.appBar});
+  SideBar({required this.appBar, required this.blue});
 
   @override
   State<SideBar> createState() => _SideBarState();
@@ -43,6 +46,19 @@ class _SideBarState extends State<SideBar> {
               Navigator.pop(context);
               await Navigator.push(context, MaterialPageRoute(builder: (context) {
                 return HistoryPage(appBar: widget.appBar,);
+              }));
+              
+            },
+          ),
+          ListTile(
+            title: Text(
+              'Dispositivo',
+              style: Theme.of(context).textTheme.headline6,
+            ),
+            onTap: () async{
+              Navigator.pop(context);
+              await Navigator.push(context, MaterialPageRoute(builder: (context) {
+                return DevicePage(appBar: widget.appBar,blue: widget.blue,);
               }));
               
             },
