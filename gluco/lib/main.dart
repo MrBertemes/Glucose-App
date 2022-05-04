@@ -8,10 +8,19 @@ import 'package:gluco/widgets/sidebar.dart';
 import 'package:gluco/widgets/valuecard.dart';
 import 'package:flutter_blue/flutter_blue.dart';
 import './models/collected.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'firebase_options.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
-void main() => runApp(MaterialApp(
-      home: Main(),
-    ));
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+  runApp(MaterialApp(
+    home: Main(),
+  ));
+}
 
 class Main extends StatefulWidget {
   @override
@@ -35,11 +44,9 @@ class _MainState extends State<Main> {
     final AppBar appBar = AppBar(
       elevation: 4,
       centerTitle: true,
-      title: Text(
-        "E-Gluco",
-        textAlign: TextAlign.center,
-        style: Theme.of(context).appBarTheme.titleTextStyle
-      ),
+      title: Text("E-Gluco",
+          textAlign: TextAlign.center,
+          style: Theme.of(context).appBarTheme.titleTextStyle),
     );
 
     return MaterialApp(
