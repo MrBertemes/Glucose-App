@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "506625053641",
+    "project_id": "egluco",
+    "storage_bucket": "egluco.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:506625053641:android:2da757ba669d59d099ce18",
+        "android_client_info": {
+          "package_name": "com.example.gluco"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "506625053641-inbb71fqm38tn3mbk1i2ufuf3jacdmur.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAviavEOAHgTbE8DyeuJSnOXbeqIJBhLlM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "506625053641-inbb71fqm38tn3mbk1i2ufuf3jacdmur.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

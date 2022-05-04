@@ -1,10 +1,12 @@
 // ignore_for_file: avoid_unnecessary_containers, prefer_const_constructors, use_key_in_widget_constructors, must_be_immutable, prefer_const_literals_to_create_immutables, sized_box_for_whitespace, prefer_final_fields, unused_element, prefer_const_constructors_in_immutables
 
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_blue/flutter_blue.dart';
 import 'package:gluco/pages/devicepage.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../pages/historypage.dart';
+import '../pages/loginpage.dart';
 
 class SideBar extends StatefulWidget {
   final AppBar appBar;
@@ -25,6 +27,9 @@ class _SideBarState extends State<SideBar> {
 
   @override
   Widget build(BuildContext context) {
+    User? user = FirebaseAuth.instance.currentUser;
+    String tileText = user == null ? "Login" : "Olá, ${user.email}";
+
     return Drawer(
       // width: MediaQuery.of(context).size.width * 0.8,
       child: ListView(
@@ -39,15 +44,46 @@ class _SideBarState extends State<SideBar> {
           ),
           ListTile(
             title: Text(
+              tileText,
+              style: Theme.of(context).textTheme.headline6,
+            ),
+            onTap: () async {
+              Navigator.pop(context);
+              await Navigator.push(context,
+                  MaterialPageRoute(builder: (context) {
+                return LoginPage(
+                  appBar: widget.appBar,
+                );
+              }));
+            },
+            enabled: user == null,
+          ),
+          Visibility(
+            child: ListTile(
+              title: Text(
+                "Sair",
+                style: Theme.of(context).textTheme.headline6,
+              ),
+              onTap: () async {
+                FirebaseAuth.instance.signOut();
+                Navigator.pop(context);
+              },
+            ),
+            visible: user != null,
+          ),
+          ListTile(
+            title: Text(
               'Histórico',
               style: Theme.of(context).textTheme.headline6,
             ),
-            onTap: () async{
+            onTap: () async {
               Navigator.pop(context);
-              await Navigator.push(context, MaterialPageRoute(builder: (context) {
-                return HistoryPage(appBar: widget.appBar,);
+              await Navigator.push(context,
+                  MaterialPageRoute(builder: (context) {
+                return HistoryPage(
+                  appBar: widget.appBar,
+                );
               }));
-              
             },
           ),
           ListTile(
@@ -55,12 +91,15 @@ class _SideBarState extends State<SideBar> {
               'Dispositivo',
               style: Theme.of(context).textTheme.headline6,
             ),
-            onTap: () async{
+            onTap: () async {
               Navigator.pop(context);
-              await Navigator.push(context, MaterialPageRoute(builder: (context) {
-                return DevicePage(appBar: widget.appBar,blue: widget.blue,);
+              await Navigator.push(context,
+                  MaterialPageRoute(builder: (context) {
+                return DevicePage(
+                  appBar: widget.appBar,
+                  blue: widget.blue,
+                );
               }));
-              
             },
           ),
           ListTile(
