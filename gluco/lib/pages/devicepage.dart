@@ -36,7 +36,7 @@ class _DevicePageState extends State<DevicePage> {
       if (!mounted) return;
 
       List<BluetoothDevice> valDevice = [];
-      for(ScanResult e in value){
+      for (ScanResult e in value) {
         valDevice.add(e.device);
       }
       setState(() {
@@ -69,9 +69,18 @@ class _DevicePageState extends State<DevicePage> {
                   leading: Icon(Icons.bluetooth),
                   title: Text(_devices[i].name),
                   subtitle: Text(_devices[i].id.toString()),
-                  onTap: () {},
+                  onTap: () {connectDevice(_devices[i]);},
                 );
               }),
+    );
+  }
+
+  Future<void> connectDevice(BluetoothDevice device) async {
+    await device.connect(
+      autoConnect: true,
+      timeout: Duration(
+        seconds: 3,
+      ),
     );
   }
 

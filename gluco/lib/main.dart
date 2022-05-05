@@ -1,5 +1,7 @@
 // ignore_for_file: use_key_in_widget_constructors, prefer_const_constructors, prefer_const_literals_to_create_immutables, avoid_unnecessary_containers, deprecated_member_use, unused_import, avoid_print, sized_box_for_whitespace, non_constant_identifier_names, unused_local_variable, unused_field, prefer_final_fields
 
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:gluco/widgets/chartbox.dart';
@@ -50,34 +52,36 @@ class _MainState extends State<Main> {
     );
 
     return MaterialApp(
-        theme: ThemeData(
-          primarySwatch: Colors.green,
-          accentColor: Colors.red,
-          errorColor: Colors.purple[900],
-          fontFamily: 'Quicksand',
+      theme: ThemeData(
+        primarySwatch: Colors.green,
+        accentColor: Colors.red,
+        errorColor: Colors.purple[900],
+        fontFamily: 'Quicksand',
+        textTheme: ThemeData.light().textTheme.copyWith(
+            headline6: TextStyle(
+              color: Colors.black,
+              fontFamily: 'OpenSans',
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+            ),
+            button: TextStyle(color: Colors.white)),
+        appBarTheme: AppBarTheme(
           textTheme: ThemeData.light().textTheme.copyWith(
-              headline6: TextStyle(
-                color: Colors.black,
-                fontFamily: 'OpenSans',
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-              ),
-              button: TextStyle(color: Colors.white)),
-          appBarTheme: AppBarTheme(
-            textTheme: ThemeData.light().textTheme.copyWith(
-                  headline6: TextStyle(
-                    color: Colors.white,
-                    fontFamily: 'OpenSans',
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                  ),
+                headline6: TextStyle(
+                  color: Colors.white,
+                  fontFamily: 'OpenSans',
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
                 ),
-          ),
+              ),
         ),
-        home: HomePage(
-          appBar: appBar,
-          dataCollected: _dataCollected,
-          bluetooth: bluetooth,
-        ));
+      ),
+      home: HomePage(
+        appBar: appBar,
+        dataCollected: _dataCollected,
+        bluetooth: bluetooth,
+      ),
+      // supportedLocales: ln10.all,
+    );
   }
 }
