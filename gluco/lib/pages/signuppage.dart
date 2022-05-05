@@ -1,22 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter_blue/flutter_blue.dart';
-import '../main.dart';
-import '../models/collected.dart';
-import 'homepage.dart';
-import 'signuppage.dart';
 
-class LoginPage extends StatefulWidget {
+import 'loginpage.dart';
+
+class SignUpPage extends StatefulWidget {
   final AppBar appBar;
-  // Collected dataCollected;
-  // FlutterBlue bluetooth;
-  const LoginPage({Key? key, required this.appBar}) : super(key: key);
+
+  const SignUpPage({Key? key, required this.appBar}) : super(key: key);
 
   @override
-  State<LoginPage> createState() => _LoginPageState();
+  State<SignUpPage> createState() => _SignUpPageState();
 }
 
-class _LoginPageState extends State<LoginPage> {
+class _SignUpPageState extends State<SignUpPage> {
   late final TextEditingController _email;
   late final TextEditingController _password;
 
@@ -64,25 +60,21 @@ class _LoginPageState extends State<LoginPage> {
               onPressed: () async {
                 final email = _email.text;
                 final password = _password.text;
-                await FirebaseAuth.instance.signInWithEmailAndPassword(
+                await FirebaseAuth.instance.createUserWithEmailAndPassword(
                     email: email, password: password);
 
-                Navigator.pop(context);
-                await Navigator.push(context,
-                    MaterialPageRoute(builder: (context) {
-                  // TESTE
-                  return Main();
+                // loga depois de criar conta
+                await FirebaseAuth.instance.signInWithEmailAndPassword(
+                    email: email, password: password);
+                _user = FirebaseAuth.instance.currentUser;
+                await _user?.sendEmailVerification();
 
-                  // return HomePage(
-                  //     appBar: widget.appBar,
-                  //     dataCollected: widget.dataCollected,
-                  //     bluetooth: widget.bluetooth);
-                }));
+                Navigator.pop(context);
               },
-              child: const Text("Acessar", style: TextStyle(fontSize: 20)),
+              child: const Text("Criar conta", style: TextStyle(fontSize: 20)),
               style: TextButton.styleFrom(
                   primary: Colors.black,
-                  backgroundColor: Colors.green[600],
+                  backgroundColor: Color.fromARGB(255, 236, 39, 13),
                   padding: const EdgeInsets.all(30)),
             ),
             TextButton(
@@ -90,11 +82,11 @@ class _LoginPageState extends State<LoginPage> {
                 Navigator.pop(context);
                 await Navigator.push(context,
                     MaterialPageRoute(builder: (context) {
-                  return SignUpPage(appBar: widget.appBar);
+                  return LoginPage(appBar: widget.appBar);
                 }));
               },
-              child: const Text("Não possui conta?"),
-            ),
+              child: const Text("Já possui conta?"),
+            )
           ]
               .map(
                 (e) => Padding(

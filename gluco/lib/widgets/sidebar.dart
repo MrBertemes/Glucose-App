@@ -27,8 +27,7 @@ class _SideBarState extends State<SideBar> {
 
   @override
   Widget build(BuildContext context) {
-    User? user = FirebaseAuth.instance.currentUser;
-    String tileText = user == null ? "Login" : "Olá, ${user.email}";
+    User? _user = FirebaseAuth.instance.currentUser;
 
     return Drawer(
       // width: MediaQuery.of(context).size.width * 0.8,
@@ -42,21 +41,24 @@ class _SideBarState extends State<SideBar> {
               style: Theme.of(context).textTheme.headline6,
             ),
           ),
-          ListTile(
-            title: Text(
-              tileText,
-              style: Theme.of(context).textTheme.headline6,
+          Visibility(
+            child: ListTile(
+              title: Text(
+                "Olá, ${_user?.email}",
+                style: Theme.of(context).textTheme.headline6,
+              ),
+              onTap: () async {
+                Navigator.pop(context);
+                await Navigator.push(context,
+                    MaterialPageRoute(builder: (context) {
+                  return LoginPage(
+                    appBar: widget.appBar,
+                  );
+                }));
+              },
+              enabled: false,
             ),
-            onTap: () async {
-              Navigator.pop(context);
-              await Navigator.push(context,
-                  MaterialPageRoute(builder: (context) {
-                return LoginPage(
-                  appBar: widget.appBar,
-                );
-              }));
-            },
-            enabled: user == null,
+            visible: _user != null,
           ),
           Visibility(
             child: ListTile(
@@ -69,7 +71,7 @@ class _SideBarState extends State<SideBar> {
                 Navigator.pop(context);
               },
             ),
-            visible: user != null,
+            visible: _user != null,
           ),
           ListTile(
             title: Text(
