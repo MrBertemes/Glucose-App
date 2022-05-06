@@ -5,14 +5,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter_blue/flutter_blue.dart';
 import 'package:gluco/pages/devicepage.dart';
 import 'package:url_launcher/url_launcher.dart';
+import '../models/collected.dart';
 import '../pages/historypage.dart';
 import '../pages/loginpage.dart';
 
 class SideBar extends StatefulWidget {
   final AppBar appBar;
   final FlutterBlue blue;
-
-  SideBar({required this.appBar, required this.blue});
+  final Collected dataCollected;
+  SideBar(
+      {required this.appBar, required this.dataCollected, required this.blue});
 
   @override
   State<SideBar> createState() => _SideBarState();
@@ -44,33 +46,13 @@ class _SideBarState extends State<SideBar> {
           Visibility(
             child: ListTile(
               title: Text(
-                "Olá, ${_user?.email}",
+                "Olá, ${_user?.displayName}",
                 style: Theme.of(context).textTheme.headline6,
               ),
-              onTap: () async {
-                Navigator.pop(context);
-                await Navigator.push(context,
-                    MaterialPageRoute(builder: (context) {
-                  return LoginPage(
-                    appBar: widget.appBar,
-                  );
-                }));
-              },
+              onTap: () {},
               enabled: false,
             ),
-            visible: _user != null,
-          ),
-          Visibility(
-            child: ListTile(
-              title: Text(
-                "Sair",
-                style: Theme.of(context).textTheme.headline6,
-              ),
-              onTap: () async {
-                FirebaseAuth.instance.signOut();
-                Navigator.pop(context);
-              },
-            ),
+            // nem faz mais sentido isso aqui, ou faz?
             visible: _user != null,
           ),
           ListTile(
@@ -116,6 +98,28 @@ class _SideBarState extends State<SideBar> {
               _launchURL();
               Navigator.pop(context);
             },
+          ),
+          Visibility(
+            child: ListTile(
+              title: Text(
+                "Sair",
+                style: Theme.of(context).textTheme.headline6,
+              ),
+              onTap: () async {
+                FirebaseAuth.instance.signOut();
+                Navigator.pop(context); // appbar
+                Navigator.pop(context); // homepage
+                await Navigator.push(context,
+                    MaterialPageRoute(builder: (context) {
+                  return LoginPage(
+                    appBar: widget.appBar,
+                    dataCollected: widget.dataCollected,
+                    bluetooth: widget.blue,
+                  );
+                }));
+              },
+            ),
+            visible: _user != null,
           ),
         ],
       ),

@@ -14,6 +14,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'pages/loginpage.dart';
+import 'pages/initscreen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -41,10 +42,8 @@ class MainState extends State<Main> {
 
   FlutterBlue bluetooth = FlutterBlue.instance;
 
-  User? user = FirebaseAuth.instance.currentUser;
-
   // desabilitar autenticação
-  bool auth = false;
+  bool auth = true;
 
   GlobalKey<ScaffoldState> _globalKey = GlobalKey();
   @override
@@ -81,20 +80,15 @@ class MainState extends State<Main> {
                     ),
                   ),
             )),
-        home: !auth
-            ? HomePage(
+        home: auth
+            ? InitScreen(
+                appBar: appBar,
+                bluetooth: bluetooth,
+                dataCollected: _dataCollected,
+              )
+            : HomePage(
                 appBar: appBar,
                 dataCollected: _dataCollected,
-                bluetooth: bluetooth,
-              )
-            : user == null
-                ? LoginPage(
-                    appBar: appBar,
-                  )
-                : HomePage(
-                    appBar: appBar,
-                    dataCollected: _dataCollected,
-                    bluetooth: bluetooth,
-                  ));
+                bluetooth: bluetooth));
   }
 }
