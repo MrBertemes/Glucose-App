@@ -33,6 +33,7 @@ class _HomePageState extends State<HomePage> {
       appBar: widget.appBar,
       drawer: SideBar(
         blue: widget.bluetooth,
+        dataCollected: widget.dataCollected,
         appBar: widget.appBar,
       ),
       body: SingleChildScrollView(
