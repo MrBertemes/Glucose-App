@@ -1,17 +1,20 @@
 // ignore_for_file: avoid_print
 
-import 'dart:convert';
-import 'package:http/http.dart' as http; 
+// import 'dart:convert';
+// import 'package:http/http.dart' as http;
+// import 'package:firebase/firebase_io.dart';
+// import 'package:firebase/firestore.dart';
+// import '../models/collected.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
-Future<Map> fetch() async{
-  var url = Uri.parse('https://jsonplaceholder.typicode.com/todos/1');
-  var reponse  = await http.get(url);
-  var json = jsonDecode(reponse.body);
-  return json;
-}
+class Database {
 
-Future<int> postTable() async{
-  int success=0;
+  Database();
 
-  return success;
+  var db = FirebaseFirestore.instance;
+
+  void addNewMeasurement(Map<String, dynamic> measureMap) {
+    db.collection("measures").add(measureMap).then((DocumentReference doc) =>
+        print('DocumentSnapshot added with ID: ${doc.id}'));
+  }
 }
