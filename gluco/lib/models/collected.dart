@@ -1,4 +1,4 @@
-// ignore_for_file: unused_import
+// ignore_for_file: unused_import, unnecessary_new
 
 import 'package:flutter/foundation.dart';
 
@@ -16,4 +16,24 @@ class Collected {
     required this.temperatura,
     required this.data,
   });
+
+  factory Collected.fromMap(Map<String, dynamic> json) => new Collected(
+    saturacao: json['saturacao'],
+    batimento: json['batimento'],
+    glicose: json['glicose'],
+    temperatura: json['temperatura'],
+    data: json['data']
+  );
+
+
+  Map<String, dynamic> toMap() {
+    return {
+      'saturacao': saturacao,
+      'batimento': batimento,
+      'glicose': glicose,
+      'temperatura': temperatura,
+      'data' : data
+    };
+  }
+  
 }

@@ -47,6 +47,7 @@ class HistoryPage extends StatelessWidget {
               ),
               leading: Icon(Icons.calendar_today_rounded),
               title: Text(DateFormat.EEEE().format(medidasUltimaSemana[i].data)),
+              // title: Text(medidasUltimaSemanaTest[i]),
             ),
           );
         },
