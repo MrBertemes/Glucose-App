@@ -69,6 +69,8 @@ class _HomePageState extends State<HomePage> {
                 builder: (context, child, callback, _) {
                   return ElevatedButton(
                     style: ButtonStyle(
+                      backgroundColor: MaterialStateProperty.all<Color>(
+                          Color.fromARGB(255, 83, 100, 232)),
                       shape: MaterialStateProperty.all<RoundedRectangleBorder>(
                           RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(100),

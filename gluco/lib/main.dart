@@ -1,7 +1,6 @@
 // ignore_for_file: use_key_in_widget_constructors, prefer_const_constructors, prefer_const_literals_to_create_immutables, avoid_unnecessary_containers, deprecated_member_use, unused_import, avoid_print, sized_box_for_whitespace, non_constant_identifier_names, unused_local_variable, unused_field, prefer_final_fields
 
 import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:gluco/widgets/chartbox.dart';
@@ -37,7 +36,7 @@ class MainState extends State<Main> {
   FlutterBlue bluetooth = FlutterBlue.instance;
 
   // desabilitar autenticação
-  bool auth = true;
+  bool auth = false;
 
   GlobalKey<ScaffoldState> _globalKey = GlobalKey();
   @override
@@ -45,6 +44,8 @@ class MainState extends State<Main> {
     final AppBar appBar = AppBar(
       elevation: 4,
       centerTitle: true,
+      // backgroundColor: Color.fromARGB(255, 98, 114, 250),
+      backgroundColor: Color.fromARGB(255, 83, 100, 232),
       title: Text("E-Gluco",
           textAlign: TextAlign.center,
           style: Theme.of(context).appBarTheme.titleTextStyle),
@@ -53,7 +54,8 @@ class MainState extends State<Main> {
     return MaterialApp(
         theme: ThemeData(
             primarySwatch: Colors.green,
-            accentColor: Colors.red,
+            // primarySwatch: Color.fromARGB(255, 98, 114, 250),
+            accentColor: Colors.grey[600],
             errorColor: Colors.purple[900],
             fontFamily: 'Quicksand',
             textTheme: ThemeData.light().textTheme.copyWith(
