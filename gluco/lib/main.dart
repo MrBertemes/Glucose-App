@@ -27,6 +27,7 @@ class Main extends StatefulWidget {
 
 class MainState extends State<Main> {
   Collected _dataCollected = Collected(
+    id: 0,
     batimento: 78,
     data: DateTime.now(),
     saturacao: 98,

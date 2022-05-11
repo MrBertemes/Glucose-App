@@ -11,6 +11,7 @@ class HistoryPage extends StatelessWidget {
 
   List<Collected> medidasUltimaSemana = [
     Collected(
+      id: 0,
       saturacao: 100,
       batimento: 90,
       glicose: 45.00,
