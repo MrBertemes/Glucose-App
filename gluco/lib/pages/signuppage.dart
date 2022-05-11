@@ -1,7 +1,6 @@
 // ignore_for_file: must_be_immutable
 
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_blue/flutter_blue.dart';
 import '../models/collected.dart';
 import '../styles/appbartest.dart';
@@ -28,7 +27,6 @@ class _SignUpPageState extends State<SignUpPage> {
   late final TextEditingController _email;
   late final TextEditingController _password;
 
-  User? _user;
 
   @override
   void initState() {
@@ -83,15 +81,10 @@ class _SignUpPageState extends State<SignUpPage> {
                 final name = _name.text;
                 final email = _email.text;
                 final password = _password.text;
-                await FirebaseAuth.instance.createUserWithEmailAndPassword(
-                    email: email, password: password);
+                
 
                 // loga depois de criar conta
-                await FirebaseAuth.instance.signInWithEmailAndPassword(
-                    email: email, password: password);
-                _user = FirebaseAuth.instance.currentUser;
-                await _user?.sendEmailVerification();
-                await _user?.updateDisplayName(name);
+                
 
                 Navigator.pop(context);
               },
