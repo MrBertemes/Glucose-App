@@ -10,17 +10,11 @@ import 'package:gluco/widgets/sidebar.dart';
 import 'package:gluco/widgets/valuecard.dart';
 import 'package:flutter_blue/flutter_blue.dart';
 import './models/collected.dart';
-import 'package:firebase_core/firebase_core.dart';
-import 'firebase_options.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'pages/loginpage.dart';
 import 'pages/initscreen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
   runApp(MaterialApp(
     home: Main(),
   ));

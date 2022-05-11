@@ -1,7 +1,6 @@
 // ignore_for_file: must_be_immutable
 
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_blue/flutter_blue.dart';
 import '../models/collected.dart';
 import '../styles/appbartest.dart';
@@ -70,8 +69,8 @@ class _LoginPageState extends State<LoginPage> {
               onPressed: () async {
                 final email = _email.text;
                 final password = _password.text;
-                await FirebaseAuth.instance.signInWithEmailAndPassword(
-                    email: email, password: password);
+                // await FirebaseAuth.instance.signInWithEmailAndPassword(
+                //     email: email, password: password);
                 Navigator.pop(context);
                 await Navigator.push(context,
                     MaterialPageRoute(builder: (context) {
