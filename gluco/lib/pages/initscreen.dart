@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_blue/flutter_blue.dart';
-import '../main.dart';
 import '../models/collected.dart';
 import 'homepage.dart';
 import 'loginpage.dart';
@@ -47,15 +46,19 @@ class _InitScreenState extends State<InitScreen> {
   animationDelay() async {
     return Timer(const Duration(seconds: 3), () {
       Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(
-          builder: (context) => HomePage(
-            appBar: widget.appBar,
-            dataCollected: widget.dataCollected,
-            bluetooth: widget.bluetooth,
-          ),
-        ),
-      );
+          context,
+          MaterialPageRoute(
+              builder: (context) => // MainState.auth
+                  // ? LoginPage(
+                  //     appBar: widget.appBar,
+                  //     dataCollected: widget.dataCollected,
+                  //     bluetooth: widget.bluetooth,
+                  //   ):
+                  HomePage(
+                    appBar: widget.appBar,
+                    dataCollected: widget.dataCollected,
+                    bluetooth: widget.bluetooth,
+                  )));
     });
   }
 }

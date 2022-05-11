@@ -4,14 +4,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_blue/flutter_blue.dart';
 import '../models/collected.dart';
 import '../styles/appbartest.dart';
+import 'homepage.dart';
 import 'loginpage.dart';
 
 class SignUpPage extends StatefulWidget {
-  AppBar appBarTestSignUp = appBarTest2; // teste de estilização
   final AppBar appBar;
   final Collected dataCollected;
   final FlutterBlue bluetooth;
-  SignUpPage(
+  const SignUpPage(
       {Key? key,
       required this.appBar,
       required this.dataCollected,
@@ -26,7 +26,6 @@ class _SignUpPageState extends State<SignUpPage> {
   late final TextEditingController _name;
   late final TextEditingController _email;
   late final TextEditingController _password;
-
 
   @override
   void initState() {
@@ -47,7 +46,7 @@ class _SignUpPageState extends State<SignUpPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: widget.appBarTestSignUp,
+      appBar: appBarTest(title: "E-Gluco Cadastro"),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -81,12 +80,17 @@ class _SignUpPageState extends State<SignUpPage> {
                 final name = _name.text;
                 final email = _email.text;
                 final password = _password.text;
-                
 
                 // loga depois de criar conta
-                
 
                 Navigator.pop(context);
+                await Navigator.push(context,
+                    MaterialPageRoute(builder: (context) {
+                  return HomePage(
+                      appBar: widget.appBar,
+                      dataCollected: widget.dataCollected,
+                      bluetooth: widget.bluetooth);
+                }));
               },
               child: const Text("Criar conta", style: TextStyle(fontSize: 20)),
               style: TextButton.styleFrom(

@@ -8,11 +8,10 @@ import 'homepage.dart';
 import 'signuppage.dart';
 
 class LoginPage extends StatefulWidget {
-  AppBar appBarTestLogin = appBarTest; // teste de estilização
   final AppBar appBar;
   final Collected dataCollected;
   final FlutterBlue bluetooth;
-  LoginPage(
+  const LoginPage(
       {Key? key,
       required this.appBar,
       required this.dataCollected,
@@ -44,7 +43,7 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: widget.appBarTestLogin,
+      appBar: appBarTest(title: "E-Gluco Acesso"),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
