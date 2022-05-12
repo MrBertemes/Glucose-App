@@ -37,7 +37,7 @@ class MainState extends State<Main> {
   FlutterBlue bluetooth = FlutterBlue.instance;
 
   // desabilitar autenticação
-  bool auth = false;
+  bool auth = true;
 
   GlobalKey<ScaffoldState> _globalKey = GlobalKey();
   @override

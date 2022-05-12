@@ -18,11 +18,6 @@ class _ProfilePageState extends State<ProfilePage> {
         appBar: widget.appBarProfile,
         body: Column(children: [
           ListTile(
-            title: Text("Sexo"),
-            onTap: () {},
-            trailing: Icon(Icons.arrow_forward_ios),
-          ),
-          ListTile(
             title: Text("Idade"),
             onTap: () {},
             trailing: Icon(Icons.arrow_forward_ios),
