@@ -44,21 +44,23 @@ class _InitScreenState extends State<InitScreen> {
   }
 
   animationDelay() async {
-    return Timer(const Duration(seconds: 3), () {
+    return Timer(const Duration(seconds: 1), () {
       Navigator.pushReplacement(
           context,
           MaterialPageRoute(
               builder: (context) => // MainState.auth
-                  // ? LoginPage(
-                  //     appBar: widget.appBar,
-                  //     dataCollected: widget.dataCollected,
-                  //     bluetooth: widget.bluetooth,
-                  //   ):
-                  HomePage(
+                  // ?
+                  LoginPage(
                     appBar: widget.appBar,
                     dataCollected: widget.dataCollected,
                     bluetooth: widget.bluetooth,
                   )));
+      // :
+      // HomePage(
+      //   appBar: widget.appBar,
+      //   dataCollected: widget.dataCollected,
+      //   bluetooth: widget.bluetooth,
+      // )));
     });
   }
 }
