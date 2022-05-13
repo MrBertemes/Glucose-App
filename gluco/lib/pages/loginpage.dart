@@ -42,8 +42,13 @@ class _LoginPageState extends State<LoginPage> {
   Widget build(BuildContext context) {
     return Stack(
       children: [
+        Container(
+          width: MediaQuery.of(context).size.width,
+          height: MediaQuery.of(context).size.height,
+          color: Colors.white,
+        ),
         Positioned(
-          top: -MediaQuery.of(context).size.width / 2,
+          top: -MediaQuery.of(context).size.width * 0.4,
           left: -MediaQuery.of(context).size.width * 0.1,
           child: ClipOval(
             child: Container(
@@ -63,7 +68,7 @@ class _LoginPageState extends State<LoginPage> {
           ),
         ),
         Positioned(
-          top: MediaQuery.of(context).size.height / 10,
+          top: MediaQuery.of(context).size.height * 0.1,
           left: 0,
           width: MediaQuery.of(context).size.width,
           height: MediaQuery.of(context).size.height,
@@ -78,12 +83,12 @@ class _LoginPageState extends State<LoginPage> {
           ),
         ),
         Positioned(
-          top: MediaQuery.of(context).size.height / 2.2,
+          top: MediaQuery.of(context).size.height * 0.4,
           left: MediaQuery.of(context).size.width * 0.05,
-          height: MediaQuery.of(context).size.height / 2,
+          height: MediaQuery.of(context).size.height * 0.6,
           width: MediaQuery.of(context).size.width * 0.9,
           child: Scaffold(
-            backgroundColor: Colors.white,
+            backgroundColor: Color.fromARGB(0, 0, 0, 0),
             body: Column(
               children: [
                 Container(
@@ -136,11 +141,10 @@ class _LoginPageState extends State<LoginPage> {
                     obscureText: true,
                     enableSuggestions: false,
                     autocorrect: false,
-                    // textAlign: TextAlign.center,
                   ),
                 ),
                 Container(
-                  padding: const EdgeInsets.fromLTRB(10.0, 10.0, 10.0, 10.0),
+                  padding: const EdgeInsets.all(10.0),
                   width: MediaQuery.of(context).size.width * 0.865,
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(8),
@@ -168,7 +172,7 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                 ),
                 Container(
-                  padding: const EdgeInsets.fromLTRB(10.0, 10.0, 10.0, 10.0),
+                  padding: const EdgeInsets.all(10.0),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: const [
@@ -195,7 +199,7 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                 ),
                 Container(
-                  padding: const EdgeInsets.fromLTRB(10.0, 10.0, 10.0, 10.0),
+                  padding: const EdgeInsets.all(10.0),
                   width: MediaQuery.of(context).size.width * 0.865,
                   decoration: BoxDecoration(
                     border:
