@@ -25,16 +25,19 @@ class _InitScreenState extends State<InitScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        body: Center(
-            child: Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: const [
-        CircularProgressIndicator(),
-        Padding(
-            padding: EdgeInsets.all(24.0),
-            child: Text("*finge que é uma animação*")),
-      ],
-    )));
+      backgroundColor: Colors.white,
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: const [
+            CircularProgressIndicator(),
+            Padding(
+                padding: EdgeInsets.all(24.0),
+                child: Text("*finge que é uma animação*")),
+          ],
+        ),
+      ),
+    );
   }
 
   @override
@@ -44,23 +47,28 @@ class _InitScreenState extends State<InitScreen> {
   }
 
   animationDelay() async {
-    return Timer(const Duration(seconds: 1), () {
-      Navigator.pushReplacement(
+    return Timer(
+      const Duration(seconds: 1),
+      () {
+        Navigator.pushReplacement(
           context,
           MaterialPageRoute(
-              builder: (context) => // MainState.auth
-                  // ?
-                  LoginPage(
-                    appBar: widget.appBar,
-                    dataCollected: widget.dataCollected,
-                    bluetooth: widget.bluetooth,
-                  )));
-      // :
-      // HomePage(
-      //   appBar: widget.appBar,
-      //   dataCollected: widget.dataCollected,
-      //   bluetooth: widget.bluetooth,
-      // )));
-    });
+            builder: (context) => // MainState.auth
+                // ?
+                LoginPage(
+              appBar: widget.appBar,
+              dataCollected: widget.dataCollected,
+              bluetooth: widget.bluetooth,
+            ),
+          ),
+        );
+        // :
+        // HomePage(
+        //   appBar: widget.appBar,
+        //   dataCollected: widget.dataCollected,
+        //   bluetooth: widget.bluetooth,
+        // )));
+      },
+    );
   }
 }

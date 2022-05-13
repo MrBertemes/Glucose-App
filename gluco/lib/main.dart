@@ -53,39 +53,43 @@ class MainState extends State<Main> {
     );
 
     return MaterialApp(
-        theme: ThemeData(
-            primarySwatch: Colors.green,
-            // primarySwatch: Color.fromARGB(255, 98, 114, 250),
-            accentColor: Colors.grey[600],
-            errorColor: Colors.purple[900],
-            fontFamily: 'Quicksand',
-            textTheme: ThemeData.light().textTheme.copyWith(
+      theme: ThemeData(
+        scaffoldBackgroundColor: Colors.white,
+        primarySwatch: Colors.green,
+        // primarySwatch: Color.fromARGB(255, 98, 114, 250),
+        accentColor: Colors.grey[600],
+        errorColor: Colors.purple[900],
+        fontFamily: 'Quicksand',
+        textTheme: ThemeData.light().textTheme.copyWith(
+            headline6: TextStyle(
+              color: Colors.black,
+              fontFamily: 'OpenSans',
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+            ),
+            button: TextStyle(color: Colors.white)),
+        appBarTheme: AppBarTheme(
+          textTheme: ThemeData.light().textTheme.copyWith(
                 headline6: TextStyle(
-                  color: Colors.black,
+                  color: Colors.white,
                   fontFamily: 'OpenSans',
-                  fontSize: 18,
+                  fontSize: 20,
                   fontWeight: FontWeight.bold,
                 ),
-                button: TextStyle(color: Colors.white)),
-            appBarTheme: AppBarTheme(
-              textTheme: ThemeData.light().textTheme.copyWith(
-                    headline6: TextStyle(
-                      color: Colors.white,
-                      fontFamily: 'OpenSans',
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-            )),
-        home: auth
-            ? InitScreen(
-                appBar: appBar,
-                bluetooth: bluetooth,
-                dataCollected: _dataCollected,
-              )
-            : HomePage(
-                appBar: appBar,
-                dataCollected: _dataCollected,
-                bluetooth: bluetooth));
+              ),
+        ),
+      ),
+      home: auth
+          ? InitScreen(
+              appBar: appBar,
+              bluetooth: bluetooth,
+              dataCollected: _dataCollected,
+            )
+          : HomePage(
+              appBar: appBar,
+              dataCollected: _dataCollected,
+              bluetooth: bluetooth,
+            ),
+    );
   }
 }
