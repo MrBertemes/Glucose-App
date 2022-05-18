@@ -79,7 +79,7 @@ class MainState extends State<Main> {
               ),
         ),
       ),
-      home: auth
+      home: auth 
           ? InitScreen(
               appBar: appBar,
               bluetooth: bluetooth,
