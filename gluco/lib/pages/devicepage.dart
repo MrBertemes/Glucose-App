@@ -84,24 +84,4 @@ class _DevicePageState extends State<DevicePage> {
     );
   }
 
-//   Future<bool> blueIsOn(FlutterBlue blue) async {
-//     if (await blue.isOn) {
-//       return true;
-//     }
-//     return false;
-//   }
-
-//   void scanDevices(FlutterBlue bluetooth) async {
-//     bluetooth.startScan(timeout: Duration(seconds: 4));
-//     var subscription = bluetooth.scanResults.listen((results) {
-//       var resMap = results.map((ScanResult r) {});
-
-//       for (ScanResult r in results) {
-//         print('${r.device.name} found! rssi: ${r.rssi}');
-//       }
-//     });
-
-//     // Stop scanning
-//     bluetooth.stopScan();
-//   }
 }
