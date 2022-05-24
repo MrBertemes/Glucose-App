@@ -21,10 +21,10 @@ class SideBar extends StatefulWidget {
 }
 
 class _SideBarState extends State<SideBar> {
-  final String _url = 'https://www.udesc.br/cct/home/';
+  final String _url = 'http://egluco.bio.br/';
 
   void _launchURL() async {
-    if (!await launch(_url)) throw 'Could not launch $_url';
+    if (!await launch(_url,forceWebView: false)) throw 'Could not launch $_url';
   }
 
   @override
