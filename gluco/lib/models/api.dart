@@ -1,6 +1,7 @@
 // ignore_for_file: avoid_print, unused_import
 
 import 'dart:async';
+import 'package:crypto/crypto.dart';
 import 'dart:convert';
 import 'dart:html';
 import 'package:flutter/material.dart';
@@ -9,17 +10,18 @@ import 'package:http/retry.dart';
 import 'collected.dart';
 import '../db/measurements.dart';
 
-
 class Api {
-  
   Uri url = Uri.parse('http://159.223.221.13/');
 
-  Future<dynamic> fetchMeasurements() async {
+  Future<dynamic> fetchMeasurements(int id, String name) async {
     Collected? measurement;
-    var token = "tokenLegal";
+    var token = generateToken(id, name);
     final client = RetryClient(http.Client());
     try {
-      var response = await http.get(url, headers: {"token":token});
+      var response = await http.get(url, headers: {
+        "access-token": token,
+        "Content-Type": "application/json",
+      });
       if (response.statusCode == 200) {
         // success
         var jsonResponse = jsonDecode(response.body) as Map<String, dynamic>;
@@ -36,7 +38,6 @@ class Api {
   }
 
   Future<int> postMeasurements(Collected measurement) async {
-
     var success = 1;
     var measurementJson = measurement.toMap();
     var stringJson = json.encode(measurementJson).toString();
@@ -56,7 +57,8 @@ class Api {
         },
         encoding: Encoding.getByName("utf-8"),
       );
-      if (response.statusCode == 200) { // success
+      if (response.statusCode == 200) {
+        // success
         success = 0;
         return success;
       }
@@ -67,7 +69,7 @@ class Api {
   }
 
   Future<int> postDataStream(String dataStream) async {
-    var success =1;
+    var success = 1;
 
     final client = RetryClient(http.Client());
     try {
@@ -81,7 +83,8 @@ class Api {
         },
         encoding: Encoding.getByName("utf-8"),
       );
-      if (response.statusCode == 200) { // success
+      if (response.statusCode == 200) {
+        // success
         success = 0;
         return success;
       }
@@ -89,5 +92,33 @@ class Api {
       client.close();
     }
     return success;
+  }
+
+  String generateToken(int id, String name) {
+    // JWT
+    String _secret = String.fromEnvironment('SECRET');
+
+    // header
+    var header = {
+      "alg": "HS256",
+      "typ": "JWT",
+    };
+    var header64 = base64Encode(jsonEncode(header).codeUnits);
+
+    // Payload
+    var payload = {
+      "sub": id, // id
+      "name": name,
+      "exp": DateTime.now().microsecondsSinceEpoch +
+          60000, // 1 minuto de expiração
+    };
+    var payload64 = base64Encode(jsonEncode(payload).codeUnits);
+
+    // signature
+    var hmac = Hmac(sha256, _secret.codeUnits);
+    var digest = hmac.convert("$header64.$payload64".codeUnits);
+    var sign = base64Encode(digest.bytes);
+
+    return "$header64.$payload64.$sign";
   }
 }
