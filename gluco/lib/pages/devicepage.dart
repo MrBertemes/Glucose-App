@@ -3,14 +3,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_blue/flutter_blue.dart';
+import 'package:gluco/styles/defaultappbar.dart';
 import '../models/device.dart';
 import 'package:intl/intl.dart';
 
+import '../styles/colors.dart';
+
 class DevicePage extends StatefulWidget {
-  final AppBar appBar;
   final FlutterBlue blue;
 
-  DevicePage({required this.blue, required this.appBar});
+  DevicePage({required this.blue});
 
   @override
   State<DevicePage> createState() => _DevicePageState();
@@ -24,7 +26,7 @@ class _DevicePageState extends State<DevicePage> {
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance?.addPostFrameCallback((_) => {initScan()});
+    WidgetsBinding.instance.addPostFrameCallback((_) => {initScan()});
   }
 
   Future<void> initScan() async {
@@ -54,24 +56,44 @@ class _DevicePageState extends State<DevicePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: widget.appBar,
-      body: _devices.isEmpty
-          ? Center(
-              child: Text(
-                _devicesMsg,
-                style: Theme.of(context).textTheme.headline6,
+      appBar: defaultAppBar(
+        title: "Conexão com Relógio",
+        trailing: [
+          Padding(
+            padding: EdgeInsets.all(15.0),
+            child: Icon(Icons.bluetooth),
+          ),
+        ],
+      ),
+      body: Container(
+        decoration: BoxDecoration(
+          color: fundoScaf2,
+          borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(25),
+            topRight: Radius.circular(25),
+          ),
+        ),
+        child: _devices.isEmpty
+            ? Center(
+                child: Text(
+                  _devicesMsg,
+                  style: Theme.of(context).textTheme.headline6,
+                ),
+              )
+            : ListView.builder(
+                itemCount: _devices.length,
+                itemBuilder: (c, i) {
+                  return ListTile(
+                    leading: Icon(Icons.bluetooth),
+                    title: Text(_devices[i].name),
+                    subtitle: Text(_devices[i].id.toString()),
+                    onTap: () {
+                      connectDevice(_devices[i]);
+                    },
+                  );
+                },
               ),
-            )
-          : ListView.builder(
-              itemCount: _devices.length,
-              itemBuilder: (c, i) {
-                return ListTile(
-                  leading: Icon(Icons.bluetooth),
-                  title: Text(_devices[i].name),
-                  subtitle: Text(_devices[i].id.toString()),
-                  onTap: () {connectDevice(_devices[i]);},
-                );
-              }),
+      ),
     );
   }
 

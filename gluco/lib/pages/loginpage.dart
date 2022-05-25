@@ -1,20 +1,10 @@
-// ignore_for_file: must_be_immutable, prefer_const_constructors
+// ignore_for_file: must_be_immutable, prefer_const_constructors, use_key_in_widget_constructors
 
 import 'package:flutter/material.dart';
-import 'package:flutter_blue/flutter_blue.dart';
-import '../models/collected.dart';
-import 'homepage.dart';
+import 'package:gluco/styles/colors.dart';
 
 class LoginPage extends StatefulWidget {
-  final AppBar appBar;
-  final Collected dataCollected;
-  final FlutterBlue bluetooth;
-  const LoginPage(
-      {Key? key,
-      required this.appBar,
-      required this.dataCollected,
-      required this.bluetooth})
-      : super(key: key);
+  const LoginPage();
 
   @override
   State<LoginPage> createState() => _LoginPageState();
@@ -23,6 +13,7 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   late final TextEditingController _email;
   late final TextEditingController _password;
+  bool hidePassword = true;
 
   @override
   void initState() {
@@ -40,12 +31,13 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
+    // Problema com scrollable, corta quando abre o teclado
     return Stack(
       children: [
         Container(
           width: MediaQuery.of(context).size.width,
           height: MediaQuery.of(context).size.height,
-          color: Colors.white,
+          color: fundo,
         ),
         Positioned(
           top: -MediaQuery.of(context).size.width * 0.4,
@@ -54,13 +46,13 @@ class _LoginPageState extends State<LoginPage> {
             child: Container(
               width: MediaQuery.of(context).size.width * 1.2,
               height: MediaQuery.of(context).size.width,
-              decoration: const BoxDecoration(
+              decoration: BoxDecoration(
                 gradient: LinearGradient(
                   begin: Alignment.center,
                   end: Alignment.bottomCenter,
                   colors: [
-                    Color.fromARGB(150, 168, 222, 234),
-                    Color.fromARGB(150, 142, 196, 121)
+                    azulClaro, // são essas cores ou as primas?
+                    verdeClaro,
                   ],
                 ),
               ),
@@ -73,6 +65,7 @@ class _LoginPageState extends State<LoginPage> {
           width: MediaQuery.of(context).size.width,
           height: MediaQuery.of(context).size.height,
           child: const Text(
+            // placeholder
             "EGluco",
             textAlign: TextAlign.center,
             style: TextStyle(
@@ -95,23 +88,25 @@ class _LoginPageState extends State<LoginPage> {
                   padding: const EdgeInsets.fromLTRB(10.0, 0.0, 10.0, 10.0),
                   child: TextField(
                     controller: _email,
-                    decoration: const InputDecoration(
+                    decoration: InputDecoration(
                       hintText: "E-mail",
                       hintStyle: TextStyle(
-                        color: Color.fromARGB(255, 142, 196, 121),
+                        color: verdeAzulado,
                       ),
                       enabledBorder: UnderlineInputBorder(
                         borderSide: BorderSide(
-                            width: 2,
-                            color: Color.fromARGB(255, 142, 196, 121)),
+                          width: 2,
+                          color: verdeAzulado,
+                        ),
                       ),
                       focusedBorder: UnderlineInputBorder(
                         borderSide: BorderSide(
-                            width: 3,
-                            color: Color.fromARGB(255, 142, 196, 121)),
+                          width: 3,
+                          color: verdeAzulado,
+                        ),
                       ),
                     ),
-                    cursorColor: Color.fromARGB(255, 142, 196, 121),
+                    cursorColor: verdeAzulado,
                     keyboardType: TextInputType.emailAddress,
                     style: Theme.of(context).textTheme.bodyText2,
                   ),
@@ -120,25 +115,39 @@ class _LoginPageState extends State<LoginPage> {
                   padding: const EdgeInsets.fromLTRB(10.0, 0.0, 10.0, 25.0),
                   child: TextField(
                     controller: _password,
-                    decoration: const InputDecoration(
+                    obscureText: hidePassword,
+                    decoration: InputDecoration(
                       hintText: "Senha",
                       hintStyle: TextStyle(
-                        color: Color.fromARGB(255, 130, 180, 153),
+                        color: azulClaro,
                       ),
                       enabledBorder: UnderlineInputBorder(
                         borderSide: BorderSide(
-                            width: 2,
-                            color: Color.fromARGB(255, 130, 180, 153)),
+                          width: 2,
+                          color: azulClaro,
+                        ),
                       ),
                       focusedBorder: UnderlineInputBorder(
                         borderSide: BorderSide(
-                            width: 3,
-                            color: Color.fromARGB(255, 130, 180, 153)),
+                          width: 3,
+                          color: azulClaro,
+                        ),
                       ),
+                      suffixIcon: IconButton(
+                          onPressed: () {
+                            setState(
+                              () {
+                                hidePassword = !hidePassword;
+                              },
+                            );
+                          },
+                          icon: Icon(hidePassword
+                              ? Icons.visibility_off
+                              : Icons.visibility),
+                          color: azulClaro),
                     ),
-                    cursorColor: Color.fromARGB(255, 130, 180, 153),
+                    cursorColor: azulClaro,
                     style: Theme.of(context).textTheme.bodyText2,
-                    obscureText: true,
                     enableSuggestions: false,
                     autocorrect: false,
                   ),
@@ -148,52 +157,64 @@ class _LoginPageState extends State<LoginPage> {
                   width: MediaQuery.of(context).size.width * 0.865,
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(8),
-                    color: Color.fromARGB(255, 51, 181, 203),
+                    color: azulClaro,
                   ),
                   child: TextButton(
-                    onPressed: () async {
-                      final email = _email.text;
-                      final password = _password.text;
-                      // await FirebaseAuth.instance.signInWithEmailAndPassword(
-                      //     email: email, password: password);
-                      Navigator.pop(context);
-                      await Navigator.push(context,
-                          MaterialPageRoute(builder: (context) {
-                        return HomePage(
-                            appBar: widget.appBar,
-                            dataCollected: widget.dataCollected,
-                            bluetooth: widget.bluetooth);
-                      }));
-                    },
                     child: const Text("Entrar", style: TextStyle(fontSize: 16)),
                     style: TextButton.styleFrom(
                       primary: Colors.white,
                     ),
+                    onPressed: () async {
+                      // final email = _email.text;
+                      // final password = _password.text;
+                      // await FirebaseAuth.instance.signInWithEmailAndPassword(
+                      //     email: email, password: password);
+
+                      Navigator.popAndPushNamed(context, '/home');
+                    },
                   ),
                 ),
                 Container(
                   padding: const EdgeInsets.all(10.0),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
-                    children: const [
+                    children: [
                       Expanded(
-                        child: Divider(
-                            thickness: 2,
-                            color: Color.fromARGB(255, 51, 181, 203)),
+                        child: Container(
+                          height: 2,
+                          decoration: BoxDecoration(
+                            gradient: LinearGradient(
+                              colors: [
+                                Colors.transparent,
+                                azulClaro,
+                                azulClaro,
+                              ],
+                            ),
+                          ),
+                        ),
                       ),
                       Padding(
                         padding: EdgeInsets.all(8.0),
                         child: Text(
                           "ou",
                           style: TextStyle(
-                            color: Color.fromARGB(255, 51, 181, 203),
+                            color: azulClaro,
                           ),
                         ),
                       ),
                       Expanded(
-                        child: Divider(
-                            thickness: 2,
-                            color: Color.fromARGB(255, 51, 181, 203)),
+                        child: Container(
+                          height: 2,
+                          decoration: BoxDecoration(
+                            gradient: LinearGradient(
+                              colors: [
+                                azulClaro,
+                                azulClaro,
+                                Colors.transparent,
+                              ],
+                            ),
+                          ),
+                        ),
                       ),
                     ],
                   ),
@@ -202,38 +223,22 @@ class _LoginPageState extends State<LoginPage> {
                   padding: const EdgeInsets.all(10.0),
                   width: MediaQuery.of(context).size.width * 0.865,
                   decoration: BoxDecoration(
-                    border:
-                        Border.all(color: Color.fromARGB(255, 51, 181, 203)),
+                    border: Border.all(color: azulClaro),
                     borderRadius: BorderRadius.circular(8),
-                    color: Colors.white,
+                    color: fundo,
                   ),
                   child: TextButton(
-                    // onPressed: () async {
-                    //   Navigator.pop(context);
-                    //   await Navigator.push(context,
-                    //       MaterialPageRoute(builder: (context) {
-                    //     return SignUpPage(
-                    //       appBar: widget.appBar,
-                    //       dataCollected: widget.dataCollected,
-                    //       bluetooth: widget.bluetooth,
-                    //     );
-                    //   }));
-                    // },
-                    onPressed: () async {
-                      Navigator.pop(context);
-                      await Navigator.push(context,
-                          MaterialPageRoute(builder: (context) {
-                        return HomePage(
-                            appBar: widget.appBar,
-                            dataCollected: widget.dataCollected,
-                            bluetooth: widget.bluetooth);
-                      }));
-                    },
                     child:
                         const Text("Cadastrar", style: TextStyle(fontSize: 16)),
                     style: TextButton.styleFrom(
-                      primary: const Color.fromARGB(255, 51, 181, 203),
+                      primary: azulClaro,
                     ),
+                    onPressed: () async {
+                      Navigator.popAndPushNamed(context, '/home');
+                    },
+                    // onPressed: () async {
+                    //   Navigator.popAndPushNamed(context, '/signup');
+                    // },
                   ),
                 ),
                 Container(
@@ -243,7 +248,7 @@ class _LoginPageState extends State<LoginPage> {
                     child: Text(
                       "Esqueci a senha",
                       style: TextStyle(
-                        color: Color.fromARGB(255, 51, 181, 203),
+                        color: azulClaro,
                       ),
                     ),
                   ),

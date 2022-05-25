@@ -2,19 +2,12 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_blue/flutter_blue.dart';
-import 'package:gluco/pages/devicepage.dart';
+import 'package:gluco/styles/colors.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../models/collected.dart';
-import '../pages/historypage.dart';
-import '../pages/loginpage.dart';
-import '../pages/profilepage.dart';
 
 class SideBar extends StatefulWidget {
-  final AppBar appBar;
-  final FlutterBlue blue;
-  final Collected dataCollected;
-  SideBar(
-      {required this.appBar, required this.dataCollected, required this.blue});
+  SideBar();
 
   @override
   State<SideBar> createState() => _SideBarState();
@@ -24,7 +17,9 @@ class _SideBarState extends State<SideBar> {
   final String _url = 'http://egluco.bio.br/';
 
   void _launchURL() async {
-    if (!await launch(_url,forceWebView: false)) throw 'Could not launch $_url';
+    if (!await launch(_url, forceWebView: false)) {
+      throw 'Could not launch $_url';
+    }
   }
 
   @override
@@ -39,7 +34,7 @@ class _SideBarState extends State<SideBar> {
           DrawerHeader(
             // decoration: BoxDecoration(color: Theme.of(context).primaryColor),
             decoration: BoxDecoration(
-              color: Color.fromARGB(255, 83, 100, 232),
+              color: azulEsverdeado,
             ),
             child: Text(
               'E-Gluco',
@@ -67,11 +62,7 @@ class _SideBarState extends State<SideBar> {
               style: Theme.of(context).textTheme.headline6,
             ),
             onTap: () async {
-              Navigator.pop(context);
-              await Navigator.push(context,
-                  MaterialPageRoute(builder: (context) {
-                return ProfilePage();
-              }));
+              Navigator.popAndPushNamed(context, '/profile');
             },
           ),
           ListTile(
@@ -82,30 +73,17 @@ class _SideBarState extends State<SideBar> {
               style: Theme.of(context).textTheme.headline6,
             ),
             onTap: () async {
-              Navigator.pop(context);
-              await Navigator.push(context,
-                  MaterialPageRoute(builder: (context) {
-                return HistoryPage(
-                  appBar: widget.appBar,
-                );
-              }));
+              Navigator.popAndPushNamed(context, '/history');
             },
           ),
           ListTile(
             leading: Icon(Icons.watch_outlined),
             title: Text(
-              'Dispositivo',
+              'Dispositivos',
               style: Theme.of(context).textTheme.headline6,
             ),
             onTap: () async {
-              Navigator.pop(context);
-              await Navigator.push(context,
-                  MaterialPageRoute(builder: (context) {
-                return DevicePage(
-                  appBar: widget.appBar,
-                  blue: widget.blue,
-                );
-              }));
+              Navigator.popAndPushNamed(context, '/devices');
             },
           ),
           ListTile(
@@ -114,6 +92,7 @@ class _SideBarState extends State<SideBar> {
               'Sobre nós',
               style: Theme.of(context).textTheme.headline6,
             ),
+            trailing: Icon(Icons.open_in_new),
             onTap: () {
               // Update the state of the app
               // ...
@@ -130,16 +109,11 @@ class _SideBarState extends State<SideBar> {
               ),
               onTap: () async {
                 // FirebaseAuth.instance.signOut();
-                Navigator.pop(context); // appbar
-                Navigator.pop(context); // homepage
-                await Navigator.push(context,
-                    MaterialPageRoute(builder: (context) {
-                  return LoginPage(
-                    appBar: widget.appBar,
-                    dataCollected: widget.dataCollected,
-                    bluetooth: widget.blue,
-                  );
-                }));
+                Navigator.pushNamedAndRemoveUntil(
+                  context,
+                  '/login',
+                  (route) => false,
+                );
               },
             ),
             // visible: _user != null,

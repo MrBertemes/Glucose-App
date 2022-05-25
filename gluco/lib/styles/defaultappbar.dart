@@ -1,19 +1,21 @@
 // ignore_for_file: prefer_const_constructors
 
 import 'package:flutter/material.dart';
+import 'package:gluco/styles/colors.dart';
 
-AppBar appBarTest({title}) => AppBar(
-      elevation: 4,
-      centerTitle: true,
-      backgroundColor: Color.fromARGB(255, 98, 114, 250),
+AppBar defaultAppBar({title, trailing}) => AppBar(
+      elevation: 0,
+      backgroundColor: Colors.transparent,
+      foregroundColor: Colors.grey[800],
+      actions: trailing,
       title: Text(
         title,
         textAlign: TextAlign.center,
         style: TextStyle(
-          color: Colors.white,
           fontFamily: 'OpenSans',
           fontSize: 18,
           fontWeight: FontWeight.bold,
+          fontStyle: FontStyle.italic,
         ),
       ),
     );

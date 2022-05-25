@@ -1,22 +1,12 @@
-// ignore_for_file: must_be_immutable
+// ignore_for_file: must_be_immutable, use_key_in_widget_constructors
 
 import 'package:flutter/material.dart';
-import 'package:flutter_blue/flutter_blue.dart';
-import '../models/collected.dart';
-import '../styles/appbartest.dart';
-import 'homepage.dart';
-import 'loginpage.dart';
+import '../styles/defaultappbar.dart';
 
+@Deprecated(
+    "Por enquanto não há pagina de SignUp, tudo é feito pela página de Login")
 class SignUpPage extends StatefulWidget {
-  final AppBar appBar;
-  final Collected dataCollected;
-  final FlutterBlue bluetooth;
-  const SignUpPage(
-      {Key? key,
-      required this.appBar,
-      required this.dataCollected,
-      required this.bluetooth})
-      : super(key: key);
+  const SignUpPage();
 
   @override
   State<SignUpPage> createState() => _SignUpPageState();
@@ -46,7 +36,7 @@ class _SignUpPageState extends State<SignUpPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: appBarTest(title: "E-Gluco Cadastro"),
+      appBar: defaultAppBar(title: "E-Gluco Cadastro"),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -57,14 +47,12 @@ class _SignUpPageState extends State<SignUpPage> {
               style: Theme.of(context).textTheme.headline6,
               keyboardType: TextInputType.name,
               autocorrect: false,
-              // textAlign: TextAlign.center,
             ),
             TextField(
               controller: _email,
               decoration: const InputDecoration(hintText: "Insira seu email"),
               style: Theme.of(context).textTheme.headline6,
               keyboardType: TextInputType.emailAddress,
-              // textAlign: TextAlign.center,
             ),
             TextField(
               controller: _password,
@@ -73,44 +61,26 @@ class _SignUpPageState extends State<SignUpPage> {
               obscureText: true,
               enableSuggestions: false,
               autocorrect: false,
-              // textAlign: TextAlign.center,
             ),
             TextButton(
-              onPressed: () async {
-                final name = _name.text;
-                final email = _email.text;
-                final password = _password.text;
-
-                // loga depois de criar conta
-
-                Navigator.pop(context);
-                await Navigator.push(context,
-                    MaterialPageRoute(builder: (context) {
-                  return HomePage(
-                      appBar: widget.appBar,
-                      dataCollected: widget.dataCollected,
-                      bluetooth: widget.bluetooth);
-                }));
-              },
               child: const Text("Criar conta", style: TextStyle(fontSize: 20)),
               style: TextButton.styleFrom(
-                  primary: Colors.black,
-                  backgroundColor: const Color.fromARGB(255, 236, 39, 13),
-                  padding: const EdgeInsets.all(30)),
+                primary: Colors.black,
+                backgroundColor: const Color.fromARGB(255, 236, 39, 13),
+                padding: const EdgeInsets.all(30),
+              ),
+              onPressed: () async {
+                // final name = _name.text;
+                // final email = _email.text;
+                // final password = _password.text;
+                Navigator.popAndPushNamed(context, '/home');
+              },
             ),
             TextButton(
-              onPressed: () async {
-                Navigator.pop(context);
-                await Navigator.push(context,
-                    MaterialPageRoute(builder: (context) {
-                  return LoginPage(
-                    appBar: widget.appBar,
-                    dataCollected: widget.dataCollected,
-                    bluetooth: widget.bluetooth,
-                  );
-                }));
-              },
               child: const Text("Já possui conta?"),
+              onPressed: () async {
+                Navigator.popAndPushNamed(context, '/login');
+              },
             )
           ]
               .map(

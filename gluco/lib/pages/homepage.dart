@@ -4,20 +4,19 @@ import 'package:flutter/material.dart';
 import 'package:flutter_blue/flutter_blue.dart';
 import 'package:async_button_builder/async_button_builder.dart';
 import 'package:flutter_blue/gen/flutterblue.pb.dart' as pb;
+import 'package:gluco/styles/defaultappbar.dart';
 import 'package:http/http.dart';
+import '../styles/colors.dart';
 import '../widgets/sidebar.dart';
 import '../models/collected.dart';
 import '../widgets/chartbox.dart';
 import 'dart:math';
 
 class HomePage extends StatefulWidget {
-  AppBar appBar;
+  final AppBar appBar = defaultAppBar(title: "E-Gluco");
   Collected dataCollected;
   FlutterBlue bluetooth;
-  HomePage(
-      {required this.appBar,
-      required this.dataCollected,
-      required this.bluetooth});
+  HomePage({required this.dataCollected, required this.bluetooth});
 
   @override
   State<HomePage> createState() => _HomePageState();
@@ -29,64 +28,72 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
       key: _globalKey,
       appBar: widget.appBar,
-      drawer: SideBar(
-        blue: widget.bluetooth,
-        dataCollected: widget.dataCollected,
-        appBar: widget.appBar,
-      ),
-      body: SingleChildScrollView(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: <Widget>[
-            Container(
-              height: (MediaQuery.of(context).size.height -
-                      MediaQuery.of(context).padding.top -
-                      widget.appBar.preferredSize.height) *
-                  0.7,
-              child: Card(
-                child: ChartBox(collectedData: widget.dataCollected),
-                elevation: 2,
+      drawer: SideBar(),
+      body: Container(
+        decoration: BoxDecoration(
+          color: fundoScaf2,
+          borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(25),
+            topRight: Radius.circular(25),
+          ),
+        ),
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: <Widget>[
+              Container(
+                height: (MediaQuery.of(context).size.height -
+                        MediaQuery.of(context).padding.top -
+                        widget.appBar.preferredSize.height) *
+                    0.7,
+                child: Card(
+                  child: ChartBox(collectedData: widget.dataCollected),
+                  elevation: 2,
+                ),
               ),
-            ),
-            Container(
-              padding: EdgeInsets.all(10),
-              width: MediaQuery.of(context).size.width * 0.7,
-              height: (MediaQuery.of(context).size.height -
-                      MediaQuery.of(context).padding.top -
-                      widget.appBar.preferredSize.height) *
-                  0.3,
-              child: AsyncButtonBuilder(
-                child: Text('MEDIR'),
-                onPressed: () async {
-                  setState(() {
-                    readData(widget.bluetooth);
-                    // readData(widget.bluetooth);
-                  });
-                },
-                builder: (context, child, callback, _) {
-                  return ElevatedButton(
-                    style: ButtonStyle(
-                      backgroundColor: MaterialStateProperty.all<Color>(
-                          Color.fromARGB(255, 83, 100, 232)),
-                      shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+              Container(
+                padding: EdgeInsets.all(10),
+                width: MediaQuery.of(context).size.width * 0.7,
+                height: (MediaQuery.of(context).size.height -
+                        MediaQuery.of(context).padding.top -
+                        widget.appBar.preferredSize.height) *
+                    0.3,
+                child: AsyncButtonBuilder(
+                  child: Text('MEDIR'),
+                  onPressed: () async {
+                    setState(
+                      () {
+                        readData(widget.bluetooth);
+                        // readData(widget.bluetooth);
+                      },
+                    );
+                  },
+                  builder: (context, child, callback, _) {
+                    return ElevatedButton(
+                      style: ButtonStyle(
+                        backgroundColor:
+                            MaterialStateProperty.all<Color>(azulEsverdeado),
+                        shape:
+                            MaterialStateProperty.all<RoundedRectangleBorder>(
                           RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(100),
-                        side: BorderSide(
-                          color: Theme.of(context).accentColor,
+                            borderRadius: BorderRadius.circular(100),
+                            side: BorderSide(
+                              color: Theme.of(context).accentColor,
+                            ),
+                          ),
                         ),
-                      )),
-                    ),
-                    onPressed: callback,
-                    child: child,
-                  );
-                },
+                      ),
+                      onPressed: callback,
+                      child: child,
+                    );
+                  },
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
