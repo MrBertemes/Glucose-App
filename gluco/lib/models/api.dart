@@ -3,7 +3,7 @@
 import 'dart:async';
 import 'package:crypto/crypto.dart';
 import 'dart:convert';
-import 'dart:html';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/retry.dart';
@@ -15,7 +15,7 @@ class Api {
 
   Future<dynamic> fetchMeasurements(int id, String name) async {
     Collected? measurement;
-    var token = generateToken(id, name);
+    var token = await generateToken(id, name);
     final client = RetryClient(http.Client());
     try {
       var response = await http.get(url, headers: {
@@ -94,10 +94,12 @@ class Api {
     return success;
   }
 
-  String generateToken(int id, String name) {
-    // JWT
-    String _secret = String.fromEnvironment('SECRET');
+  Future<String> generateToken(int id, String name) async {
 
+    await dotenv.load();
+    var _secret = dotenv.get('MOT');
+
+    // JWT
     // header
     var header = {
       "alg": "HS256",
