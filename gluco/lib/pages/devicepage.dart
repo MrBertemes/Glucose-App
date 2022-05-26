@@ -26,7 +26,7 @@ class _DevicePageState extends State<DevicePage> {
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) => {initScan()});
+    WidgetsBinding.instance?.addPostFrameCallback((_) => {initScan()});
   }
 
   Future<void> initScan() async {
