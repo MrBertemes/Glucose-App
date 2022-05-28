@@ -7,6 +7,7 @@ import 'package:flutter_blue/gen/flutterblue.pb.dart' as pb;
 import 'package:gluco/styles/defaultappbar.dart';
 import 'package:http/http.dart';
 import '../styles/colors.dart';
+import '../view/historicoteste.dart';
 import '../widgets/sidebar.dart';
 import '../models/collected.dart';
 import '../widgets/chartbox.dart';
@@ -32,6 +33,7 @@ class _HomePageState extends State<HomePage> {
       appBar: widget.appBar,
       drawer: SideBar(),
       body: Container(
+        width: MediaQuery.of(context).size.width,
         decoration: BoxDecoration(
           color: fundoScaf2,
           borderRadius: BorderRadius.only(
@@ -42,9 +44,9 @@ class _HomePageState extends State<HomePage> {
         child: SingleChildScrollView(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: <Widget>[
+            children: [
               Container(
+                padding: EdgeInsets.only(top: 10.0, left: 10.0, right: 10.0),
                 height: (MediaQuery.of(context).size.height -
                         MediaQuery.of(context).padding.top -
                         widget.appBar.preferredSize.height) *
@@ -62,7 +64,10 @@ class _HomePageState extends State<HomePage> {
                         widget.appBar.preferredSize.height) *
                     0.3,
                 child: AsyncButtonBuilder(
-                  child: Text('MEDIR'),
+                  child: Text(
+                    'MEDIR',
+                    style: TextStyle(color: Colors.black),
+                  ),
                   onPressed: () async {
                     setState(
                       () {
@@ -100,6 +105,7 @@ class _HomePageState extends State<HomePage> {
   }
 
   void readData(FlutterBlue bluetooth) {
+    widget.dataCollected.id++;
     widget.dataCollected.batimento = random.nextInt(110) + 60;
     widget.dataCollected.data = DateTime.now();
     widget.dataCollected.glicose =
@@ -111,5 +117,6 @@ class _HomePageState extends State<HomePage> {
         (((random.nextInt(38) + 35) + random.nextDouble()) * 100)
                 .truncateToDouble() /
             100;
+    HistoricoTeste.saveCollected(widget.dataCollected);
   }
 }

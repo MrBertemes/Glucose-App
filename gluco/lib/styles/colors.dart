@@ -19,3 +19,6 @@ Color fundo = const Color.fromRGBO(255, 255, 255, 1.0);
 /// Cor fundo do scaffold
 Color fundoScaf = const Color.fromRGBO(195, 232, 241, 1.0);
 Color fundoScaf2 = const Color.fromRGBO(255, 255, 255, 0.7);
+
+/// Cor fundo ExpansionPanelList do Histórico
+Color fundoHist = const Color.fromRGBO(250, 250, 250, 1.0);

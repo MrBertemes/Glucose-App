@@ -1,10 +1,9 @@
 // ignore_for_file: avoid_unnecessary_containers, prefer_const_constructors, use_key_in_widget_constructors, must_be_immutable, prefer_const_literals_to_create_immutables, sized_box_for_whitespace, prefer_final_fields, unused_element, prefer_const_constructors_in_immutables, deprecated_member_use
 
 import 'package:flutter/material.dart';
-import 'package:flutter_blue/flutter_blue.dart';
+import 'package:gluco/db/authdb.dart';
 import 'package:gluco/styles/colors.dart';
 import 'package:url_launcher/url_launcher.dart';
-import '../models/collected.dart';
 
 class SideBar extends StatefulWidget {
   SideBar();
@@ -24,10 +23,7 @@ class _SideBarState extends State<SideBar> {
 
   @override
   Widget build(BuildContext context) {
-    // User? _user = FirebaseAuth.instance.currentUser;
-
     return Drawer(
-      // width: MediaQuery.of(context).size.width * 0.8,
       child: ListView(
         padding: EdgeInsets.zero,
         children: [
@@ -51,8 +47,6 @@ class _SideBarState extends State<SideBar> {
               onTap: () {},
               enabled: false,
             ),
-            // nem faz mais sentido isso aqui, ou faz?
-            // visible: _user != null,
             visible: false,
           ),
           ListTile(
@@ -66,7 +60,6 @@ class _SideBarState extends State<SideBar> {
             },
           ),
           ListTile(
-            // leading: Icon(Icons.grading_sharp),
             leading: Icon(Icons.calendar_month_outlined),
             title: Text(
               'Histórico',
@@ -94,21 +87,19 @@ class _SideBarState extends State<SideBar> {
             ),
             trailing: Icon(Icons.open_in_new),
             onTap: () {
-              // Update the state of the app
-              // ...
-              // Then close the drawer
               _launchURL();
               Navigator.pop(context);
             },
           ),
           Visibility(
             child: ListTile(
+              leading: Icon(Icons.logout),
               title: Text(
                 "Sair",
                 style: Theme.of(context).textTheme.headline6,
               ),
               onTap: () async {
-                // FirebaseAuth.instance.signOut();
+                AuthDB.logout();
                 Navigator.pushNamedAndRemoveUntil(
                   context,
                   '/login',
@@ -116,8 +107,7 @@ class _SideBarState extends State<SideBar> {
                 );
               },
             ),
-            // visible: _user != null,
-            visible: false,
+            visible: true,
           ),
         ],
       ),

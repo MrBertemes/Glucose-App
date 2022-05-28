@@ -17,7 +17,7 @@ class ChartBox extends StatelessWidget {
     return LayoutBuilder(builder: (context, constraints) {
       return Container(
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(4),
+          borderRadius: BorderRadius.circular(12),
           border: Border.all(
             color: Theme.of(context).accentColor,
             width: 4,
@@ -54,7 +54,7 @@ class ChartBox extends StatelessWidget {
                   ],
                 ),
               ),
-              // Container( // 
+              // Container( //
               //   padding: EdgeInsets.all(5),
               //   height: constraints.maxHeight * 0.6,
               //   width: constraints.maxWidth * 1,
