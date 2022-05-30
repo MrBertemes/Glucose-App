@@ -44,7 +44,12 @@ class HistoricoTeste {
     for (var elem in _collectedList) {
       var mes = DateFormat.MMMM('pt_BR').format(elem.dados.data);
       var dia = DateFormat.EEEE('pt_BR').format(elem.dados.data);
-
+      mes = mes.replaceRange(0, 1, mes[0].toUpperCase());
+      dia = dia.replaceRange(0, 1, dia[0].toUpperCase());
+      var pos = dia.indexOf('-');
+      if (pos != -1) {
+        dia = dia.replaceRange(pos, pos + 6, '');
+      }
       if (!listameses.any((meslistadias) => meslistadias.first == mes)) {
         listameses.add([mes, []]);
       }
@@ -68,10 +73,16 @@ class HistoricoTeste {
     Map<String, Map<String, List<CollectedVO>>> mapa =
         <String, Map<String, List<CollectedVO>>>{};
     for (var elem in _collectedList) {
-      // Precisa corrigir a inicial maiuscula e tirar os -feiras
-      var mes = DateFormat.MMMM('pt_BR').format(elem.dados.data);
-      var dia =
+      var mes = // 'mes, ano'
+          '${DateFormat.MMMM('pt_BR').format(elem.dados.data)}, ${DateFormat.y('pt_BR').format(elem.dados.data)}';
+      var dia = // 'diasemana, diames'
           '${DateFormat.EEEE('pt_BR').format(elem.dados.data)}, ${DateFormat.d('pt_BR').format(elem.dados.data)}';
+      mes = mes.replaceRange(0, 1, mes[0].toUpperCase()); // capitalização
+      dia = dia.replaceRange(0, 1, dia[0].toUpperCase()); // capitalização
+      var pos = dia.indexOf('-');
+      if (pos != -1) {
+        dia = dia.replaceRange(pos, pos + 6, ''); // retira os -feiras
+      }
       if (!mapa.containsKey(mes)) {
         mapa[mes] = {};
       }
