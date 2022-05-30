@@ -21,6 +21,13 @@ class _HistoryPageState extends State<HistoryPage> {
 
   @override
   Widget build(BuildContext context) {
+    bool _mesmoAno = _medidasTeste.keys
+            .map((mesano) {
+              return mesano.substring(mesano.indexOf(RegExp(r'[0-9]')));
+            })
+            .toSet()
+            .length ==
+        1;
     return Scaffold(
       appBar: appBar,
       body: Container(
@@ -53,7 +60,11 @@ class _HistoryPageState extends State<HistoryPage> {
                           Padding(
                             padding: const EdgeInsets.all(8.0),
                             child: Text(
-                              mes,
+                              // se houverem medidas de anos diferentes, o mês mostra o ano também,
+                              // caso contrário só o nome do mês
+                              _mesmoAno
+                                  ? mes.substring(0, mes.indexOf(','))
+                                  : mes,
                               textAlign: TextAlign.center,
                               style: TextStyle(fontSize: 20),
                             ),
