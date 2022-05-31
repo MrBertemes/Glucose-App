@@ -117,6 +117,6 @@ class _HomePageState extends State<HomePage> {
         (((random.nextInt(38) + 35) + random.nextDouble()) * 100)
                 .truncateToDouble() /
             100;
-    HistoricoTeste.saveCollected(widget.dataCollected);
+    HistoricoTeste().saveCollected(widget.dataCollected);
   }
 }

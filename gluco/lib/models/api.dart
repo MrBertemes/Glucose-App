@@ -8,7 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/retry.dart';
 import 'collected.dart';
-import '../db/measurements.dart';
+import '../db/databaseHelper.dart';
 
 class Api {
   Uri url = Uri.parse('http://159.223.221.13/');
@@ -95,7 +95,6 @@ class Api {
   }
 
   Future<String> generateToken(int id, String name) async {
-
     await dotenv.load();
     var _secret = dotenv.get('MOT');
 
@@ -112,7 +111,7 @@ class Api {
       "sub": id, // id
       "name": name,
       "exp": DateTime.now().microsecondsSinceEpoch +
-          60000, // 1 minuto de expiração
+          2400000, // 1 hora de expiração
     };
     var payload64 = base64Encode(jsonEncode(payload).codeUnits);
 
