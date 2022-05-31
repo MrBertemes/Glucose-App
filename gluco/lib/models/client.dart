@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart';
 
 class Client {
    int id;
+   String email;
    String name;
    int age;
    double weight;
@@ -13,6 +14,7 @@ class Client {
 
   Client({
     required this.id,
+    required this.email,
     required this.name,
     required this.age,
     required this.weight,
@@ -23,6 +25,7 @@ class Client {
 
   factory Client.fromMap(Map<String, dynamic> json) => new Client(
     id: json['id'],
+    email: json['email'],
     name: json['name'],
     age: json['batimento'],
     weight: json['glicose'],
@@ -35,6 +38,7 @@ class Client {
   Map<String, dynamic> toMap() {
     return {
       'id': id,
+      'email': email,
       'name': name,
       'age': age,
       'weight': weight,

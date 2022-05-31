@@ -19,7 +19,7 @@ class CollectedVO {
 class HistoricoTeste {
   static List<CollectedVO> _collectedList = <CollectedVO>[];
 
-  static void saveCollected(Collected collected) {
+  void saveCollected(Collected collected) {
     CollectedVO _collectedVO = CollectedVO(
       dados: Collected(
         id: collected.id,
@@ -69,7 +69,7 @@ class HistoricoTeste {
   /// no ListViewBuilder da página de histórico
   /// exemplos no final
   /// Chaves de Maps são ordenadas _b
-  static Map<String, Map<String, List<CollectedVO>>> getCollectedAsMap() {
+  Map<String, Map<String, List<CollectedVO>>> getCollectedAsMap() {
     Map<String, Map<String, List<CollectedVO>>> mapa =
         <String, Map<String, List<CollectedVO>>>{};
     for (var elem in _collectedList) {

@@ -1,4 +1,5 @@
 import 'package:gluco/models/client.dart';
+import 'package:gluco/view/historicoteste.dart';
 import '../models/collected.dart';
 import 'package:flutter/material.dart';
 import 'package:sqflite/sqflite.dart';
@@ -41,7 +42,6 @@ class DatabaseHelper {
       CREATE TABLE clients(
         id INTEGER PRIMARY KEY
         email TEXT
-        password TEXT
         name TEXT
         age INTEGER
         weight REAL
@@ -81,6 +81,28 @@ class DatabaseHelper {
     );
   }
 
+  Future<int> removeMeasurement(int id) async {
+    Database db = await instance.database;
+    return await db.delete(
+      'measurements',
+      where: 'id = ?',
+      whereArgs: [id],
+    );
+  }
+
+  Future<List<Client>> getClient(Client c) async {
+    Database db = await instance.database;
+    List<Map<String, Object?>> client;
+    client = await db.rawQuery('''
+      SELECT * FROM clients WHERE email='${c.email}'
+      '''); // Pega a tupla que tem o email do cliente passado como parametro
+
+    List<Client> clientList = client.isNotEmpty
+        ? client.map((e) => Client.fromMap(e)).toList()
+        : [];
+    return clientList;
+  }
+
   Future<int> updateCient(Client client) async {
     Database db = await instance.database;
     return await db.update(
@@ -91,12 +113,4 @@ class DatabaseHelper {
     );
   }
 
-  Future<int> removeMeasurement(int id) async {
-    Database db = await instance.database;
-    return await db.delete(
-      'measurements',
-      where: 'id = ?',
-      whereArgs: [id],
-    );
-  }
 }
