@@ -45,7 +45,7 @@ class Main extends StatefulWidget {
 
 class _MainState extends State<Main> {
   // Só pra popular as medições (nem serve pra nada essa bool init mas tive que botar pq o vscode brigou cmg)
-  bool init = HistoricoTeste.initHistoricoTeste();
+  Future<bool> init = HistoricoTeste().initHistoricoTeste();
   // Coleta a ultima medição realizada
   Collected _dataCollected = HistoricoTeste.getLastCollected();
 

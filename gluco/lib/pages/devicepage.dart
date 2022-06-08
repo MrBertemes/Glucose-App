@@ -5,12 +5,12 @@ import 'package:flutter_blue/flutter_blue.dart';
 import 'package:gluco/styles/defaultappbar.dart';
 import '../models/device.dart';
 import 'package:intl/intl.dart';
-
+import 'package:shared_preferences/shared_preferences.dart';
 import '../styles/colors.dart';
 
 class DevicePage extends StatefulWidget {
   final FlutterBlue blue;
-
+  
   DevicePage({required this.blue});
 
   @override
@@ -23,7 +23,7 @@ class _DevicePageState extends State<DevicePage> {
   final f = NumberFormat("\$###,###.00", "en_US");
 
   @override
-  void initState() {
+  void initState()  {
     super.initState();
     WidgetsBinding.instance?.addPostFrameCallback((_) => {initScan()});
   }

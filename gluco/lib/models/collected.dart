@@ -21,10 +21,10 @@ class Collected {
 
   factory Collected.fromMap(Map<String, dynamic> json) => new Collected(
     id:  json['id'],
-    saturacao: json['saturacao'],
-    batimento: json['batimento'],
-    glicose: json['glicose'],
-    temperatura: json['temperatura'],
+    saturacao: json['spo'],
+    batimento: json['bpm'],
+    glicose: json['glucose'],
+    temperatura: json['temperature'],
     data: json['data']
   );
 
@@ -32,10 +32,10 @@ class Collected {
   Map<String, dynamic> toMap() {
     return {
       'id': id,
-      'saturacao': saturacao,
-      'batimento': batimento,
-      'glicose': glicose,
-      'temperatura': temperatura,
+      'spo': saturacao,
+      'bpm': batimento,
+      'glucose': glicose,
+      'temperature': temperatura,
       'data' : data
     };
   }

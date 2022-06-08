@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:gluco/db/authdb.dart';
 import 'package:gluco/styles/colors.dart';
+import 'package:gluco/view/historicoteste.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class SideBar extends StatefulWidget {
@@ -66,6 +67,7 @@ class _SideBarState extends State<SideBar> {
               style: Theme.of(context).textTheme.headline6,
             ),
             onTap: () async {
+              
               Navigator.popAndPushNamed(context, '/history');
             },
           ),
