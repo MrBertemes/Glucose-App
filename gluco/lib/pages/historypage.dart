@@ -17,9 +17,16 @@ class _HistoryPageState extends State<HistoryPage> {
   final AppBar appBar = defaultAppBar(title: "Histórico de Medições");
 
   // Somente para popular a página de histórico (poderia ser substituida por um get do bd)
-  final _medidasTeste = HistoricoTeste().getCollectedAsMap();
+  late Map<String, Map<String, List<CollectedVO>>>  _medidasTeste =  HistoricoTeste().getCollectedAsMap();
+  // getCollected()async{
+  //   _medidasTeste = await HistoricoTeste().getCollectedAsMap();
+  // }
 
-
+  // @override
+  // void initState() {
+  //   super.initState();
+  //   WidgetsBinding.instance?.addPostFrameCallback((_) => {getCollected()});
+  // }
 
   @override
   Widget build(BuildContext context) {

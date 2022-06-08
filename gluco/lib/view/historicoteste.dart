@@ -1,7 +1,9 @@
 // ignore_for_file: prefer_final_fields
 
+import 'package:gluco/db/databasehelper.dart';
 import 'package:gluco/models/collected.dart';
 import 'package:intl/intl.dart';
+import 'package:sqflite/sqflite.dart';
 
 /// Classe de visualização das medições
 /// (lembro da sbs do bocadinho que tinham as entidadesVO, imagino que seja pra ValueObject)
@@ -14,9 +16,9 @@ class CollectedVO {
     this.isExpanded = false,
   });
 }
-
 /// Armazena as medições em uma lista ordenada da mais recente pra mais antiga
 class HistoricoTeste {
+  late DatabaseHelper db = DatabaseHelper.instance ;
   static List<CollectedVO> _collectedList = <CollectedVO>[];
 
   void saveCollected(Collected collected) {
@@ -116,7 +118,7 @@ class HistoricoTeste {
     );
   }
 
-  static bool initHistoricoTeste() {
+  Future<bool> initHistoricoTeste() async {
     if (_collectedList.isNotEmpty) {
       return false;
     }
@@ -155,10 +157,17 @@ class HistoricoTeste {
       ),
     ];
 
-    for (var collected in medidas) {
-      _collectedList.add(CollectedVO(dados: collected));
+    // for (var collected in medidas) {
+    //   _collectedList.add(CollectedVO(dados: collected));
+    // }
+    var collectedList = await db.getMeasurements();
+    if(collectedList.isNotEmpty){
+      for (var c in collectedList) {
+        if(c != null){
+          _collectedList.add(CollectedVO(dados: c));
+        }
+      }
     }
-
     return true;
   }
 }

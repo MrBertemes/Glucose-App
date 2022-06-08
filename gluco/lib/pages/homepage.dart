@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_blue/flutter_blue.dart';
 import 'package:async_button_builder/async_button_builder.dart';
 import 'package:flutter_blue/gen/flutterblue.pb.dart' as pb;
+import 'package:gluco/db/databasehelper.dart';
 import 'package:gluco/styles/defaultappbar.dart';
 import 'package:http/http.dart';
 import '../styles/colors.dart';
@@ -26,6 +27,7 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   GlobalKey<ScaffoldState> _globalKey = GlobalKey();
   Random random = Random();
+  DatabaseHelper db = DatabaseHelper.instance;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -104,7 +106,7 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  void readData(FlutterBlue bluetooth) {
+  void readData(FlutterBlue bluetooth) async {
     widget.dataCollected.id++;
     widget.dataCollected.batimento = random.nextInt(110) + 60;
     widget.dataCollected.data = DateTime.now();
@@ -117,6 +119,14 @@ class _HomePageState extends State<HomePage> {
         (((random.nextInt(38) + 35) + random.nextDouble()) * 100)
                 .truncateToDouble() /
             100;
-    HistoricoTeste().saveCollected(widget.dataCollected);
+    // HistoricoTeste().saveCollected(widget.dataCollected);
+    
+    var res = await db.addMeasurement(widget.dataCollected);
+    if(res == 0){
+      throw('Error while adding measurements to database!');
+    }else{
+      print('Success :D');
+    } 
+    
   }
 }
