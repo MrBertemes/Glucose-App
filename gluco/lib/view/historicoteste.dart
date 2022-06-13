@@ -16,9 +16,10 @@ class CollectedVO {
     this.isExpanded = false,
   });
 }
+
 /// Armazena as medições em uma lista ordenada da mais recente pra mais antiga
 class HistoricoTeste {
-  late DatabaseHelper db = DatabaseHelper.instance ;
+  late DatabaseHelper db = DatabaseHelper.instance;
   static List<CollectedVO> _collectedList = <CollectedVO>[];
 
   void saveCollected(Collected collected) {
@@ -161,9 +162,9 @@ class HistoricoTeste {
     //   _collectedList.add(CollectedVO(dados: collected));
     // }
     var collectedList = await db.getMeasurements();
-    if(collectedList.isNotEmpty){
+    if (collectedList.isNotEmpty) {
       for (var c in collectedList) {
-        if(c != null){
+        if (c != null) {
           _collectedList.add(CollectedVO(dados: c));
         }
       }

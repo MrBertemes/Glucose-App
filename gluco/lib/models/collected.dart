@@ -2,6 +2,7 @@
 
 import 'package:flutter/foundation.dart';
 
+// papo que measurements não ficava melhor? casar com o nome da tabela no banco
 class Collected {
   int id;
   int saturacao;
@@ -20,14 +21,12 @@ class Collected {
   });
 
   factory Collected.fromMap(Map<String, dynamic> json) => new Collected(
-    id:  json['id'],
-    saturacao: json['spo'],
-    batimento: json['bpm'],
-    glicose: json['glucose'],
-    temperatura: json['temperature'],
-    data: json['data']
-  );
-
+      id: json['id'],
+      saturacao: json['spo'],
+      batimento: json['bpm'],
+      glicose: json['glucose'],
+      temperatura: json['temperature'],
+      data: json['data']);
 
   Map<String, dynamic> toMap() {
     return {
@@ -36,8 +35,7 @@ class Collected {
       'bpm': batimento,
       'glucose': glicose,
       'temperature': temperatura,
-      'data' : data
+      'data': data
     };
   }
-  
 }

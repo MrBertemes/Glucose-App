@@ -1,5 +1,5 @@
 // ignore_for_file: prefer_final_fields
-import 'package:gluco/models/client.dart';
+import 'package:gluco/models/user.dart';
 import 'package:gluco/view/historicoteste.dart';
 import 'package:intl/intl.dart';
 import '../models/collected.dart';
@@ -53,7 +53,6 @@ class DatabaseHelper {
     ''');
   }
 
-
   Future<List<Collected?>> getMeasurements() async {
     Database db = await DatabaseHelper.instance.database;
     List<Map<String, Object?>> measurements;
@@ -61,15 +60,15 @@ class DatabaseHelper {
 
     List<Collected?> measurementsList = measurements.isNotEmpty
         ? measurements.map((e) {
-            if(e.isNotEmpty){
+            if (e.isNotEmpty) {
               for (var k in e.keys) {
-              if (k == 'date') {
-                var tmp = DateTime.parse(e[k] as String);
-                e[k] = tmp;
+                if (k == 'date') {
+                  var tmp = DateTime.parse(e[k] as String);
+                  e[k] = tmp;
+                }
               }
-            }
-            var c = Collected?.fromMap(e);
-            return c;
+              var c = Collected?.fromMap(e);
+              return c;
             }
             return null;
           }).toList()
@@ -105,7 +104,6 @@ class DatabaseHelper {
     }
     return res;
   }
-  
 
   Future<int> updateMeasurements(Collected measurement) async {
     Database db = await DatabaseHelper.instance.database;
@@ -126,25 +124,25 @@ class DatabaseHelper {
     );
   }
 
-  // Future<List<Client>> getClient(Client c) async {
+  // Future<List<User>> getUser(User c) async {
   //   Database db = await DatabaseHelper.instance.database;
-  //   List<Map<String, Object?>> client;
-  //   client = await db.rawQuery('''
+  //   List<Map<String, Object?>> user;
+  //   user = await db.rawQuery('''
   //     SELECT * FROM clients WHERE email='${c.email}'
   //     '''); // Pega a tupla que tem o email do cliente passado como parametro
 
-  //   List<Client> clientList =
-  //       client.isNotEmpty ? client.map((e) => Client.fromMap(e)).toList() : [];
-  //   return clientList;
+  //   List<User> userList =
+  //       user.isNotEmpty ? user.map((e) => User.fromMap(e)).toList() : [];
+  //   return userList;
   // }
 
-  Future<int> updateCient(Client client) async {
+  Future<int> updateUser(User user) async {
     Database db = await DatabaseHelper.instance.database;
     return await db.update(
       'clients',
-      client.toMap(),
+      user.toMap(),
       where: 'id = ?',
-      whereArgs: [client.id],
+      whereArgs: [user.profile!.id],
     );
   }
 }
