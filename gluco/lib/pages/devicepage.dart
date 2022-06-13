@@ -1,4 +1,4 @@
-// ignore_for_file: prefer_const_constructors_in_immutables, use_key_in_widget_constructors, avoid_unnecessary_containers, prefer_const_constructors, unused_local_variable, avoid_print, unused_import
+// ignore_for_file: invalid_null_aware_operator, prefer_const_constructors_in_immutables, use_key_in_widget_constructors, avoid_unnecessary_containers, prefer_const_constructors, unused_local_variable, avoid_print, unused_import
 
 import 'package:flutter/material.dart';
 import 'package:flutter_blue/flutter_blue.dart';
@@ -10,7 +10,7 @@ import '../styles/colors.dart';
 
 class DevicePage extends StatefulWidget {
   final FlutterBlue blue;
-  
+
   DevicePage({required this.blue});
 
   @override
@@ -23,7 +23,7 @@ class _DevicePageState extends State<DevicePage> {
   final f = NumberFormat("\$###,###.00", "en_US");
 
   @override
-  void initState()  {
+  void initState() {
     super.initState();
     WidgetsBinding.instance?.addPostFrameCallback((_) => {initScan()});
   }
