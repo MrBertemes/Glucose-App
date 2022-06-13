@@ -1,6 +1,7 @@
 // ignore_for_file: must_be_immutable, prefer_const_constructors, use_key_in_widget_constructors
 
 import 'package:flutter/material.dart';
+import 'package:gluco/services/authapi.dart';
 import 'package:gluco/styles/colors.dart';
 import 'package:gluco/styles/customclippers.dart';
 
@@ -15,6 +16,8 @@ class _LoginPageState extends State<LoginPage> {
   late final TextEditingController _email;
   late final TextEditingController _password;
   bool _hidePassword = true;
+  bool _invalidEmail = false;
+  bool _invalidPassword = false;
 
   @override
   void initState() {
@@ -102,6 +105,17 @@ class _LoginPageState extends State<LoginPage> {
                           cursorColor: verdeAzulado,
                           keyboardType: TextInputType.emailAddress,
                         ),
+                        Visibility(
+                          visible: _invalidEmail,
+                          child: Container(
+                            alignment: Alignment.centerLeft,
+                            padding: EdgeInsets.only(top: 8.0),
+                            child: Text(
+                              '*Não há conta nesse e-mail',
+                              style: TextStyle(color: Colors.red),
+                            ),
+                          ),
+                        ),
                         Padding(padding: EdgeInsets.all(8.0)),
                         TextField(
                           controller: _password,
@@ -141,6 +155,17 @@ class _LoginPageState extends State<LoginPage> {
                           enableSuggestions: false,
                           autocorrect: false,
                         ),
+                        Visibility(
+                          visible: _invalidPassword,
+                          child: Container(
+                            alignment: Alignment.centerLeft,
+                            padding: EdgeInsets.only(top: 8.0),
+                            child: Text(
+                              '*Senha inválida',
+                              style: TextStyle(color: Colors.red),
+                            ),
+                          ),
+                        ),
                         Padding(padding: EdgeInsets.all(2.0)),
                         Align(
                           alignment: Alignment.centerRight,
@@ -169,8 +194,39 @@ class _LoginPageState extends State<LoginPage> {
                             ),
                           ),
                           onPressed: () async {
-                            // AuthAPI.login(model);
-                            await Navigator.popAndPushNamed(context, '/home');
+                            if (await AuthAPI.login(
+                                _email.text, _password.text)) {
+                              // limpar caixa da senha após clicar no botão e dar erro?
+                              switch (AuthAPI.getResponseMessage()) {
+                                case 'Success':
+                                  await Navigator.popAndPushNamed(
+                                      context, '/home');
+                                  break;
+                                case 'Empty profile':
+                                  await Navigator.popAndPushNamed(
+                                      context, '/welcome');
+                                  break;
+                              }
+                            } else {
+                              switch (AuthAPI.getResponseMessage()) {
+                                case 'Invalid Email':
+                                  setState(
+                                    () {
+                                      _invalidEmail = true;
+                                      _invalidPassword = false;
+                                    },
+                                  );
+                                  break;
+                                case 'Invalid Password':
+                                  setState(
+                                    () {
+                                      _invalidEmail = false;
+                                      _invalidPassword = true;
+                                    },
+                                  );
+                                  break;
+                              }
+                            }
                           },
                         ),
                         Row(

@@ -7,8 +7,8 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/retry.dart';
-import 'collected.dart';
-import '../db/databasehelper.dart';
+import 'package:gluco/models/collected.dart';
+import 'package:gluco/db/databasehelper.dart';
 
 class Api {
   Uri url = Uri.parse('http://159.223.221.13/');

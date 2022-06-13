@@ -4,15 +4,15 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:gluco/styles/colors.dart';
 
-class InitScreen extends StatefulWidget {
+class SplashScreen extends StatefulWidget {
   final String route;
-  const InitScreen({required this.route});
+  const SplashScreen({required this.route});
 
   @override
-  State<InitScreen> createState() => _InitScreenState();
+  State<SplashScreen> createState() => _SplashScreenState();
 }
 
-class _InitScreenState extends State<InitScreen> {
+class _SplashScreenState extends State<SplashScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -24,7 +24,7 @@ class _InitScreenState extends State<InitScreen> {
             CircularProgressIndicator(),
             Padding(
               padding: EdgeInsets.all(24.0),
-              child: Text("*finge que é uma animação*"),
+              child: Text('*finge que é uma animação*'),
             ),
           ],
         ),

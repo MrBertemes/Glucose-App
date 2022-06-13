@@ -1,8 +1,10 @@
 // ignore_for_file: use_key_in_widget_constructors, prefer_const_constructors_in_immutables, prefer_const_constructors
 
 import 'package:flutter/material.dart';
-import '../styles/colors.dart';
-import '../styles/defaultappbar.dart';
+import 'package:gluco/models/user.dart';
+import 'package:gluco/services/authapi.dart';
+import 'package:gluco/styles/colors.dart';
+import 'package:gluco/styles/defaultappbar.dart';
 
 class ProfilePage extends StatefulWidget {
   ProfilePage();
@@ -14,6 +16,8 @@ class ProfilePage extends StatefulWidget {
 class _ProfilePageState extends State<ProfilePage> {
   @override
   Widget build(BuildContext context) {
+    User user = AuthAPI.currentUser;
+    Profile? userProfile = user.profile;
     return Scaffold(
       appBar: defaultAppBar(title: "Perfil"),
       body: Container(
@@ -27,20 +31,23 @@ class _ProfilePageState extends State<ProfilePage> {
         child: Column(
           children: [
             ListTile(
-              title: Text("Idade"),
+              title: Text(
+                  "Nome: ${userProfile != null ? userProfile.name : 'erro'}"),
               onTap: () {},
               trailing: Icon(Icons.arrow_forward_ios),
             ),
             ListTile(
-              title: Text("Peso"),
+              title:
+                  Text("Email: ${user.email.isNotEmpty ? user.email : 'erro'}"),
               onTap: () {},
               trailing: Icon(Icons.arrow_forward_ios),
             ),
             ListTile(
-              title: Text("Altura"),
+              title: Text(
+                  "Data Nascimento: ${userProfile != null ? userProfile.birthdate : 'erro'}"),
               onTap: () {},
               trailing: Icon(Icons.arrow_forward_ios),
-            )
+            ),
           ],
         ),
       ),

@@ -17,7 +17,8 @@ class _HistoryPageState extends State<HistoryPage> {
   final AppBar appBar = defaultAppBar(title: "Histórico de Medições");
 
   // Somente para popular a página de histórico (poderia ser substituida por um get do bd)
-  late Map<String, Map<String, List<CollectedVO>>>  _medidasTeste =  HistoricoTeste().getCollectedAsMap();
+  late Map<String, Map<String, List<CollectedVO>>> _medidasTeste =
+      HistoricoTeste().getCollectedAsMap();
   // getCollected()async{
   //   _medidasTeste = await HistoricoTeste().getCollectedAsMap();
   // }
@@ -124,6 +125,7 @@ class _HistoryPageState extends State<HistoryPage> {
                                     return ExpansionPanel(
                                       backgroundColor: fundoHist,
                                       isExpanded: collected.isExpanded,
+                                      canTapOnHeader: true,
                                       headerBuilder: ((context, isExpanded) {
                                         return ListTile(
                                           title: Text(
@@ -144,22 +146,23 @@ class _HistoryPageState extends State<HistoryPage> {
                                       }),
                                       body: Column(
                                         children: [
-                                          ListTile(
-                                            title: Text(
-                                              'Temperatura',
-                                              style: TextStyle(
-                                                  fontStyle: FontStyle.italic),
-                                            ),
-                                            subtitle: Text(
-                                                '${collected.dados.temperatura}°C'),
-                                            leading: CircleAvatar(
-                                              backgroundColor: azulEsverdeado,
-                                              child: Icon(
-                                                Icons.thermostat_sharp,
-                                                color: Colors.white,
-                                              ),
-                                            ),
-                                          ),
+                                          // A princípio temperatura foi de base
+                                          // ListTile(
+                                          //   title: Text(
+                                          //     'Temperatura',
+                                          //     style: TextStyle(
+                                          //         fontStyle: FontStyle.italic),
+                                          //   ),
+                                          //   subtitle: Text(
+                                          //       '${collected.dados.temperatura}°C'),
+                                          //   leading: CircleAvatar(
+                                          //     backgroundColor: azulEsverdeado,
+                                          //     child: Icon(
+                                          //       Icons.thermostat_sharp,
+                                          //       color: Colors.white,
+                                          //     ),
+                                          //   ),
+                                          // ),
                                           ListTile(
                                             title: Text(
                                               'Saturação de oxigênio',

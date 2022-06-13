@@ -1,6 +1,7 @@
 // ignore_for_file: must_be_immutable, use_key_in_widget_constructors, prefer_const_constructors
 
 import 'package:flutter/material.dart';
+import 'package:gluco/services/authapi.dart';
 import 'package:gluco/styles/colors.dart';
 import 'package:gluco/styles/customclippers.dart';
 
@@ -16,6 +17,10 @@ class _SignUpPageState extends State<SignUpPage> {
   late final TextEditingController _email;
   late final TextEditingController _password;
   bool _hidePassword = true;
+  bool _isNameFilled = false;
+  bool _isEmailFilled = false;
+  bool _isPasswordFilled = false;
+  bool _invalidEmail = false;
 
   @override
   void initState() {
@@ -81,8 +86,17 @@ class _SignUpPageState extends State<SignUpPage> {
                     width: MediaQuery.of(context).size.width * 0.9,
                     child: Column(
                       children: [
+                        /////////////////////////////////////////////////////////////////////////////
+                        // meter um container/text antes com a hinttext, setar visibilidade pra _isNameFilled
                         TextField(
                           controller: _name,
+                          onChanged: (text) {
+                            setState(
+                              () {
+                                _isNameFilled = text.isNotEmpty;
+                              },
+                            );
+                          },
                           decoration: InputDecoration(
                             hintText: 'Nome completo',
                             hintStyle: TextStyle(
@@ -109,6 +123,14 @@ class _SignUpPageState extends State<SignUpPage> {
                         Padding(padding: EdgeInsets.all(8.0)),
                         TextField(
                           controller: _email,
+                          onChanged: (text) {
+                            setState(
+                              () {
+                                _isEmailFilled = text.isNotEmpty;
+                                _invalidEmail = false;
+                              },
+                            );
+                          },
                           decoration: InputDecoration(
                             hintText: 'E-mail',
                             hintStyle: TextStyle(
@@ -131,9 +153,27 @@ class _SignUpPageState extends State<SignUpPage> {
                           cursorColor: verdeAzulado,
                           keyboardType: TextInputType.emailAddress,
                         ),
+                        Visibility(
+                          visible: _invalidEmail,
+                          child: Container(
+                            alignment: Alignment.centerLeft,
+                            padding: EdgeInsets.only(top: 8.0),
+                            child: Text(
+                              '*Você já possui uma conta nesse e-mail',
+                              style: TextStyle(color: Colors.red),
+                            ),
+                          ),
+                        ),
                         Padding(padding: EdgeInsets.all(8.0)),
                         TextField(
                           controller: _password,
+                          onChanged: (text) {
+                            setState(
+                              () {
+                                _isPasswordFilled = text.isNotEmpty;
+                              },
+                            );
+                          },
                           obscureText: _hidePassword,
                           decoration: InputDecoration(
                             hintText: 'Senha',
@@ -170,27 +210,62 @@ class _SignUpPageState extends State<SignUpPage> {
                           enableSuggestions: false,
                           autocorrect: false,
                         ),
-                        Padding(padding: EdgeInsets.all(25.0)),
+                        Padding(padding: EdgeInsets.all(30.0)),
+                        Visibility(
+                          visible: !(_isNameFilled &&
+                              _isEmailFilled &&
+                              _isPasswordFilled),
+                          child: Container(
+                            alignment: Alignment.bottomRight,
+                            padding: EdgeInsets.all(8.0),
+                            child: Text(
+                              '*Preencha todos os campos',
+                              style: TextStyle(color: Colors.grey),
+                            ),
+                          ),
+                        ),
                         TextButton(
-                          child: const Text('Cadastrar'),
+                          child: const Text('Concluir Cadastro'),
                           style: TextButton.styleFrom(
+                            primary: Colors.white,
                             textStyle: TextStyle(
+                              color: Colors.white,
+                              // a cor tá errada, aparecendo cinza por algum motivo (por estar desabilitado será?)
                               fontSize: 16.0,
                               fontWeight: FontWeight.bold,
                             ),
-                            primary: Colors.white,
-                            backgroundColor: verdeClaro,
+                            backgroundColor: _isNameFilled &&
+                                    _isEmailFilled &&
+                                    _isPasswordFilled
+                                ? verdeClaro
+                                : Colors.grey,
                             padding: EdgeInsets.all(10.0),
                             minimumSize: Size(viewportConstraints.maxWidth, 60),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(8),
                             ),
                           ),
-                          onPressed: () async {
-                            // AuthAPI.signUp(model);
-                            // AuthAPI.login(model);
-                            await Navigator.popAndPushNamed(context, '/home');
-                          },
+                          onPressed: !(_isNameFilled &&
+                                  _isEmailFilled &&
+                                  _isPasswordFilled)
+                              ? null
+                              : () async {
+                                  if (await AuthAPI.signUp(_name.text,
+                                      _email.text, _password.text)) {
+                                    await Navigator.popAndPushNamed(
+                                        context, '/welcome');
+                                  } else {
+                                    switch (AuthAPI.getResponseMessage()) {
+                                      case 'Invalid Email':
+                                        setState(
+                                          () {
+                                            _invalidEmail = true;
+                                          },
+                                        );
+                                        break;
+                                    }
+                                  }
+                                },
                         ),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
@@ -260,6 +335,37 @@ class _SignUpPageState extends State<SignUpPage> {
             ),
           );
         },
+      ),
+    );
+  }
+}
+
+// fiquei na duvida se eu fazia um novo arquivo ou deixava aqui mesmo
+class FirstLoginPage extends StatefulWidget {
+  const FirstLoginPage();
+
+  @override
+  State<FirstLoginPage> createState() => _FirstLoginPageState();
+}
+
+class _FirstLoginPageState extends State<FirstLoginPage> {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: fundo,
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text('BEM - VINDO\nTela de preencher informações pessoais'),
+            Padding(padding: EdgeInsets.all(20.0)),
+            TextButton(
+                onPressed: () async {
+                  await Navigator.popAndPushNamed(context, '/home');
+                },
+                child: Text('Confirmar'))
+          ],
+        ),
       ),
     );
   }
