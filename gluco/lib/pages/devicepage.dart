@@ -1,5 +1,7 @@
 // ignore_for_file: invalid_null_aware_operator, prefer_const_constructors_in_immutables, use_key_in_widget_constructors, avoid_unnecessary_containers, prefer_const_constructors, unused_local_variable, avoid_print, unused_import
 
+import 'dart:convert';
+import '../services/bluehelper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_blue/flutter_blue.dart';
 import 'package:gluco/styles/defaultappbar.dart';
@@ -9,15 +11,14 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../styles/colors.dart';
 
 class DevicePage extends StatefulWidget {
-  final FlutterBlue blue;
-
-  DevicePage({required this.blue});
+  DevicePage();
 
   @override
   State<DevicePage> createState() => _DevicePageState();
 }
 
 class _DevicePageState extends State<DevicePage> {
+  final BlueHelper blue = BlueHelper();
   List<BluetoothDevice> _devices = [];
   String _devicesMsg = "";
   final f = NumberFormat("\$###,###.00", "en_US");
@@ -25,31 +26,7 @@ class _DevicePageState extends State<DevicePage> {
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance?.addPostFrameCallback((_) => {initScan()});
-  }
-
-  Future<void> initScan() async {
-    widget.blue.startScan(timeout: Duration(seconds: 3));
-
-    if (!mounted) return;
-
-    widget.blue.scanResults.listen((value) {
-      if (!mounted) return;
-
-      List<BluetoothDevice> valDevice = [];
-      for (ScanResult e in value) {
-        valDevice.add(e.device);
-      }
-      setState(() {
-        _devices = valDevice;
-      });
-
-      if (_devicesMsg.isEmpty) {
-        setState(() {
-          _devicesMsg = "Não há dispositivos disponíveis";
-        });
-      }
-    });
+    WidgetsBinding.instance?.addPostFrameCallback((_) => {blue.initScan()});
   }
 
   @override
@@ -87,7 +64,7 @@ class _DevicePageState extends State<DevicePage> {
                   topRight: Radius.circular(25),
                 ),
               ),
-              child: _devices.isEmpty
+              child: _devices.isEmpty 
                   ? Center(
                       child: Text(
                         _devicesMsg,
@@ -106,7 +83,7 @@ class _DevicePageState extends State<DevicePage> {
                           title: Text(_devices[i].name),
                           subtitle: Text(_devices[i].id.toString()),
                           onTap: () {
-                            connectDevice(_devices[i]);
+                            blue.connectDeviceOrDisconnect(_devices[i]);
                           },
                         );
                       },
@@ -123,12 +100,5 @@ class _DevicePageState extends State<DevicePage> {
     );
   }
 
-  Future<void> connectDevice(BluetoothDevice device) async {
-    await device.connect(
-      autoConnect: true,
-      timeout: Duration(
-        seconds: 3,
-      ),
-    );
-  }
+  
 }

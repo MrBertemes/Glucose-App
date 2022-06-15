@@ -84,11 +84,11 @@ class _MainState extends State<Main> {
       routes: {
         '/': (context) => SplashScreen(route: _defaultHome),
         '/home': (context) =>
-            HomePage(dataCollected: _dataCollected, bluetooth: bluetooth),
+            HomePage(dataCollected: _dataCollected),
         '/login': (context) => LoginPage(),
         '/signup': (context) => SignUpPage(),
         '/welcome': (context) => FirstLoginPage(),
-        '/devices': (context) => DevicePage(blue: bluetooth),
+        '/devices': (context) => DevicePage(),
         '/history': (context) => HistoryPage(),
         '/profile': (context) => ProfilePage(),
       },
