@@ -17,8 +17,8 @@ import 'dart:math';
 class HomePage extends StatefulWidget {
   final AppBar appBar = defaultAppBar(title: "E-Gluco");
   Collected dataCollected;
-  FlutterBlue bluetooth;
-  HomePage({required this.dataCollected, required this.bluetooth});
+  // FlutterBlue bluetooth;
+  HomePage({required this.dataCollected/*, required this.bluetooth*/});
 
   @override
   State<HomePage> createState() => _HomePageState();
@@ -73,7 +73,7 @@ class _HomePageState extends State<HomePage> {
                   onPressed: () async {
                     setState(
                       () {
-                        readData(widget.bluetooth);
+                        readData();
                         // readData(widget.bluetooth);
                       },
                     );
@@ -106,7 +106,7 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  void readData(FlutterBlue bluetooth) async {
+  void readData() async {
     widget.dataCollected.id++;
     widget.dataCollected.batimento = random.nextInt(110) + 60;
     widget.dataCollected.data = DateTime.now();
