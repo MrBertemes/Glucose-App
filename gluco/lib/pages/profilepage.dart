@@ -31,8 +31,7 @@ class _ProfilePageState extends State<ProfilePage> {
         child: Column(
           children: [
             ListTile(
-              title: Text(
-                  "Nome: ${userProfile != null ? userProfile.name : 'erro'}"),
+              title: Text("Nome: ${user.name.isNotEmpty ? user.name : 'erro'}"),
               onTap: () {},
               trailing: Icon(Icons.arrow_forward_ios),
             ),
