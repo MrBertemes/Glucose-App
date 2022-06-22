@@ -25,9 +25,15 @@ void main() async {
   // popula banco com usuários pra teste
   AutenticacaoTeste.populaBanco();
 
-  if (await AuthAPI.isLoggedIn()) {
-    //probleminha: não trata first login aqui
-    _defaultHome = '/home';
+  if (await AuthAPI.fetchCredentials()) {
+    switch (AuthAPI.getResponseMessage()) {
+      case 'Success':
+        _defaultHome = '/home';
+        break;
+      case 'Empty profile':
+        _defaultHome = '/welcome';
+        break;
+    }
   }
 
   // troquei pra cá pra testar
@@ -83,8 +89,7 @@ class _MainState extends State<Main> {
       ),
       routes: {
         '/': (context) => SplashScreen(route: _defaultHome),
-        '/home': (context) =>
-            HomePage(dataCollected: _dataCollected),
+        '/home': (context) => HomePage(dataCollected: _dataCollected),
         '/login': (context) => LoginPage(),
         '/signup': (context) => SignUpPage(),
         '/welcome': (context) => FirstLoginPage(),

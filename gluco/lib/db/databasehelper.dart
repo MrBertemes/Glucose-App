@@ -48,7 +48,7 @@ class DatabaseHelper {
         weight REAL,
         height REAL,
         sex TEXT,
-        diabetes INTEGER
+        diabetes TEXT
       );
     ''');
   }
@@ -142,7 +142,7 @@ class DatabaseHelper {
       'clients',
       user.toMap(),
       where: 'id = ?',
-      whereArgs: [user.profile!.id],
+      whereArgs: [user.id],
     );
   }
 }
