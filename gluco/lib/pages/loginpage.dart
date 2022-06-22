@@ -15,6 +15,7 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   late final TextEditingController _email;
   late final TextEditingController _password;
+
   bool _hidePassword = true;
   bool _invalidEmail = false;
   bool _invalidPassword = false;
@@ -48,10 +49,8 @@ class _LoginPageState extends State<LoginPage> {
               child: Column(
                 children: [
                   ClipPath(
-                    // clipper: BezierClipper(),
                     clipper: CubicClipper(),
                     child: Container(
-                      // height: viewportConstraints.maxHeight * 0.6,
                       height: MediaQuery.of(context).size.height * 0.4,
                       decoration: BoxDecoration(
                         gradient: LinearGradient(
@@ -81,12 +80,12 @@ class _LoginPageState extends State<LoginPage> {
                     width: MediaQuery.of(context).size.width * 0.9,
                     child: Column(
                       children: [
-                        TextField(
+                        TextFormField(
                           controller: _email,
                           decoration: InputDecoration(
-                            hintText: 'E-mail',
-                            hintStyle: TextStyle(
-                              color: verdeAzulado,
+                            label: Text(
+                              'E-mail',
+                              style: TextStyle(color: verdeAzulado),
                             ),
                             enabledBorder: UnderlineInputBorder(
                               borderSide: BorderSide(
@@ -101,29 +100,24 @@ class _LoginPageState extends State<LoginPage> {
                               ),
                             ),
                           ),
-                          style: TextStyle(color: verdeAzulado),
+                          autovalidateMode: AutovalidateMode.always,
+                          validator: (text) {
+                            if (_invalidEmail) {
+                              return '*Não há conta nesse e-mail';
+                            }
+                            return null;
+                          },
                           cursorColor: verdeAzulado,
                           keyboardType: TextInputType.emailAddress,
                         ),
-                        Visibility(
-                          visible: _invalidEmail,
-                          child: Container(
-                            alignment: Alignment.centerLeft,
-                            padding: EdgeInsets.only(top: 8.0),
-                            child: Text(
-                              '*Não há conta nesse e-mail',
-                              style: TextStyle(color: Colors.red),
-                            ),
-                          ),
-                        ),
                         Padding(padding: EdgeInsets.all(8.0)),
-                        TextField(
+                        TextFormField(
                           controller: _password,
                           obscureText: _hidePassword,
                           decoration: InputDecoration(
-                            hintText: 'Senha',
-                            hintStyle: TextStyle(
-                              color: azulClaro,
+                            label: Text(
+                              'Senha',
+                              style: TextStyle(color: azulClaro),
                             ),
                             enabledBorder: UnderlineInputBorder(
                               borderSide: BorderSide(
@@ -150,34 +144,31 @@ class _LoginPageState extends State<LoginPage> {
                                     : Icons.visibility),
                                 color: azulClaro),
                           ),
-                          style: TextStyle(color: azulClaro),
+                          autovalidateMode: AutovalidateMode.always,
+                          validator: (text) {
+                            if (_invalidPassword) {
+                              return '*Senha inválida';
+                            }
+                            return null;
+                          },
                           cursorColor: azulClaro,
                           enableSuggestions: false,
                           autocorrect: false,
                         ),
-                        Visibility(
-                          visible: _invalidPassword,
-                          child: Container(
-                            alignment: Alignment.centerLeft,
-                            padding: EdgeInsets.only(top: 8.0),
-                            child: Text(
-                              '*Senha inválida',
-                              style: TextStyle(color: Colors.red),
-                            ),
-                          ),
-                        ),
-                        Padding(padding: EdgeInsets.all(2.0)),
-                        Align(
-                          alignment: Alignment.centerRight,
-                          child: TextButton(
-                            child: Text(
-                              'Esqueci a senha',
-                              style: TextStyle(color: azulClaro),
-                            ),
-                            onPressed: () {},
-                          ),
-                        ),
-                        Padding(padding: EdgeInsets.all(10.0)),
+                        /////// tirei pq não foi implementado ainda
+                        // Padding(padding: EdgeInsets.all(2.0)),
+                        // Align(
+                        //   alignment: Alignment.centerRight,
+                        //   child: TextButton(
+                        //     child: Text(
+                        //       'Esqueci a senha',
+                        //       style: TextStyle(color: azulClaro),
+                        //     ),
+                        //     onPressed: () {},
+                        //   ),
+                        // ),
+                        // Padding(padding: EdgeInsets.all(10.0)),
+                        Padding(padding: EdgeInsets.all(30.0)),
                         TextButton(
                           child: const Text('Entrar'),
                           style: TextButton.styleFrom(
@@ -196,7 +187,6 @@ class _LoginPageState extends State<LoginPage> {
                           onPressed: () async {
                             if (await AuthAPI.login(
                                 _email.text, _password.text)) {
-                              // limpar caixa da senha após clicar no botão e dar erro?
                               switch (AuthAPI.getResponseMessage()) {
                                 case 'Success':
                                   await Navigator.popAndPushNamed(

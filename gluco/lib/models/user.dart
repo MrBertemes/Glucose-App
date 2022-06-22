@@ -1,15 +1,21 @@
 class User {
+  int id;
+  String name;
   String email;
   String password;
   Profile? profile;
 
   User({
+    required this.id,
+    required this.name,
     required this.email,
     required this.password,
     this.profile,
   });
 
   factory User.fromMap(Map<String, dynamic> json) => User(
+        id: json['id'],
+        name: json['name'],
         email: json['email'],
         password: json['password'],
         profile:
@@ -18,6 +24,8 @@ class User {
 
   Map<String, dynamic> toMap() {
     return {
+      'id': id,
+      'name': name,
       'email': email,
       'password': password,
       'profile': profile?.toMap(),
@@ -26,17 +34,13 @@ class User {
 }
 
 class Profile {
-  int id;
-  String name;
   DateTime birthdate;
   double weight;
   double height;
   String sex;
-  int diabetes;
+  String diabetes;
 
   Profile({
-    required this.id,
-    required this.name,
     required this.birthdate,
     required this.weight,
     required this.height,
@@ -45,8 +49,6 @@ class Profile {
   });
 
   factory Profile.fromMap(Map<String, dynamic> json) => Profile(
-        id: json['id'],
-        name: json['name'],
         birthdate: DateTime.parse(json['birthdate']),
         weight: json['weight'],
         height: json['height'],
@@ -56,8 +58,6 @@ class Profile {
 
   Map<String, dynamic> toMap() {
     return {
-      'id': id,
-      'name': name,
       'birthdate': birthdate.toString(),
       'weight': weight,
       'height': height,
