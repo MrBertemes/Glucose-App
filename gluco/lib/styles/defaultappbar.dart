@@ -3,10 +3,11 @@
 import 'package:flutter/material.dart';
 import 'package:gluco/styles/colors.dart';
 
-AppBar defaultAppBar({title, trailing}) => AppBar(
+AppBar defaultAppBar({title, trailing, bool centertitle = false}) => AppBar(
       elevation: 0,
       backgroundColor: Colors.transparent,
       foregroundColor: Colors.grey[800],
+      centerTitle: centertitle,
       actions: trailing,
       title: Text(
         title,

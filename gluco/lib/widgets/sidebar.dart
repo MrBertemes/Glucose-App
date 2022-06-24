@@ -3,7 +3,6 @@
 import 'package:flutter/material.dart';
 import 'package:gluco/services/authapi.dart';
 import 'package:gluco/styles/colors.dart';
-import 'package:gluco/view/historicoteste.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class SideBar extends StatefulWidget {
@@ -38,18 +37,6 @@ class _SideBarState extends State<SideBar> {
               style: Theme.of(context).textTheme.headline6,
             ),
           ),
-          Visibility(
-            child: ListTile(
-              title: Text(
-                // "Olá, ${_user?.displayName}",
-                "Olá",
-                style: Theme.of(context).textTheme.headline6,
-              ),
-              onTap: () {},
-              enabled: false,
-            ),
-            visible: false,
-          ),
           ListTile(
             leading: Icon(Icons.person),
             title: Text(
@@ -60,16 +47,16 @@ class _SideBarState extends State<SideBar> {
               Navigator.popAndPushNamed(context, '/profile');
             },
           ),
-          ListTile(
-            leading: Icon(Icons.calendar_month_outlined),
-            title: Text(
-              'Histórico',
-              style: Theme.of(context).textTheme.headline6,
-            ),
-            onTap: () async {
-              Navigator.popAndPushNamed(context, '/history');
-            },
-          ),
+          // ListTile(
+          //   leading: Icon(Icons.calendar_month_outlined),
+          //   title: Text(
+          //     'Histórico',
+          //     style: Theme.of(context).textTheme.headline6,
+          //   ),
+          //   onTap: () async {
+          //     Navigator.popAndPushNamed(context, '/history');
+          //   },
+          // ),
           ListTile(
             leading: Icon(Icons.watch_outlined),
             title: Text(

@@ -2,6 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:gluco/styles/colors.dart';
+import 'package:gluco/styles/mainbottomappbar.dart';
 import '../styles/defaultappbar.dart';
 
 import '../view/historicoteste.dart';
@@ -14,8 +15,6 @@ class HistoryPage extends StatefulWidget {
 }
 
 class _HistoryPageState extends State<HistoryPage> {
-  final AppBar appBar = defaultAppBar(title: "Histórico de Medições");
-
   // Somente para popular a página de histórico (poderia ser substituida por um get do bd)
   late Map<String, Map<String, List<CollectedVO>>> _medidasTeste =
       HistoricoTeste().getCollectedAsMap();
@@ -39,7 +38,8 @@ class _HistoryPageState extends State<HistoryPage> {
             .length ==
         1;
     return Scaffold(
-      appBar: appBar,
+      appBar: defaultAppBar(title: 'Histórico de Medições'),
+      bottomNavigationBar: mainBottomAppBar(context, 'history'),
       body: Container(
         padding: EdgeInsets.only(top: 10.0, left: 10.0, right: 10.0),
         decoration: BoxDecoration(
