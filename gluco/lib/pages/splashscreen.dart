@@ -12,24 +12,27 @@ class SplashScreen extends StatefulWidget {
   State<SplashScreen> createState() => _SplashScreenState();
 }
 
-class _SplashScreenState extends State<SplashScreen> {
+class _SplashScreenState extends State<SplashScreen>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _controller = AnimationController(
+    duration: const Duration(seconds: 3),
+    vsync: this,
+  )..repeat(reverse: true);
+
+  late final Animation<Offset> _offsetAnimation = Tween<Offset>(
+    begin: Offset.zero,
+    end: const Offset(1.5, 0.0),
+  ).animate(
+    CurvedAnimation(
+      parent: _controller,
+      curve: Curves.elasticIn,
+    ),
+  );
+
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: fundo,
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: const [
-            CircularProgressIndicator(),
-            Padding(
-              padding: EdgeInsets.all(24.0),
-              child: Text('*finge que é uma animação*'),
-            ),
-          ],
-        ),
-      ),
-    );
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
   }
 
   @override
@@ -40,10 +43,42 @@ class _SplashScreenState extends State<SplashScreen> {
 
   animationDelay() async {
     return Timer(
-      const Duration(seconds: 1),
+      const Duration(seconds: 3),
       () {
         Navigator.popAndPushNamed(context, widget.route);
       },
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: fundo,
+      body: Container(
+        height: MediaQuery.of(context).size.height,
+        width: MediaQuery.of(context).size.width,
+        decoration: BoxDecoration(
+          gradient: RadialGradient(
+            radius: 2.0,
+            colors: [
+              Colors.white,
+              azulEsverdeado,
+              verdeAzulado,
+            ],
+          ),
+        ),
+        child: Center(
+          // peguei a animação de exemplo na documentação de
+          // slidetransition só pra ver como ficaria
+          child: SlideTransition(
+            position: _offsetAnimation,
+            child: Image.asset(
+              'assets/images/splashicon.png',
+              scale: 3.0,
+            ),
+          ),
+        ),
+      ),
     );
   }
 }
