@@ -21,7 +21,7 @@ BottomAppBar mainBottomAppBar(context, page) => BottomAppBar(
               ),
               child: TextButton(
                 child: Padding(
-                  padding: const EdgeInsets.all(12.0),
+                  padding: const EdgeInsets.all(8.0),
                   child: Text(
                     'Medir',
                     style: TextStyle(
@@ -54,7 +54,7 @@ BottomAppBar mainBottomAppBar(context, page) => BottomAppBar(
               ),
               child: TextButton(
                 child: Padding(
-                  padding: const EdgeInsets.all(12.0),
+                  padding: const EdgeInsets.all(8.0),
                   child: Text(
                     'Histórico',
                     style: TextStyle(

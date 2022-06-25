@@ -33,7 +33,7 @@ class _DevicePageState extends State<DevicePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: defaultAppBar(
-        title: "Conexão com Relógio",
+        title: 'Conexão com Relógio',
         trailing: [
           Padding(
             padding: EdgeInsets.all(15.0),
@@ -49,7 +49,7 @@ class _DevicePageState extends State<DevicePage> {
             child: Padding(
               padding: EdgeInsets.only(left: 20.0, top: 5.0, bottom: 10.0),
               child: Text(
-                "Dispositivos Disponíveis",
+                'Dispositivos Disponíveis',
                 style: TextStyle(fontWeight: FontWeight.bold),
               ),
             ),
@@ -64,7 +64,7 @@ class _DevicePageState extends State<DevicePage> {
                   topRight: Radius.circular(25),
                 ),
               ),
-              child: _devices.isEmpty 
+              child: _devices.isEmpty
                   ? Center(
                       child: Text(
                         _devicesMsg,
@@ -99,6 +99,4 @@ class _DevicePageState extends State<DevicePage> {
       ),
     );
   }
-
-  
 }

@@ -34,30 +34,38 @@ class _HomePageState extends State<HomePage> {
       body: Container(
         margin: EdgeInsets.all(15.0),
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          mainAxisAlignment:
+              MediaQuery.of(context).orientation == Orientation.portrait
+                  ? MainAxisAlignment.spaceEvenly
+                  : MainAxisAlignment.spaceBetween,
           children: [
             Container(
               alignment: Alignment.center,
               child: Column(
                 children: [
-                  Text(
-                    'Última medição:',
-                    style: TextStyle(
-                      color: Colors.grey[700],
-                      fontSize: 16.0,
-                    ),
-                  ),
-                  Padding(padding: EdgeInsets.all(3.0)),
-                  Text(
-                    widget.dataCollected.glicose == 0
-                        ? 'Sem dados'
-                        : DateFormat('d MMM, E. H:mm', 'pt_BR')
-                            .format(widget.dataCollected.data)
-                            .toUpperCase(),
-                    style: TextStyle(
-                      color: Colors.grey[700],
-                      fontSize: 16.0,
-                      fontWeight: FontWeight.bold,
+                  RichText(
+                    textAlign: TextAlign.center,
+                    text: TextSpan(
+                      text:
+                          'Última medição: ${MediaQuery.of(context).orientation == Orientation.portrait ? '\n' : ' '}',
+                      style: TextStyle(
+                        color: Colors.grey[700],
+                        fontSize: 16.0,
+                      ),
+                      children: [
+                        TextSpan(
+                          text: widget.dataCollected.glicose == 0
+                              ? 'Sem dados'
+                              : DateFormat('d MMM, E. H:mm', 'pt_BR')
+                                  .format(widget.dataCollected.data)
+                                  .toUpperCase(),
+                          style: TextStyle(
+                            color: Colors.grey[700],
+                            fontSize: 16.0,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ],
@@ -189,76 +197,6 @@ class _HomePageState extends State<HomePage> {
           ],
         ),
       ),
-      // Container( // detalhe borda arredondada -- deprec
-      //   width: MediaQuery.of(context).size.width,
-      //   decoration: BoxDecoration(
-      //     // color: fundoScaf2,
-      //     borderRadius: BorderRadius.only(
-      //       topLeft: Radius.circular(25),
-      //       topRight: Radius.circular(25),
-      //     ),
-      //   ),
-      //   child: SingleChildScrollView(
-      //     child:
-      /* parte do brian
-          Column(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        children: [
-          Container(
-            padding: EdgeInsets.only(top: 10.0, left: 10.0, right: 10.0),
-            height: (MediaQuery.of(context).size.height -
-                    MediaQuery.of(context).padding.top -
-                    widget.appBar.preferredSize.height) *
-                0.7,
-            child: Card(
-              child: ChartBox(collectedData: widget.dataCollected),
-              elevation: 2,
-            ),
-          ),
-          Container(
-            padding: EdgeInsets.all(10),
-            width: MediaQuery.of(context).size.width * 0.7,
-            height: (MediaQuery.of(context).size.height -
-                    MediaQuery.of(context).padding.top -
-                    widget.appBar.preferredSize.height) *
-                0.3,
-            child: AsyncButtonBuilder(
-              child: Text(
-                'MEDIR',
-                style: TextStyle(color: Colors.black),
-              ),
-              onPressed: () async {
-                setState(
-                  () {
-                    readData();
-                    // readData(widget.bluetooth);
-                  },
-                );
-              },
-              builder: (context, child, callback, _) {
-                return ElevatedButton(
-                  style: ButtonStyle(
-                    backgroundColor:
-                        MaterialStateProperty.all<Color>(azulEsverdeado),
-                    shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                      RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(100),
-                        side: BorderSide(
-                          color: Theme.of(context).accentColor,
-                        ),
-                      ),
-                    ),
-                  ),
-                  onPressed: callback,
-                  child: child,
-                );
-              },
-            ),
-          ),
-        ],
-      ),
-         ),
-      ),*/
     );
   }
 
