@@ -15,17 +15,17 @@ class SplashScreen extends StatefulWidget {
 class _SplashScreenState extends State<SplashScreen>
     with SingleTickerProviderStateMixin {
   late final AnimationController _controller = AnimationController(
-    duration: const Duration(seconds: 3),
+    duration: const Duration(milliseconds: 2500),
     vsync: this,
-  )..repeat(reverse: true);
+  )..forward();
 
   late final Animation<Offset> _offsetAnimation = Tween<Offset>(
-    begin: Offset.zero,
-    end: const Offset(1.5, 0.0),
+    begin: const Offset(2.0, 0.0),
+    end: const Offset(0.0, 0.0),
   ).animate(
     CurvedAnimation(
       parent: _controller,
-      curve: Curves.elasticIn,
+      curve: Curves.elasticOut,
     ),
   );
 
@@ -74,7 +74,7 @@ class _SplashScreenState extends State<SplashScreen>
             position: _offsetAnimation,
             child: Image.asset(
               'assets/images/splashicon.png',
-              scale: 3.0,
+              scale: 2.5,
             ),
           ),
         ),

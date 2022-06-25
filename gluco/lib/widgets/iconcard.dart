@@ -20,8 +20,12 @@ class IconCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    double landscapeCorrection =
+        MediaQuery.of(context).orientation == Orientation.landscape
+            ? 0.75
+            : 1.0;
     return SizedBox(
-      height: size.height,
+      height: size.height * landscapeCorrection,
       width: size.width,
       child: Stack(
         alignment: Alignment.topCenter,
@@ -29,14 +33,14 @@ class IconCard extends StatelessWidget {
           Column(
             children: [
               SizedBox(
-                height: size.height * 0.15,
+                height: size.height * 0.15 * landscapeCorrection,
               ),
               Material(
                 color: Colors.transparent,
                 borderRadius: BorderRadius.circular(10.0),
                 elevation: 4.0,
                 child: Container(
-                  height: size.height * 0.85,
+                  height: size.height * 0.85 * landscapeCorrection,
                   width: size.width,
                   decoration: BoxDecoration(
                     color: fundoHist,
@@ -46,8 +50,16 @@ class IconCard extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
                       SizedBox(height: size.height * 0.1),
-                      label,
-                      data,
+                      if (MediaQuery.of(context).orientation ==
+                          Orientation.portrait) ...[
+                        label,
+                        data,
+                      ] else ...[
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [label, data],
+                        ),
+                      ]
                     ],
                   ),
                 ),

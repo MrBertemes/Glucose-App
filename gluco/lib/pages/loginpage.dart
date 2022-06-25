@@ -198,6 +198,7 @@ class _LoginPageState extends State<LoginPage> {
                                   break;
                               }
                             } else {
+                              _password.clear();
                               switch (AuthAPI.getResponseMessage()) {
                                 case 'Invalid Email':
                                   setState(

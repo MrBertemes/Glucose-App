@@ -12,6 +12,7 @@ import 'package:gluco/pages/homepage.dart';
 import 'package:gluco/pages/profilepage.dart';
 import 'package:gluco/pages/historypage.dart';
 import 'package:gluco/pages/devicepage.dart';
+import 'package:gluco/pages/firstloginpage.dart';
 import 'package:gluco/view/historicoteste.dart';
 import 'package:gluco/styles/colors.dart';
 import 'package:gluco/services/authapi.dart';

@@ -168,7 +168,7 @@ class AutenticacaoTeste {
           birthdate: DateTime.parse('2000-10-19'),
           weight: 100,
           height: 1.82,
-          sex: 'M',
+          sex: 'Masculino',
           diabetes: 'Não tenho diabetes',
         ),
       ),
