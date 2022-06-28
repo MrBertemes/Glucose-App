@@ -1,7 +1,7 @@
 // ignore_for_file: prefer_const_constructors
 
 import 'package:flutter/material.dart';
-import 'package:gluco/styles/colors.dart';
+import 'package:gluco/styles/customcolors.dart';
 
 AppBar defaultAppBar({title, trailing, bool centertitle = false}) => AppBar(
       elevation: 0,
