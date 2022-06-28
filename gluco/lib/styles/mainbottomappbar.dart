@@ -1,10 +1,13 @@
 // ignore_for_file: prefer_const_constructors
 
 import 'package:flutter/material.dart';
-import 'package:gluco/styles/colors.dart';
+import 'package:gluco/styles/customcolors.dart';
 
-BottomAppBar mainBottomAppBar(context, page) => BottomAppBar(
-      color: fundoScaf2,
+enum MainBottomAppBar { home, history }
+
+BottomAppBar mainBottomAppBar(BuildContext context, MainBottomAppBar page) =>
+    BottomAppBar(
+      color: CustomColors.scaffWhite,
       elevation: 0.0,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -13,9 +16,10 @@ BottomAppBar mainBottomAppBar(context, page) => BottomAppBar(
             child: Container(
               decoration: BoxDecoration(
                 border: Border(
-                  top: page == 'home'
+                  top: page == MainBottomAppBar.home
                       ? BorderSide(
-                          width: 5.0, color: azulClaro.withOpacity(1.0))
+                          width: 5.0,
+                          color: CustomColors.lightBlue.withOpacity(1.0))
                       : BorderSide.none,
                 ),
               ),
@@ -25,18 +29,19 @@ BottomAppBar mainBottomAppBar(context, page) => BottomAppBar(
                   child: Text(
                     'Medir',
                     style: TextStyle(
-                      color: page == 'home'
-                          ? azulClaro.withOpacity(1.0)
+                      color: page == MainBottomAppBar.home
+                          ? CustomColors.lightBlue.withOpacity(1.0)
                           : Colors.grey,
-                      fontWeight:
-                          page == 'home' ? FontWeight.bold : FontWeight.normal,
+                      fontWeight: page == MainBottomAppBar.home
+                          ? FontWeight.bold
+                          : FontWeight.normal,
                       fontSize: 18,
                     ),
                   ),
                 ),
                 onPressed: () async {
-                  if (page != 'home') {
-                    await Navigator.popAndPushNamed(context, '/home');
+                  if (page != MainBottomAppBar.home) {
+                    Navigator.popUntil(context, ModalRoute.withName('/home'));
                   }
                 },
               ),
@@ -46,9 +51,10 @@ BottomAppBar mainBottomAppBar(context, page) => BottomAppBar(
             child: Container(
               decoration: BoxDecoration(
                 border: Border(
-                  top: page == 'history'
+                  top: page == MainBottomAppBar.history
                       ? BorderSide(
-                          width: 5.0, color: azulClaro.withOpacity(1.0))
+                          width: 5.0,
+                          color: CustomColors.lightBlue.withOpacity(1.0))
                       : BorderSide.none,
                 ),
               ),
@@ -58,10 +64,10 @@ BottomAppBar mainBottomAppBar(context, page) => BottomAppBar(
                   child: Text(
                     'Histórico',
                     style: TextStyle(
-                      color: page == 'history'
-                          ? azulClaro.withOpacity(1.0)
+                      color: page == MainBottomAppBar.history
+                          ? CustomColors.lightBlue.withOpacity(1.0)
                           : Colors.grey,
-                      fontWeight: page == 'history'
+                      fontWeight: page == MainBottomAppBar.history
                           ? FontWeight.bold
                           : FontWeight.normal,
                       fontSize: 18,
@@ -69,7 +75,7 @@ BottomAppBar mainBottomAppBar(context, page) => BottomAppBar(
                   ),
                 ),
                 onPressed: () async {
-                  if (page != 'history') {
+                  if (page != MainBottomAppBar.history) {
                     await Navigator.pushNamed(context, '/history');
                   }
                 },

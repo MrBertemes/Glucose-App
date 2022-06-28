@@ -2,7 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:gluco/services/authapi.dart';
-import 'package:gluco/styles/colors.dart';
+import 'package:gluco/styles/customcolors.dart';
 
 class FirstLoginPage extends StatefulWidget {
   const FirstLoginPage();
@@ -53,7 +53,7 @@ class _FirstLoginPageState extends State<FirstLoginPage> {
     double landscapeCorrection =
         MediaQuery.of(context).orientation == Orientation.landscape ? 0.6 : 1.0;
     return Scaffold(
-      backgroundColor: fundo,
+      backgroundColor: CustomColors.white,
       body: SingleChildScrollView(
         child: Container(
           margin: EdgeInsets.all(MediaQuery.of(context).size.width * 0.05),
@@ -87,7 +87,7 @@ class _FirstLoginPageState extends State<FirstLoginPage> {
                       padding: EdgeInsets.all(10.0),
                       child: Container(
                         decoration: BoxDecoration(
-                          color: azulEsverdeado.withOpacity(1.0),
+                          color: CustomColors.blueGreen.withOpacity(1.0),
                           shape: BoxShape.circle,
                         ),
                         child: Icon(
@@ -121,12 +121,12 @@ class _FirstLoginPageState extends State<FirstLoginPage> {
                     text: TextSpan(
                       style: TextStyle(
                         fontSize: 16.0,
-                        color: azulEsverdeado.withOpacity(1.0),
+                        color: CustomColors.blueGreen.withOpacity(1.0),
                       ),
                       children: [
                         TextSpan(
                           text:
-                              'Olá, ${AuthAPI.currentUser.name.split(' ')[0]}!\n',
+                              'Olá, ${AuthAPI.instance.currentUser?.name.split(' ')[0]}!\n',
                           style: TextStyle(
                             fontSize: 22.0,
                             fontWeight: FontWeight.bold,
@@ -148,8 +148,8 @@ class _FirstLoginPageState extends State<FirstLoginPage> {
                     Padding(
                       padding: EdgeInsets.only(bottom: 8.0),
                       child: Text('Data de Nascimento',
-                          style:
-                              TextStyle(color: verdeAzulado.withOpacity(1.0))),
+                          style: TextStyle(
+                              color: CustomColors.greenBlue.withOpacity(1.0))),
                     ),
                     TextFormField(
                       controller: _birthdate,
@@ -160,7 +160,7 @@ class _FirstLoginPageState extends State<FirstLoginPage> {
                         ),
                         hintText: 'dd/mm/aaaa',
                         filled: true,
-                        fillColor: verdeAzulado,
+                        fillColor: CustomColors.greenBlue,
                         isDense: true,
                         contentPadding: EdgeInsets.all(12.0),
                       ),
@@ -197,7 +197,8 @@ class _FirstLoginPageState extends State<FirstLoginPage> {
                             padding: EdgeInsets.only(top: 20.0, bottom: 8.0),
                             child: Text('Peso',
                                 style: TextStyle(
-                                    color: verdeAzulado.withOpacity(1.0))),
+                                    color: CustomColors.greenBlue
+                                        .withOpacity(1.0))),
                           ),
                           TextFormField(
                             controller: _weight,
@@ -210,7 +211,7 @@ class _FirstLoginPageState extends State<FirstLoginPage> {
                               hintText: '70,5',
                               // suffixText: 'kg',
                               filled: true,
-                              fillColor: verdeAzulado, isDense: true,
+                              fillColor: CustomColors.greenBlue, isDense: true,
                               contentPadding: EdgeInsets.all(12.0),
                             ),
                             onChanged: (text) {
@@ -242,7 +243,8 @@ class _FirstLoginPageState extends State<FirstLoginPage> {
                             padding: EdgeInsets.only(top: 20.0, bottom: 8.0),
                             child: Text('Altura',
                                 style: TextStyle(
-                                    color: verdeAzulado.withOpacity(1.0))),
+                                    color: CustomColors.greenBlue
+                                        .withOpacity(1.0))),
                           ),
                           TextFormField(
                             controller: _height,
@@ -255,7 +257,7 @@ class _FirstLoginPageState extends State<FirstLoginPage> {
                               hintText: '1,67',
                               // suffixText: 'm',
                               filled: true,
-                              fillColor: verdeAzulado, isDense: true,
+                              fillColor: CustomColors.greenBlue, isDense: true,
                               contentPadding: EdgeInsets.all(12.0),
                             ),
                             onChanged: (text) {
@@ -286,8 +288,8 @@ class _FirstLoginPageState extends State<FirstLoginPage> {
                     Padding(
                       padding: EdgeInsets.only(top: 20.0, bottom: 8.0),
                       child: Text('Sexo',
-                          style:
-                              TextStyle(color: verdeAzulado.withOpacity(1.0))),
+                          style: TextStyle(
+                              color: CustomColors.greenBlue.withOpacity(1.0))),
                     ),
                     DropdownButtonFormField(
                       // hint: Text('Selecionar'),
@@ -298,7 +300,7 @@ class _FirstLoginPageState extends State<FirstLoginPage> {
                           borderRadius: BorderRadius.all(Radius.circular(8.0)),
                         ),
                         filled: true,
-                        fillColor: verdeAzulado,
+                        fillColor: CustomColors.greenBlue,
                         isDense: true,
                         contentPadding: EdgeInsets.all(12.0),
                       ),
@@ -324,8 +326,8 @@ class _FirstLoginPageState extends State<FirstLoginPage> {
                     Padding(
                       padding: EdgeInsets.only(top: 20.0, bottom: 8.0),
                       child: Text('Tipo de Diabetes',
-                          style:
-                              TextStyle(color: verdeAzulado.withOpacity(1.0))),
+                          style: TextStyle(
+                              color: CustomColors.greenBlue.withOpacity(1.0))),
                     ),
                     DropdownButtonFormField(
                       // hint: Text('Selecionar'),
@@ -336,7 +338,7 @@ class _FirstLoginPageState extends State<FirstLoginPage> {
                           borderRadius: BorderRadius.all(Radius.circular(8.0)),
                         ),
                         filled: true,
-                        fillColor: verdeAzulado,
+                        fillColor: CustomColors.greenBlue,
                         isDense: true,
                         contentPadding: EdgeInsets.all(12.0),
                       ),
@@ -373,7 +375,8 @@ class _FirstLoginPageState extends State<FirstLoginPage> {
                               fontSize: 16.0,
                               fontWeight: FontWeight.bold,
                             ),
-                            backgroundColor: isValid ? verdeClaro : Colors.grey,
+                            backgroundColor:
+                                isValid ? CustomColors.lightGreen : Colors.grey,
                             padding: EdgeInsets.all(10.0),
                             minimumSize: Size.fromHeight(60),
                             shape: RoundedRectangleBorder(
@@ -388,15 +391,16 @@ class _FirstLoginPageState extends State<FirstLoginPage> {
                                       _formKey.currentState?.validate() ??
                                           false;
                                   if (_validFormVN.value) {
-                                    if (await AuthAPI.updateUserProfile(
-                                        _birthdate.text
-                                            .split('/')
-                                            .reversed
-                                            .join('-'),
-                                        _weight.text.replaceAll(',', '.'),
-                                        _height.text.replaceAll(',', '.'),
-                                        _dropdownValueSex!,
-                                        _dropdownValueDiabetes!)) {
+                                    if (await AuthAPI.instance
+                                        .updateUserProfile(
+                                            _birthdate.text
+                                                .split('/')
+                                                .reversed
+                                                .join('-'),
+                                            _weight.text.replaceAll(',', '.'),
+                                            _height.text.replaceAll(',', '.'),
+                                            _dropdownValueSex!,
+                                            _dropdownValueDiabetes!)) {
                                       await Navigator.popAndPushNamed(
                                           context, '/home');
                                     }

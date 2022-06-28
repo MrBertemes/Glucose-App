@@ -2,7 +2,7 @@
 
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:gluco/styles/colors.dart';
+import 'package:gluco/styles/customcolors.dart';
 
 class SplashScreen extends StatefulWidget {
   final String route;
@@ -53,7 +53,7 @@ class _SplashScreenState extends State<SplashScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: fundo,
+      backgroundColor: CustomColors.white,
       body: Container(
         height: MediaQuery.of(context).size.height,
         width: MediaQuery.of(context).size.width,
@@ -62,8 +62,8 @@ class _SplashScreenState extends State<SplashScreen>
             radius: 2.0,
             colors: [
               Colors.white,
-              azulEsverdeado,
-              verdeAzulado,
+              CustomColors.blueGreen,
+              CustomColors.greenBlue,
             ],
           ),
         ),

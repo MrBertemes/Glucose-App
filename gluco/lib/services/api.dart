@@ -7,14 +7,14 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/retry.dart';
-import 'package:gluco/models/collected.dart';
+import 'package:gluco/models/measurement.dart';
 import 'package:gluco/db/databasehelper.dart';
 
 class Api {
   Uri url = Uri.parse('http://159.223.221.13/');
 
   Future<dynamic> fetchMeasurements(int id, String name) async {
-    Collected? measurement;
+    Measurement? measurement;
     var token = await generateToken(id, name);
     final client = RetryClient(http.Client());
     try {
@@ -25,7 +25,7 @@ class Api {
       if (response.statusCode == 200) {
         // success
         var jsonResponse = jsonDecode(response.body) as Map<String, dynamic>;
-        measurement = Collected.fromMap(jsonResponse);
+        measurement = Measurement.fromMap(jsonResponse);
         return measurement;
       } else {
         // failure
@@ -37,7 +37,7 @@ class Api {
     return;
   }
 
-  Future<int> postMeasurements(Collected measurement) async {
+  Future<int> postMeasurements(Measurement measurement) async {
     var success = 1;
     var measurementJson = measurement.toMap();
     var stringJson = json.encode(measurementJson).toString();

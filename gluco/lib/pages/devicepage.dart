@@ -8,7 +8,7 @@ import 'package:gluco/styles/defaultappbar.dart';
 import '../models/device.dart';
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import '../styles/colors.dart';
+import '../styles/customcolors.dart';
 
 class DevicePage extends StatefulWidget {
   DevicePage();
@@ -58,7 +58,7 @@ class _DevicePageState extends State<DevicePage> {
             child: Container(
               padding: EdgeInsets.only(top: 10.0),
               decoration: BoxDecoration(
-                color: fundoScaf2,
+                color: CustomColors.scaffWhite,
                 borderRadius: BorderRadius.only(
                   topLeft: Radius.circular(25),
                   topRight: Radius.circular(25),

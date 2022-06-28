@@ -2,8 +2,9 @@
 
 import 'package:flutter/material.dart';
 import 'package:gluco/services/authapi.dart';
-import 'package:gluco/styles/colors.dart';
+import 'package:gluco/styles/customcolors.dart';
 import 'package:gluco/styles/customclippers.dart';
+import 'package:gluco/views/historyvo.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage();
@@ -57,8 +58,8 @@ class _LoginPageState extends State<LoginPage> {
                           begin: Alignment.topCenter,
                           end: Alignment.bottomCenter,
                           colors: [
-                            azulClaro,
-                            verdeClaro,
+                            CustomColors.lightBlue,
+                            CustomColors.lightGreen,
                           ],
                         ),
                       ),
@@ -85,18 +86,18 @@ class _LoginPageState extends State<LoginPage> {
                           decoration: InputDecoration(
                             label: Text(
                               'E-mail',
-                              style: TextStyle(color: verdeAzulado),
+                              style: TextStyle(color: CustomColors.greenBlue),
                             ),
                             enabledBorder: UnderlineInputBorder(
                               borderSide: BorderSide(
                                 width: 2,
-                                color: verdeAzulado,
+                                color: CustomColors.greenBlue,
                               ),
                             ),
                             focusedBorder: UnderlineInputBorder(
                               borderSide: BorderSide(
                                 width: 3,
-                                color: verdeAzulado,
+                                color: CustomColors.greenBlue,
                               ),
                             ),
                           ),
@@ -107,7 +108,7 @@ class _LoginPageState extends State<LoginPage> {
                             }
                             return null;
                           },
-                          cursorColor: verdeAzulado,
+                          cursorColor: CustomColors.greenBlue,
                           keyboardType: TextInputType.emailAddress,
                         ),
                         Padding(padding: EdgeInsets.all(8.0)),
@@ -117,18 +118,18 @@ class _LoginPageState extends State<LoginPage> {
                           decoration: InputDecoration(
                             label: Text(
                               'Senha',
-                              style: TextStyle(color: azulClaro),
+                              style: TextStyle(color: CustomColors.lightBlue),
                             ),
                             enabledBorder: UnderlineInputBorder(
                               borderSide: BorderSide(
                                 width: 2,
-                                color: azulClaro,
+                                color: CustomColors.lightBlue,
                               ),
                             ),
                             focusedBorder: UnderlineInputBorder(
                               borderSide: BorderSide(
                                 width: 3,
-                                color: azulClaro,
+                                color: CustomColors.lightBlue,
                               ),
                             ),
                             suffixIcon: IconButton(
@@ -142,7 +143,7 @@ class _LoginPageState extends State<LoginPage> {
                                 icon: Icon(_hidePassword
                                     ? Icons.visibility_off
                                     : Icons.visibility),
-                                color: azulClaro),
+                                color: CustomColors.lightBlue),
                           ),
                           autovalidateMode: AutovalidateMode.always,
                           validator: (text) {
@@ -151,7 +152,7 @@ class _LoginPageState extends State<LoginPage> {
                             }
                             return null;
                           },
-                          cursorColor: azulClaro,
+                          cursorColor: CustomColors.lightBlue,
                           enableSuggestions: false,
                           autocorrect: false,
                         ),
@@ -162,7 +163,7 @@ class _LoginPageState extends State<LoginPage> {
                         //   child: TextButton(
                         //     child: Text(
                         //       'Esqueci a senha',
-                        //       style: TextStyle(color: azulClaro),
+                        //       style: TextStyle(color: CustomColors.lightBlue),
                         //     ),
                         //     onPressed: () {},
                         //   ),
@@ -177,7 +178,7 @@ class _LoginPageState extends State<LoginPage> {
                               fontWeight: FontWeight.bold,
                             ),
                             primary: Colors.white,
-                            backgroundColor: azulClaro,
+                            backgroundColor: CustomColors.lightBlue,
                             padding: EdgeInsets.all(10.0),
                             minimumSize: Size(viewportConstraints.maxWidth, 60),
                             shape: RoundedRectangleBorder(
@@ -185,10 +186,13 @@ class _LoginPageState extends State<LoginPage> {
                             ),
                           ),
                           onPressed: () async {
-                            if (await AuthAPI.login(
-                                _email.text, _password.text)) {
-                              switch (AuthAPI.getResponseMessage()) {
+                            if (await AuthAPI.instance.login(
+                              _email.text.trim().toLowerCase(),
+                              _password.text.trim(),
+                            )) {
+                              switch (AuthAPI.instance.responseMessage) {
                                 case 'Success':
+                                  await HistoryVO.fetchHistory();
                                   await Navigator.popAndPushNamed(
                                       context, '/home');
                                   break;
@@ -199,7 +203,7 @@ class _LoginPageState extends State<LoginPage> {
                               }
                             } else {
                               _password.clear();
-                              switch (AuthAPI.getResponseMessage()) {
+                              switch (AuthAPI.instance.responseMessage) {
                                 case 'Invalid Email':
                                   setState(
                                     () {
@@ -230,7 +234,7 @@ class _LoginPageState extends State<LoginPage> {
                                   gradient: LinearGradient(
                                     colors: [
                                       Colors.transparent,
-                                      azulClaro,
+                                      CustomColors.lightBlue,
                                     ],
                                   ),
                                 ),
@@ -241,7 +245,7 @@ class _LoginPageState extends State<LoginPage> {
                               child: Text(
                                 "ou",
                                 style: TextStyle(
-                                  color: azulClaro,
+                                  color: CustomColors.lightBlue,
                                   fontSize: 16.0,
                                 ),
                               ),
@@ -252,7 +256,7 @@ class _LoginPageState extends State<LoginPage> {
                                 decoration: BoxDecoration(
                                   gradient: LinearGradient(
                                     colors: [
-                                      azulClaro,
+                                      CustomColors.lightBlue,
                                       Colors.transparent,
                                     ],
                                   ),
@@ -267,12 +271,13 @@ class _LoginPageState extends State<LoginPage> {
                             textStyle: TextStyle(
                               fontSize: 16.0,
                             ),
-                            primary: azulClaro,
+                            primary: CustomColors.lightBlue,
                             backgroundColor: Colors.white,
                             padding: EdgeInsets.all(10.0),
                             minimumSize: Size(viewportConstraints.maxWidth, 60),
                             shape: RoundedRectangleBorder(
-                              side: BorderSide(color: azulClaro, width: 2.0),
+                              side: BorderSide(
+                                  color: CustomColors.lightBlue, width: 2.0),
                               borderRadius: BorderRadius.circular(8),
                             ),
                           ),

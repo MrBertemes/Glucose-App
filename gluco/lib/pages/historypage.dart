@@ -1,11 +1,10 @@
 // ignore_for_file: use_key_in_widget_constructors, prefer_const_constructors_in_immutables, prefer_const_constructors
 
 import 'package:flutter/material.dart';
-import 'package:gluco/styles/colors.dart';
+import 'package:gluco/styles/customcolors.dart';
 import 'package:gluco/styles/mainbottomappbar.dart';
-import '../styles/defaultappbar.dart';
-
-import '../view/historicoteste.dart';
+import 'package:gluco/styles/defaultappbar.dart';
+import 'package:gluco/views/historyvo.dart';
 
 class HistoryPage extends StatefulWidget {
   HistoryPage();
@@ -15,41 +14,31 @@ class HistoryPage extends StatefulWidget {
 }
 
 class _HistoryPageState extends State<HistoryPage> {
-  // Somente para popular a página de histórico (poderia ser substituida por um get do bd)
-  late Map<String, Map<String, List<CollectedVO>>> _medidasTeste =
-      HistoricoTeste().getCollectedAsMap();
-  // getCollected()async{
-  //   _medidasTeste = await HistoricoTeste().getCollectedAsMap();
-  // }
-
-  // @override
-  // void initState() {
-  //   super.initState();
-  //   WidgetsBinding.instance?.addPostFrameCallback((_) => {getCollected()});
-  // }
+  final Map<String, Map<String, List<MeasurementVO>>> _monthsMap =
+      HistoryVO.measurementsVOMap;
 
   @override
   Widget build(BuildContext context) {
-    bool _mesmoAno = _medidasTeste.keys
-            .map((mesano) {
-              return mesano.substring(mesano.indexOf(RegExp(r'[0-9]')));
+    bool _isSameYear = _monthsMap.keys
+            .map((monthYear) {
+              return monthYear.substring(monthYear.indexOf(RegExp(r'[0-9]')));
             })
             .toSet()
             .length ==
         1;
     return Scaffold(
       appBar: defaultAppBar(title: 'Histórico de Medições'),
-      bottomNavigationBar: mainBottomAppBar(context, 'history'),
+      bottomNavigationBar: mainBottomAppBar(context, MainBottomAppBar.history),
       body: Container(
         padding: EdgeInsets.only(top: 10.0, left: 10.0, right: 10.0),
         decoration: BoxDecoration(
-          color: fundoScaf2,
+          color: CustomColors.scaffWhite,
           borderRadius: BorderRadius.only(
             topLeft: Radius.circular(25),
             topRight: Radius.circular(25),
           ),
         ),
-        child: _medidasTeste.isEmpty
+        child: _monthsMap.isEmpty
             ? Center(
                 child: Text(
                   'Não há medições recentes',
@@ -58,9 +47,9 @@ class _HistoryPageState extends State<HistoryPage> {
               )
             : ListView.builder(
                 padding: EdgeInsets.all(4),
-                itemCount: _medidasTeste.length,
+                itemCount: _monthsMap.length,
                 itemBuilder: (c, indexMonth) {
-                  String mes = _medidasTeste.keys.elementAt(indexMonth);
+                  String monthKey = _monthsMap.keys.elementAt(indexMonth);
                   return Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -72,9 +61,9 @@ class _HistoryPageState extends State<HistoryPage> {
                             child: Text(
                               // se houverem medidas de anos diferentes, o mês mostra o ano também,
                               // caso contrário só o nome do mês
-                              _mesmoAno
-                                  ? mes.substring(0, mes.indexOf(','))
-                                  : mes,
+                              _isSameYear
+                                  ? monthKey.substring(0, monthKey.indexOf(','))
+                                  : monthKey,
                               textAlign: TextAlign.center,
                               style: TextStyle(fontSize: 20),
                             ),
@@ -91,8 +80,9 @@ class _HistoryPageState extends State<HistoryPage> {
                         ),
                       ),
                       Column(
-                        children: _medidasTeste[mes]!.keys.fold([], (t, dia) {
-                          t.add(
+                        children: _monthsMap[monthKey]!.keys.fold([],
+                            (total, dayKey) {
+                          total.add(
                             Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
@@ -100,7 +90,7 @@ class _HistoryPageState extends State<HistoryPage> {
                                   padding: const EdgeInsets.only(
                                       top: 18.0, left: 8.0, bottom: 8.0),
                                   child: Text(
-                                    dia,
+                                    dayKey,
                                     textAlign: TextAlign.left,
                                     style: TextStyle(
                                         fontSize: 16,
@@ -114,17 +104,17 @@ class _HistoryPageState extends State<HistoryPage> {
                                   elevation: 4,
                                   expansionCallback: ((panelIndex, isExpanded) {
                                     setState(() {
-                                      _medidasTeste[mes]![dia]
+                                      _monthsMap[monthKey]![dayKey]
                                           ?.elementAt(panelIndex)
                                           .isExpanded = !isExpanded;
                                     });
                                   }),
-                                  children: _medidasTeste[mes]![dia]!
+                                  children: _monthsMap[monthKey]![dayKey]!
                                       .map<ExpansionPanel>(
-                                          (CollectedVO collected) {
+                                          (MeasurementVO measurementVO) {
                                     return ExpansionPanel(
-                                      backgroundColor: fundoHist,
-                                      isExpanded: collected.isExpanded,
+                                      backgroundColor: CustomColors.histWhite,
+                                      isExpanded: measurementVO.isExpanded,
                                       canTapOnHeader: true,
                                       headerBuilder: ((context, isExpanded) {
                                         return ListTile(
@@ -134,9 +124,10 @@ class _HistoryPageState extends State<HistoryPage> {
                                                 fontStyle: FontStyle.italic),
                                           ),
                                           subtitle: Text(
-                                              '${collected.dados.glicose} mg/dL'),
+                                              '${measurementVO.data.glucose} mg/dL'),
                                           leading: CircleAvatar(
-                                            backgroundColor: azulClaro,
+                                            backgroundColor:
+                                                CustomColors.lightBlue,
                                             child: Icon(
                                               Icons.hub_outlined,
                                               color: Colors.white,
@@ -146,23 +137,6 @@ class _HistoryPageState extends State<HistoryPage> {
                                       }),
                                       body: Column(
                                         children: [
-                                          // A princípio temperatura foi de base
-                                          // ListTile(
-                                          //   title: Text(
-                                          //     'Temperatura',
-                                          //     style: TextStyle(
-                                          //         fontStyle: FontStyle.italic),
-                                          //   ),
-                                          //   subtitle: Text(
-                                          //       '${collected.dados.temperatura}°C'),
-                                          //   leading: CircleAvatar(
-                                          //     backgroundColor: azulEsverdeado,
-                                          //     child: Icon(
-                                          //       Icons.thermostat_sharp,
-                                          //       color: Colors.white,
-                                          //     ),
-                                          //   ),
-                                          // ),
                                           ListTile(
                                             title: Text(
                                               'Saturação de oxigênio',
@@ -170,9 +144,10 @@ class _HistoryPageState extends State<HistoryPage> {
                                                   fontStyle: FontStyle.italic),
                                             ),
                                             subtitle: Text(
-                                                '${collected.dados.saturacao}%'),
+                                                '${measurementVO.data.sats}%'),
                                             leading: CircleAvatar(
-                                              backgroundColor: verdeClaro,
+                                              backgroundColor:
+                                                  CustomColors.lightGreen,
                                               child: Icon(
                                                 Icons.air,
                                                 color: Colors.white,
@@ -186,9 +161,10 @@ class _HistoryPageState extends State<HistoryPage> {
                                                   fontStyle: FontStyle.italic),
                                             ),
                                             subtitle: Text(
-                                                '${collected.dados.batimento} bpm'),
+                                                '${measurementVO.data.bpm} bpm'),
                                             leading: CircleAvatar(
-                                              backgroundColor: verdeAzulado,
+                                              backgroundColor:
+                                                  CustomColors.greenBlue,
                                               child: Icon(
                                                 Icons.favorite,
                                                 color: Colors.white,
@@ -203,7 +179,7 @@ class _HistoryPageState extends State<HistoryPage> {
                               ],
                             ),
                           );
-                          return t;
+                          return total;
                         }),
                       ),
                       Padding(padding: EdgeInsets.only(bottom: 15)),

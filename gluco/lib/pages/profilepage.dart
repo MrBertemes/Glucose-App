@@ -3,7 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:gluco/models/user.dart';
 import 'package:gluco/services/authapi.dart';
-import 'package:gluco/styles/colors.dart';
+import 'package:gluco/styles/customcolors.dart';
 import 'package:gluco/styles/defaultappbar.dart';
 import 'package:intl/intl.dart';
 
@@ -15,13 +15,14 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage> {
-  User user = AuthAPI.currentUser;
+  User user = AuthAPI.instance.currentUser!;
   late final TextEditingController _birthdate;
   late final TextEditingController _weight;
   late final TextEditingController _height;
 
-  String _dropdownValueSex = AuthAPI.currentUser.profile!.sex;
-  String _dropdownValueDiabetes = AuthAPI.currentUser.profile!.diabetes;
+  String _dropdownValueSex = AuthAPI.instance.currentUser!.profile!.sex;
+  String _dropdownValueDiabetes =
+      AuthAPI.instance.currentUser!.profile!.diabetes;
 
   @override
   void initState() {
@@ -71,7 +72,7 @@ class _ProfilePageState extends State<ProfilePage> {
                         padding: EdgeInsets.all(10.0),
                         child: Container(
                           decoration: BoxDecoration(
-                            color: azulEsverdeado.withOpacity(1.0),
+                            color: CustomColors.blueGreen.withOpacity(1.0),
                             shape: BoxShape.circle,
                           ),
                           child: Icon(
@@ -107,7 +108,7 @@ class _ProfilePageState extends State<ProfilePage> {
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 28.0,
-                          color: azulEsverdeado.withOpacity(1.0),
+                          color: CustomColors.blueGreen.withOpacity(1.0),
                         ),
                       ),
                     ),
@@ -115,7 +116,7 @@ class _ProfilePageState extends State<ProfilePage> {
                   Container(
                     padding: EdgeInsets.all(20.0),
                     decoration: BoxDecoration(
-                      color: fundoScaf2,
+                      color: CustomColors.scaffWhite,
                       borderRadius: BorderRadius.only(
                         topLeft: Radius.circular(25),
                         topRight: Radius.circular(25),
@@ -146,7 +147,8 @@ class _ProfilePageState extends State<ProfilePage> {
                                     'Data de Nascimento',
                                     style: TextStyle(
                                       fontSize: 22.0,
-                                      color: azulEsverdeado.withOpacity(1.0),
+                                      color: CustomColors.blueGreen
+                                          .withOpacity(1.0),
                                     ),
                                   ),
                                 ),
@@ -200,8 +202,8 @@ class _ProfilePageState extends State<ProfilePage> {
                                           'Peso',
                                           style: TextStyle(
                                             fontSize: 22.0,
-                                            color:
-                                                azulEsverdeado.withOpacity(1.0),
+                                            color: CustomColors.blueGreen
+                                                .withOpacity(1.0),
                                           ),
                                         ),
                                       ),
@@ -252,8 +254,8 @@ class _ProfilePageState extends State<ProfilePage> {
                                           'Altura',
                                           style: TextStyle(
                                             fontSize: 22.0,
-                                            color:
-                                                azulEsverdeado.withOpacity(1.0),
+                                            color: CustomColors.blueGreen
+                                                .withOpacity(1.0),
                                           ),
                                         ),
                                       ),
@@ -304,7 +306,8 @@ class _ProfilePageState extends State<ProfilePage> {
                                     'Sexo',
                                     style: TextStyle(
                                       fontSize: 22.0,
-                                      color: azulEsverdeado.withOpacity(1.0),
+                                      color: CustomColors.blueGreen
+                                          .withOpacity(1.0),
                                     ),
                                   ),
                                 ),
@@ -350,7 +353,8 @@ class _ProfilePageState extends State<ProfilePage> {
                                     'Tipo de Diabetes',
                                     style: TextStyle(
                                       fontSize: 22.0,
-                                      color: azulEsverdeado.withOpacity(1.0),
+                                      color: CustomColors.blueGreen
+                                          .withOpacity(1.0),
                                     ),
                                   ),
                                 ),
@@ -399,8 +403,9 @@ class _ProfilePageState extends State<ProfilePage> {
                                         fontSize: 16.0,
                                         fontWeight: FontWeight.bold,
                                       ),
-                                      backgroundColor:
-                                          isValid ? verdeClaro : Colors.grey,
+                                      backgroundColor: isValid
+                                          ? CustomColors.lightGreen
+                                          : Colors.grey,
                                       padding: EdgeInsets.all(10.0),
                                       minimumSize: Size.fromHeight(60),
                                       shape: RoundedRectangleBorder(
@@ -415,7 +420,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                                     ?.validate() ??
                                                 false;
                                             if (_validFormVN.value) {
-                                              if (await AuthAPI
+                                              if (await AuthAPI.instance
                                                   .updateUserProfile(
                                                       _birthdate.text
                                                           .split('/')

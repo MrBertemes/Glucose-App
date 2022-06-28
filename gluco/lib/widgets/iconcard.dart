@@ -1,7 +1,7 @@
 // ignore_for_file: use_key_in_widget_constructors, prefer_const_constructors_in_immutables
 
 import 'package:flutter/material.dart';
-import 'package:gluco/styles/colors.dart';
+import 'package:gluco/styles/customcolors.dart';
 
 class IconCard extends StatelessWidget {
   final Icon icon;
@@ -43,7 +43,7 @@ class IconCard extends StatelessWidget {
                   height: size.height * 0.85 * landscapeCorrection,
                   width: size.width,
                   decoration: BoxDecoration(
-                    color: fundoHist,
+                    color: CustomColors.histWhite,
                     borderRadius: BorderRadius.circular(10.0),
                   ),
                   child: Column(

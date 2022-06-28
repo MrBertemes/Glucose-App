@@ -4,14 +4,16 @@ import 'package:gluco/models/user.dart';
 
 /// Request genérico, é o que imagino que será usado no fetch das medições também
 class RequestModel {
-  late final String email;
-  late final String password;
+  // Até onde eu me lembro o email e senha de fato não serão usados,
+  // apenas os secrets gerados pela api, deixei comentado se estiver errado
+  // late final String email;
+  // late final String password;
   late final String emailsecret;
   late final String passwordsecret;
 
   RequestModel({
-    required this.email,
-    required this.password,
+    // required this.email,
+    // required this.password,
     required this.emailsecret,
     required this.passwordsecret,
   });
@@ -59,6 +61,8 @@ class LoginRequestModel {
 /// Model para resposta de requisição de login
 class LoginResponseModel {
   late String message;
+  // deveria retornar o jwt também?
+  // late String? token;
   late int? id;
   late String? name;
   late String? emailsecret;
@@ -120,15 +124,16 @@ class SignUpRequestModel {
 
 /// Model para body da requisição de alteração de perfil
 class ProfileRequestModel {
-  late final String email;
-  late final String password;
+  // provalvemente envia só os secrets
+  // late final String email;
+  // late final String password;
   late final String emailsecret;
   late final String passwordsecret;
   late final String profile;
 
   ProfileRequestModel({
-    required this.email,
-    required this.password,
+    // required this.email,
+    // required this.password,
     required this.emailsecret,
     required this.passwordsecret,
     required this.profile,
@@ -144,8 +149,8 @@ class ProfileRequestModel {
 
   Map<String, dynamic> toMap() {
     final _data = <String, dynamic>{};
-    _data['email'] = email;
-    _data['password'] = password;
+    // _data['email'] = email;
+    // _data['password'] = password;
     _data['emailsecret'] = emailsecret;
     _data['passwordsecret'] = passwordsecret;
     _data['profile'] = profile;
@@ -156,8 +161,7 @@ class ProfileRequestModel {
 /// Model para resposta de requisição de perfil
 class ProfileResponseModel {
   late String message;
-  late Profile?
-      profile; // usei o mesmo perfil de User do app, não sei o quanto isso faz sentido
+  late Profile? profile;
 
   ProfileResponseModel({
     required this.message,

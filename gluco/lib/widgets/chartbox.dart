@@ -2,11 +2,11 @@
 
 import 'package:flutter/material.dart';
 import 'valuecard.dart';
-import '../models/collected.dart';
+import '../models/measurement.dart';
 
 class ChartBox extends StatelessWidget {
   int valor = 0;
-  Collected collectedData;
+  Measurement collectedData;
 
   ChartBox({
     required this.collectedData,
@@ -37,19 +37,19 @@ class ChartBox extends StatelessWidget {
                   children: <Widget>[
                     ValuesCard(
                       label: 'BPM',
-                      dados: collectedData.batimento,
+                      dados: collectedData.bpm,
                     ),
                     ValuesCard(
                       label: 'SpO2',
-                      dados: collectedData.saturacao,
+                      dados: collectedData.sats,
                     ),
                     ValuesCard(
                       label: 'Glicose',
-                      dados: collectedData.glicose,
+                      dados: collectedData.glucose,
                     ),
                     ValuesCard(
                       label: 'Temperatura',
-                      dados: collectedData.temperatura,
+                      dados: collectedData.temperature,
                     ),
                   ],
                 ),
