@@ -2,14 +2,12 @@ class User {
   int id;
   String name;
   String email;
-  String password;
   Profile? profile;
 
   User({
     required this.id,
     required this.name,
     required this.email,
-    required this.password,
     this.profile,
   });
 
@@ -17,7 +15,6 @@ class User {
         id: json['id'],
         name: json['name'],
         email: json['email'],
-        password: json['password'],
         profile:
             json['profile'] == null ? null : Profile.fromMap(json['profile']),
       );
@@ -27,7 +24,6 @@ class User {
       'id': id,
       'name': name,
       'email': email,
-      'password': password,
       'profile': profile?.toMap(),
     };
   }

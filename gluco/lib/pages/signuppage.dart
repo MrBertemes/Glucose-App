@@ -2,7 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:gluco/services/authapi.dart';
-import 'package:gluco/styles/colors.dart';
+import 'package:gluco/styles/customcolors.dart';
 import 'package:gluco/styles/customclippers.dart';
 
 class SignUpPage extends StatefulWidget {
@@ -70,8 +70,8 @@ class _SignUpPageState extends State<SignUpPage> {
                           begin: Alignment.topCenter,
                           end: Alignment.bottomCenter,
                           colors: [
-                            azulClaro,
-                            verdeClaro,
+                            CustomColors.lightBlue,
+                            CustomColors.lightGreen,
                           ],
                         ),
                       ),
@@ -111,18 +111,18 @@ class _SignUpPageState extends State<SignUpPage> {
                             decoration: InputDecoration(
                               label: Text(
                                 'Nome Completo',
-                                style: TextStyle(color: azulClaro),
+                                style: TextStyle(color: CustomColors.lightBlue),
                               ),
                               enabledBorder: UnderlineInputBorder(
                                 borderSide: BorderSide(
                                   width: 2,
-                                  color: azulClaro,
+                                  color: CustomColors.lightBlue,
                                 ),
                               ),
                               focusedBorder: UnderlineInputBorder(
                                 borderSide: BorderSide(
                                   width: 3,
-                                  color: azulClaro,
+                                  color: CustomColors.lightBlue,
                                 ),
                               ),
                             ),
@@ -139,8 +139,8 @@ class _SignUpPageState extends State<SignUpPage> {
                               }
                               return null;
                             },
-                            // style: TextStyle(color: azulClaro),
-                            cursorColor: azulClaro,
+                            // style: TextStyle(color: CustomColors.lightBlue),
+                            cursorColor: CustomColors.lightBlue,
                             keyboardType: TextInputType.name,
                             autocorrect: false,
                           ),
@@ -150,18 +150,18 @@ class _SignUpPageState extends State<SignUpPage> {
                             decoration: InputDecoration(
                               label: Text(
                                 'E-mail',
-                                style: TextStyle(color: verdeAzulado),
+                                style: TextStyle(color: CustomColors.greenBlue),
                               ),
                               enabledBorder: UnderlineInputBorder(
                                 borderSide: BorderSide(
                                   width: 2,
-                                  color: verdeAzulado,
+                                  color: CustomColors.greenBlue,
                                 ),
                               ),
                               focusedBorder: UnderlineInputBorder(
                                 borderSide: BorderSide(
                                   width: 3,
-                                  color: verdeAzulado,
+                                  color: CustomColors.greenBlue,
                                 ),
                               ),
                             ),
@@ -184,8 +184,8 @@ class _SignUpPageState extends State<SignUpPage> {
                               }
                               return null;
                             },
-                            // style: TextStyle(color: verdeAzulado),
-                            cursorColor: verdeAzulado,
+                            // style: TextStyle(color: CustomColors.greenBlue),
+                            cursorColor: CustomColors.greenBlue,
                             keyboardType: TextInputType.emailAddress,
                           ),
                           Padding(padding: EdgeInsets.all(8.0)),
@@ -194,18 +194,19 @@ class _SignUpPageState extends State<SignUpPage> {
                             decoration: InputDecoration(
                               label: Text(
                                 'Senha',
-                                style: TextStyle(color: verdeClaro),
+                                style:
+                                    TextStyle(color: CustomColors.lightGreen),
                               ),
                               enabledBorder: UnderlineInputBorder(
                                 borderSide: BorderSide(
                                   width: 2,
-                                  color: verdeClaro,
+                                  color: CustomColors.lightGreen,
                                 ),
                               ),
                               focusedBorder: UnderlineInputBorder(
                                 borderSide: BorderSide(
                                   width: 3,
-                                  color: verdeClaro,
+                                  color: CustomColors.lightGreen,
                                 ),
                               ),
                               suffixIcon: IconButton(
@@ -217,7 +218,7 @@ class _SignUpPageState extends State<SignUpPage> {
                                   icon: Icon(_hidePassword
                                       ? Icons.visibility_off
                                       : Icons.visibility),
-                                  color: verdeClaro),
+                                  color: CustomColors.lightGreen),
                             ),
                             onChanged: (text) {
                               _isFieldFilled['password'] = text.isNotEmpty;
@@ -231,8 +232,8 @@ class _SignUpPageState extends State<SignUpPage> {
                               }
                               return null;
                             },
-                            // style: TextStyle(color: verdeClaro),
-                            cursorColor: verdeClaro,
+                            // style: TextStyle(color: CustomColors.lightGreen),
+                            cursorColor: CustomColors.lightGreen,
                             obscureText: _hidePassword,
                             keyboardType: TextInputType.visiblePassword,
                             enableSuggestions: false,
@@ -265,8 +266,9 @@ class _SignUpPageState extends State<SignUpPage> {
                                         fontSize: 16.0,
                                         fontWeight: FontWeight.bold,
                                       ),
-                                      backgroundColor:
-                                          isValid ? verdeClaro : Colors.grey,
+                                      backgroundColor: isValid
+                                          ? CustomColors.lightGreen
+                                          : Colors.grey,
                                       padding: EdgeInsets.all(10.0),
                                       minimumSize: Size.fromHeight(60),
                                       shape: RoundedRectangleBorder(
@@ -283,16 +285,26 @@ class _SignUpPageState extends State<SignUpPage> {
                                                     ?.validate() ??
                                                 false;
                                             if (_validFormVN.value) {
-                                              if (await AuthAPI.signUp(
-                                                  _name.text,
-                                                  _email.text,
-                                                  _password.text)) {
+                                              if (await AuthAPI.instance.signUp(
+                                                  _name.text
+                                                      .trim()
+                                                      .split(RegExp(' +'))
+                                                      .map((t) {
+                                                    return t[0].toUpperCase() +
+                                                        t
+                                                            .substring(1)
+                                                            .toLowerCase();
+                                                  }).join(' '),
+                                                  _email.text
+                                                      .trim()
+                                                      .toLowerCase(),
+                                                  _password.text.trim())) {
                                                 await Navigator.popAndPushNamed(
                                                     context, '/welcome');
                                               } else {
                                                 _password.clear();
                                                 switch (AuthAPI
-                                                    .getResponseMessage()) {
+                                                    .instance.responseMessage) {
                                                   case 'Invalid Email':
                                                     setState(() {
                                                       _emailAlreadyInUse = true;
@@ -317,7 +329,7 @@ class _SignUpPageState extends State<SignUpPage> {
                                     gradient: LinearGradient(
                                       colors: [
                                         Colors.transparent,
-                                        verdeClaro,
+                                        CustomColors.lightGreen,
                                       ],
                                     ),
                                   ),
@@ -328,7 +340,7 @@ class _SignUpPageState extends State<SignUpPage> {
                                 child: Text(
                                   'ou',
                                   style: TextStyle(
-                                    color: verdeClaro,
+                                    color: CustomColors.lightGreen,
                                     fontSize: 16.0,
                                   ),
                                 ),
@@ -339,7 +351,7 @@ class _SignUpPageState extends State<SignUpPage> {
                                   decoration: BoxDecoration(
                                     gradient: LinearGradient(
                                       colors: [
-                                        verdeClaro,
+                                        CustomColors.lightGreen,
                                         Colors.transparent,
                                       ],
                                     ),
@@ -354,13 +366,14 @@ class _SignUpPageState extends State<SignUpPage> {
                               textStyle: TextStyle(
                                 fontSize: 16.0,
                               ),
-                              primary: verdeClaro,
+                              primary: CustomColors.lightGreen,
                               backgroundColor: Colors.white,
                               padding: EdgeInsets.all(10.0),
                               minimumSize:
                                   Size(viewportConstraints.maxWidth, 60),
                               shape: RoundedRectangleBorder(
-                                side: BorderSide(color: verdeClaro, width: 2.0),
+                                side: BorderSide(
+                                    color: CustomColors.lightGreen, width: 2.0),
                                 borderRadius: BorderRadius.circular(8),
                               ),
                             ),
