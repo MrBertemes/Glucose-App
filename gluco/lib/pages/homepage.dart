@@ -5,18 +5,17 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:async_button_builder/async_button_builder.dart';
 import 'package:gluco/db/databasehelper.dart';
-import 'package:gluco/models/collected.dart';
+import 'package:gluco/services/authapi.dart';
 import 'package:gluco/styles/defaultappbar.dart';
 import 'package:gluco/styles/mainbottomappbar.dart';
-import 'package:gluco/styles/colors.dart';
+import 'package:gluco/styles/customcolors.dart';
+import 'package:gluco/views/historyvo.dart';
 import 'package:gluco/widgets/iconcard.dart';
 import 'package:gluco/widgets/sidebar.dart';
 import 'package:intl/intl.dart';
 
 class HomePage extends StatefulWidget {
-  final AppBar appBar = defaultAppBar(title: 'E-Gluco', centertitle: true);
-  Collected dataCollected;
-  HomePage({required this.dataCollected});
+  const HomePage();
 
   @override
   State<HomePage> createState() => _HomePageState();
@@ -28,8 +27,8 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: widget.appBar,
-      bottomNavigationBar: mainBottomAppBar(context, 'home'),
+      appBar: defaultAppBar(title: 'E-Gluco', centertitle: true),
+      bottomNavigationBar: mainBottomAppBar(context, MainBottomAppBar.home),
       drawer: SideBar(),
       body: Container(
         margin: EdgeInsets.all(15.0),
@@ -54,11 +53,11 @@ class _HomePageState extends State<HomePage> {
                       ),
                       children: [
                         TextSpan(
-                          text: widget.dataCollected.glicose == 0
-                              ? 'Sem dados'
-                              : DateFormat('d MMM, E. H:mm', 'pt_BR')
-                                  .format(widget.dataCollected.data)
-                                  .toUpperCase(),
+                          text: HistoryVO.currentMeasurement.id != -1
+                              ? DateFormat('d MMM, E. H:mm', 'pt_BR')
+                                  .format(HistoryVO.currentMeasurement.date)
+                                  .toUpperCase()
+                              : 'Sem dados',
                           style: TextStyle(
                             color: Colors.grey[700],
                             fontSize: 16.0,
@@ -83,9 +82,9 @@ class _HomePageState extends State<HomePage> {
                       fontStyle: FontStyle.italic,
                     ),
                   ),
-                  data: widget.dataCollected.glicose != 0
+                  data: HistoryVO.currentMeasurement.id != -1
                       ? Text(
-                          '${widget.dataCollected.glicose} mg/dL',
+                          '${HistoryVO.currentMeasurement.glucose} mg/dL',
                           style: TextStyle(
                             fontSize: 18.0,
                             color: Colors.grey[700],
@@ -93,7 +92,7 @@ class _HomePageState extends State<HomePage> {
                           ),
                         )
                       : Text('Sem dados'),
-                  color: azulClaro.withOpacity(1.0),
+                  color: CustomColors.lightBlue.withOpacity(1.0),
                   size:
                       Size.fromHeight(MediaQuery.of(context).size.height * 0.2),
                 ),
@@ -111,16 +110,16 @@ class _HomePageState extends State<HomePage> {
                             fontStyle: FontStyle.italic,
                           ),
                         ),
-                        data: widget.dataCollected.saturacao != 0
+                        data: HistoryVO.currentMeasurement.id != -1
                             ? Text(
-                                '${widget.dataCollected.saturacao}%',
+                                '${HistoryVO.currentMeasurement.sats}%',
                                 style: TextStyle(
                                   color: Colors.grey[700],
                                   fontWeight: FontWeight.bold,
                                 ),
                               )
                             : Text('Sem dados'),
-                        color: verdeClaro.withOpacity(1.0),
+                        color: CustomColors.lightGreen.withOpacity(1.0),
                         size: Size.fromHeight(
                             MediaQuery.of(context).size.height * 0.2),
                       ),
@@ -137,16 +136,16 @@ class _HomePageState extends State<HomePage> {
                             fontStyle: FontStyle.italic,
                           ),
                         ),
-                        data: widget.dataCollected.batimento != 0
+                        data: HistoryVO.currentMeasurement.id != -1
                             ? Text(
-                                '${widget.dataCollected.batimento} bpm',
+                                '${HistoryVO.currentMeasurement.bpm} bpm',
                                 style: TextStyle(
                                   color: Colors.grey[700],
                                   fontWeight: FontWeight.bold,
                                 ),
                               )
                             : Text('Sem dados'),
-                        color: verdeAzulado.withOpacity(1.0),
+                        color: CustomColors.greenBlue.withOpacity(1.0),
                         size: Size.fromHeight(
                             MediaQuery.of(context).size.height * 0.2),
                       ),
@@ -182,7 +181,7 @@ class _HomePageState extends State<HomePage> {
               builder: (context, child, callback, _) {
                 return TextButton(
                   style: TextButton.styleFrom(
-                    backgroundColor: verdeAzulado.withOpacity(1.0),
+                    backgroundColor: CustomColors.greenBlue.withOpacity(1.0),
                     minimumSize: Size.fromHeight(
                         MediaQuery.of(context).size.height * 0.12),
                     shape: RoundedRectangleBorder(
@@ -201,25 +200,26 @@ class _HomePageState extends State<HomePage> {
   }
 
   void readData() async {
-    widget.dataCollected.id++;
-    widget.dataCollected.batimento = random.nextInt(110) + 60;
-    widget.dataCollected.data = DateTime.now();
-    widget.dataCollected.glicose =
+    HistoryVO.currentMeasurement.id++;
+    HistoryVO.currentMeasurement.bpm = random.nextInt(110) + 60;
+    HistoryVO.currentMeasurement.date = DateTime.now();
+    HistoryVO.currentMeasurement.glucose =
         (((random.nextInt(110) + 60) + random.nextDouble()) * 100)
                 .truncateToDouble() /
             100;
-    widget.dataCollected.saturacao = random.nextInt(101) + 96;
-    widget.dataCollected.temperatura =
+    HistoryVO.currentMeasurement.sats = random.nextInt(101) + 96;
+    HistoryVO.currentMeasurement.temperature =
         (((random.nextInt(38) + 35) + random.nextDouble()) * 100)
                 .truncateToDouble() /
             100;
-    // HistoricoTeste().saveCollected(widget.dataCollected);
 
-    var res = await db.addMeasurement(widget.dataCollected);
-    if (res == 0) {
-      throw ('Error while adding measurements to database!');
-    } else {
+    HistoryVO.updateMeasurementsMap();
+
+    if (await db.insertMeasurement(
+        AuthAPI.instance.currentUser!, HistoryVO.currentMeasurement)) {
       print('Success :D');
+    } else {
+      throw ('Error while adding measurements to database!');
     }
   }
 }
