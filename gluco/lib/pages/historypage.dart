@@ -49,7 +49,11 @@ class _HistoryPageState extends State<HistoryPage> {
                 padding: EdgeInsets.all(4),
                 itemCount: _monthsMap.length,
                 itemBuilder: (c, indexMonth) {
-                  String monthKey = _monthsMap.keys.elementAt(indexMonth);
+                  // as chaves são ordenadas do mais velho pro mais novo,
+                  // para fazer o display das medicoes mais novas primeiro
+                  // é necessário inverte-las
+                  String monthKey =
+                      _monthsMap.keys.toList().reversed.elementAt(indexMonth);
                   return Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -80,8 +84,14 @@ class _HistoryPageState extends State<HistoryPage> {
                         ),
                       ),
                       Column(
-                        children: _monthsMap[monthKey]!.keys.fold([],
-                            (total, dayKey) {
+                        // mesma questão dos meses, a lista de chaves de dias
+                        // precisa ser invertida para mostrar primeiro as
+                        // medições mais recentes
+                        children: _monthsMap[monthKey]!
+                            .keys
+                            .toList()
+                            .reversed
+                            .fold([], (total, dayKey) {
                           total.add(
                             Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
