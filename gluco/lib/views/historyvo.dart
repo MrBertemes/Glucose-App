@@ -67,6 +67,10 @@ abstract class HistoryVO {
       MMMMy = MMMMy.replaceRange(0, 1, MMMMy[0].toUpperCase());
       EEEEd = EEEEd.replaceRange(0, 1, EEEEd[0].toUpperCase());
       // Retira os '-feira'
+      int index = EEEEd.indexOf('-');
+      if (index != -1) {
+        EEEEd = EEEEd.replaceRange(index, index + 6, '');
+      }
       EEEEd = EEEEd.split('-')[0];
       // Insere a medição no mapa
       if (!measurementsVOMap.containsKey(MMMMy)) {
