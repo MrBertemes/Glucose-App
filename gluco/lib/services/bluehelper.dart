@@ -2,41 +2,44 @@
 import 'dart:convert';
 
 import 'package:flutter_blue/flutter_blue.dart';
+import 'package:gluco/models/device.dart';
 
-class BlueHelper{
+class BlueHelper {
   FlutterBlue blue = FlutterBlue.instance;
-  List<BluetoothDevice> _devices = [];
-  String _devicesMsg = "";
-
+  final List<BluetoothDevice> _devices = [];
+  late Device connectedDevice;
 
   Future<void> initScan() async {
-    blue.startScan(timeout: Duration(seconds: 3));
+    blue.scan(
+      allowDuplicates: true,
+      timeout: Duration(seconds: 60),
+    );
 
-    blue.scanResults.listen((value) {
-      List<BluetoothDevice> valDevice = [];
-      for (ScanResult e in value) {
-        valDevice.add(e.device);
-      }
-      _devices = valDevice;
-
-      if (_devicesMsg.isEmpty) {
-        _devicesMsg = "Não há dispositivos disponíveis";
-      }
-    });
+    blue.scanResults.listen(
+      (value) {
+        for (ScanResult e in value) {
+          _devices.add(e.device);
+        }
+      },
+    );
   }
 
-  List<BluetoothDevice> getDevices(){
+  List<BluetoothDevice> get getDevices {
     return _devices;
   }
 
   Future<void> connectDeviceOrDisconnect(BluetoothDevice device) async {
-    await device.connect(
-      timeout: Duration(
-        seconds: 10,
-      ),
-    ).whenComplete(() => {
-      
-    });
+    await device
+        .connect(
+          timeout: Duration(
+            seconds: 10,
+          ),
+        )
+        .whenComplete(
+          () => {
+            connectedDevice = Device(connected: true, identifier: device.id, name: device.name),
+          },
+        );
     String bit = 'nda';
     List<BluetoothService> services = await device.discoverServices();
     services.forEach((service) async {
@@ -44,9 +47,8 @@ class BlueHelper{
       for (BluetoothCharacteristic c in characteristics) {
         List<int> value = await c.read();
         bit = utf8.decode(value);
-        print("string brabissima: $bit");
+        print("string recebida: $bit");
       }
     });
   }
-
 }
