@@ -2,7 +2,7 @@
 
 import 'package:gluco/db/databasehelper.dart';
 import 'package:gluco/models/measurement.dart';
-import 'package:gluco/services/authapi.dart';
+import 'package:gluco/services/api.dart';
 import 'package:intl/intl.dart';
 
 /// Classe de visualização das medições.
@@ -90,7 +90,7 @@ abstract class HistoryVO {
   /// utilizada no login
   static Future<bool> fetchHistory() async {
     List<Measurement> measurementsList = await DatabaseHelper.instance
-        .queryMeasurements(AuthAPI.instance.currentUser!);
+        .queryMeasurements(API.instance.currentUser!);
 
     if (measurementsList.isNotEmpty) {
       // não sei o quanto faz sentido: a querymeasurements retorna uma lista

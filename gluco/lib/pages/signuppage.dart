@@ -1,7 +1,7 @@
 // ignore_for_file: must_be_immutable, use_key_in_widget_constructors, prefer_const_constructors
 
 import 'package:flutter/material.dart';
-import 'package:gluco/services/authapi.dart';
+import 'package:gluco/services/api.dart';
 import 'package:gluco/styles/customcolors.dart';
 import 'package:gluco/styles/customclippers.dart';
 
@@ -285,7 +285,7 @@ class _SignUpPageState extends State<SignUpPage> {
                                                     ?.validate() ??
                                                 false;
                                             if (_validFormVN.value) {
-                                              if (await AuthAPI.instance.signUp(
+                                              if (await API.instance.signUp(
                                                   _name.text
                                                       .trim()
                                                       .split(RegExp(' +'))
@@ -303,9 +303,10 @@ class _SignUpPageState extends State<SignUpPage> {
                                                     context, '/welcome');
                                               } else {
                                                 _password.clear();
-                                                switch (AuthAPI
+                                                switch (API
                                                     .instance.responseMessage) {
-                                                  case 'Invalid Email':
+                                                  case APIResponseMessages
+                                                      .alreadyRegistered:
                                                     setState(() {
                                                       _emailAlreadyInUse = true;
                                                     });

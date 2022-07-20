@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:gluco/db/databasehelper.dart';
+import 'package:gluco/services/api.dart';
 import 'package:http/http.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:gluco/models/user.dart';
@@ -51,11 +52,11 @@ class AutenticacaoTeste {
         //
       } else {
         statuscode = 403;
-        response.message = 'Invalid Password';
+        response.message = APIResponseMessages.wrongPassword;
       }
     } else {
       statuscode = 404;
-      response.message = 'Invalid Email';
+      response.message = APIResponseMessages.notRegistered;
     }
     body = jsonEncode(response.toMap());
 
@@ -82,7 +83,7 @@ class AutenticacaoTeste {
       );
     } else {
       statuscode = 403;
-      body = 'Invalid Email';
+      body = APIResponseMessages.alreadyRegistered;
     }
 
     return Response(body, statuscode);

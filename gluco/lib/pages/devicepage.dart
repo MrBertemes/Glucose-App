@@ -12,7 +12,7 @@ import '../models/device.dart';
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../styles/customcolors.dart';
-import 'package:slider_button/slider_button.dart';
+// import 'package:slider_button/slider_button.dart';
 
 class DevicePage extends StatefulWidget {
   DevicePage();

@@ -13,7 +13,7 @@ import 'package:gluco/pages/devicepage.dart';
 import 'package:gluco/pages/firstloginpage.dart';
 import 'package:gluco/views/historyvo.dart';
 import 'package:gluco/styles/customcolors.dart';
-import 'package:gluco/services/authapi.dart';
+import 'package:gluco/services/api.dart';
 
 String _defaultHome = '/login';
 
@@ -25,8 +25,8 @@ void main() async {
   // pro tryCredentials poder retornar true
   await AutenticacaoTeste.logaAutomaticoPraNaoFicarIrritante();
 
-  if (await AuthAPI.instance.tryCredentials()) {
-    switch (AuthAPI.instance.responseMessage) {
+  if (await API.instance.tryCredentials()) {
+    switch (API.instance.responseMessage) {
       case 'Success':
         _defaultHome = '/home';
         await HistoryVO.fetchHistory();

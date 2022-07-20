@@ -2,7 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:gluco/models/user.dart';
-import 'package:gluco/services/authapi.dart';
+import 'package:gluco/services/api.dart';
 import 'package:gluco/styles/customcolors.dart';
 import 'package:gluco/styles/defaultappbar.dart';
 import 'package:intl/intl.dart';
@@ -15,14 +15,13 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage> {
-  User user = AuthAPI.instance.currentUser!;
+  User user = API.instance.currentUser!;
   late final TextEditingController _birthdate;
   late final TextEditingController _weight;
   late final TextEditingController _height;
 
-  String _dropdownValueSex = AuthAPI.instance.currentUser!.profile!.sex;
-  String _dropdownValueDiabetes =
-      AuthAPI.instance.currentUser!.profile!.diabetes;
+  String _dropdownValueSex = API.instance.currentUser!.profile!.sex;
+  String _dropdownValueDiabetes = API.instance.currentUser!.profile!.diabetes;
 
   @override
   void initState() {
@@ -420,7 +419,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                                     ?.validate() ??
                                                 false;
                                             if (_validFormVN.value) {
-                                              if (await AuthAPI.instance
+                                              if (await API.instance
                                                   .updateUserProfile(
                                                       _birthdate.text
                                                           .split('/')
