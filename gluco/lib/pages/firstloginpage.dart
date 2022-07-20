@@ -1,7 +1,7 @@
 // ignore_for_file: must_be_immutable, use_key_in_widget_constructors, prefer_const_constructors
 
 import 'package:flutter/material.dart';
-import 'package:gluco/services/authapi.dart';
+import 'package:gluco/services/api.dart';
 import 'package:gluco/styles/customcolors.dart';
 
 class FirstLoginPage extends StatefulWidget {
@@ -126,7 +126,7 @@ class _FirstLoginPageState extends State<FirstLoginPage> {
                       children: [
                         TextSpan(
                           text:
-                              'Olá, ${AuthAPI.instance.currentUser?.name.split(' ')[0]}!\n',
+                              'Olá, ${API.instance.currentUser?.name.split(' ')[0]}!\n',
                           style: TextStyle(
                             fontSize: 22.0,
                             fontWeight: FontWeight.bold,
@@ -391,16 +391,15 @@ class _FirstLoginPageState extends State<FirstLoginPage> {
                                       _formKey.currentState?.validate() ??
                                           false;
                                   if (_validFormVN.value) {
-                                    if (await AuthAPI.instance
-                                        .updateUserProfile(
-                                            _birthdate.text
-                                                .split('/')
-                                                .reversed
-                                                .join('-'),
-                                            _weight.text.replaceAll(',', '.'),
-                                            _height.text.replaceAll(',', '.'),
-                                            _dropdownValueSex!,
-                                            _dropdownValueDiabetes!)) {
+                                    if (await API.instance.updateUserProfile(
+                                        _birthdate.text
+                                            .split('/')
+                                            .reversed
+                                            .join('-'),
+                                        _weight.text.replaceAll(',', '.'),
+                                        _height.text.replaceAll(',', '.'),
+                                        _dropdownValueSex!,
+                                        _dropdownValueDiabetes!)) {
                                       await Navigator.popAndPushNamed(
                                           context, '/home');
                                     }

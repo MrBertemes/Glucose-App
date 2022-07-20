@@ -1,7 +1,7 @@
 // ignore_for_file: must_be_immutable, prefer_const_constructors, use_key_in_widget_constructors
 
 import 'package:flutter/material.dart';
-import 'package:gluco/services/authapi.dart';
+import 'package:gluco/services/api.dart';
 import 'package:gluco/styles/customcolors.dart';
 import 'package:gluco/styles/customclippers.dart';
 import 'package:gluco/views/historyvo.dart';
@@ -186,11 +186,11 @@ class _LoginPageState extends State<LoginPage> {
                             ),
                           ),
                           onPressed: () async {
-                            if (await AuthAPI.instance.login(
+                            if (await API.instance.login(
                               _email.text.trim().toLowerCase(),
                               _password.text.trim(),
                             )) {
-                              switch (AuthAPI.instance.responseMessage) {
+                              switch (API.instance.responseMessage) {
                                 case 'Success':
                                   await HistoryVO.fetchHistory();
                                   await Navigator.popAndPushNamed(
@@ -203,8 +203,8 @@ class _LoginPageState extends State<LoginPage> {
                               }
                             } else {
                               _password.clear();
-                              switch (AuthAPI.instance.responseMessage) {
-                                case 'Invalid Email':
+                              switch (API.instance.responseMessage) {
+                                case APIResponseMessages.notRegistered:
                                   setState(
                                     () {
                                       _invalidEmail = true;
@@ -212,7 +212,7 @@ class _LoginPageState extends State<LoginPage> {
                                     },
                                   );
                                   break;
-                                case 'Invalid Password':
+                                case APIResponseMessages.wrongPassword:
                                   setState(
                                     () {
                                       _invalidEmail = false;
