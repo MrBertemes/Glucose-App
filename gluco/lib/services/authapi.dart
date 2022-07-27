@@ -1,3 +1,5 @@
+// ignore_for_file: unused_field
+
 import 'dart:convert';
 import 'package:http/http.dart';
 import 'package:crypto/crypto.dart';

@@ -1,3 +1,5 @@
+// ignore_for_file: non_constant_identifier_names
+
 import 'dart:convert';
 import 'package:gluco/db/databasehelper.dart';
 import 'package:http/http.dart';

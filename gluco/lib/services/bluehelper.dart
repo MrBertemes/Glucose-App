@@ -6,22 +6,25 @@ import 'package:gluco/models/device.dart';
 
 class BlueHelper {
   FlutterBlue blue = FlutterBlue.instance;
-  final List<BluetoothDevice> _devices = [];
+  late List<BluetoothDevice> _devices ;
   late Device connectedDevice;
 
   Future<void> initScan() async {
-    blue.scan(
-      allowDuplicates: true,
-      timeout: Duration(seconds: 60),
-    );
+    // Start scanning
+    blue.startScan(timeout: Duration(seconds: 4));
 
-    blue.scanResults.listen(
-      (value) {
-        for (ScanResult e in value) {
-          _devices.add(e.device);
+    // Listen to scan results
+    var subscription = blue.scanResults.listen(
+      (results) {
+        // do something with scan results
+        for (ScanResult r in results) {
+          print("${r.device.name} found: ${r.hashCode}");
+          _devices.add(r.device);
         }
       },
     );
+    // Stop scanning
+    blue.stopScan();
   }
 
   List<BluetoothDevice> get getDevices {
@@ -37,7 +40,8 @@ class BlueHelper {
         )
         .whenComplete(
           () => {
-            connectedDevice = Device(connected: true, identifier: device.id, name: device.name),
+            connectedDevice = Device(
+                connected: true, identifier: device.id, name: device.name),
           },
         );
     String bit = 'nda';

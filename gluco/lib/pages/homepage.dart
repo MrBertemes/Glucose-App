@@ -217,9 +217,8 @@ class _HomePageState extends State<HomePage> {
 
     if (await db.insertMeasurement(
         AuthAPI.instance.currentUser!, HistoryVO.currentMeasurement)) {
-      print('Success :D');
     } else {
-      throw ('Error while adding measurements to database!');
+      throw ('Error while adding measurement to database!');
     }
   }
 }
