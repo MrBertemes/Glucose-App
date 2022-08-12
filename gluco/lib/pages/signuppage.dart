@@ -299,8 +299,19 @@ class _SignUpPageState extends State<SignUpPage> {
                                                       .trim()
                                                       .toLowerCase(),
                                                   _password.text.trim())) {
-                                                await Navigator.popAndPushNamed(
-                                                    context, '/welcome');
+                                                // await Navigator.popAndPushNamed(
+                                                //     context, '/welcome'); // por enquanto não tem endpoits para a pagina de perfil
+                                                ///////
+                                                if (await API.instance.login(
+                                                    _email.text
+                                                        .trim()
+                                                        .toLowerCase(),
+                                                    _password.text.trim())) {
+                                                  await Navigator
+                                                      .popAndPushNamed(
+                                                          context, '/home');
+                                                }
+                                                ///////
                                               } else {
                                                 _password.clear();
                                                 switch (API

@@ -191,15 +191,15 @@ class _LoginPageState extends State<LoginPage> {
                               _password.text.trim(),
                             )) {
                               switch (API.instance.responseMessage) {
-                                case 'Success':
+                                case APIResponseMessages.success:
                                   await HistoryVO.fetchHistory();
                                   await Navigator.popAndPushNamed(
                                       context, '/home');
                                   break;
-                                case 'Empty profile':
-                                  await Navigator.popAndPushNamed(
-                                      context, '/welcome');
-                                  break;
+                                // case 'Empty profile':
+                                //   await Navigator.popAndPushNamed(
+                                //       context, '/welcome');
+                                //   break;
                               }
                             } else {
                               _password.clear();

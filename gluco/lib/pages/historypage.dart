@@ -134,7 +134,7 @@ class _HistoryPageState extends State<HistoryPage> {
                                                 fontStyle: FontStyle.italic),
                                           ),
                                           subtitle: Text(
-                                              '${measurementVO.data.glucose} mg/dL'),
+                                              '${measurementVO.glucose} mg/dL'),
                                           leading: CircleAvatar(
                                             backgroundColor:
                                                 CustomColors.lightBlue,
@@ -153,8 +153,8 @@ class _HistoryPageState extends State<HistoryPage> {
                                               style: TextStyle(
                                                   fontStyle: FontStyle.italic),
                                             ),
-                                            subtitle: Text(
-                                                '${measurementVO.data.sats}%'),
+                                            subtitle:
+                                                Text('${measurementVO.spo2}%'),
                                             leading: CircleAvatar(
                                               backgroundColor:
                                                   CustomColors.lightGreen,
@@ -171,7 +171,7 @@ class _HistoryPageState extends State<HistoryPage> {
                                                   fontStyle: FontStyle.italic),
                                             ),
                                             subtitle: Text(
-                                                '${measurementVO.data.bpm} bpm'),
+                                                '${measurementVO.pr_rpm} bpm'),
                                             leading: CircleAvatar(
                                               backgroundColor:
                                                   CustomColors.greenBlue,

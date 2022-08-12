@@ -27,15 +27,12 @@ class DatabaseHelper {
   }
 
   Future _onCreate(Database db, int version) async {
-    // a primary key tá como autoincrement mas provavelmente será usada só pra teste,
-    // o id vai ser o mesmo do banco do phpmyadmin, retornado pela requisição, isso?
     await db.execute('''
       CREATE TABLE measurements (
-        idmeasurements INTEGER PRIMARY KEY AUTOINCREMENT,
+        idmeasurements INTEGER PRIMARY KEY,
         glucose REAL,
-        sats INTEGER,
-        bpm INTEGER,
-        temperature REAL,
+        spo2 INTEGER,
+        pr_rpm INTEGER,
         date TEXT,
         iduser INTEGER,
         FOREIGN KEY (iduser) REFERENCES users(iduser)
@@ -55,35 +52,28 @@ class DatabaseHelper {
     ''');
     await db.execute('''
       CREATE TABLE credentials (
-        email TEXT PRIMARY KEY,
-        password TEXT,
+        clientid TEXT PRIMARY KEY,
+        refreshtoken TEXT,
         lastlogin TEXT
       )
     ''');
   }
 
   /// Insere a medição no banco referenciando o usuário em questão
-  Future<bool> insertMeasurement(User user, Measurement measurement) async {
+  Future<bool> insertMeasurement(
+      User user, MeasurementCompleted measurement) async {
     Database db = await DatabaseHelper.instance.database;
+    Map<String, Object?> data = measurement.toMap();
+    data['iduser'] = user.id;
     return await db.insert(
           'measurements',
-          // como o id de measurements ainda está como auto incremental,
-          // não dá pra usar measurement.toMap(),
-          // além de que faltaria a chave estrangeira referenciado o usuário
-          {
-            'glucose': measurement.glucose,
-            'sats': measurement.sats,
-            'bpm': measurement.bpm,
-            'temperature': measurement.temperature,
-            'date': measurement.date.toString(),
-            'iduser': user.id,
-          },
+          data,
         ) !=
         0;
   }
 
   /// Busca pelas medições do usuário em questão
-  Future<List<Measurement>> queryMeasurements(User user,
+  Future<List<MeasurementCompleted>> queryMeasurements(User user,
       [int? quantity]) async {
     Database db = await DatabaseHelper.instance.database;
     List<Map<String, Object?>> measurements = await db.query(
@@ -93,14 +83,14 @@ class DatabaseHelper {
       orderBy: 'idmeasurements DESC',
       limit: quantity,
     );
-    List<Measurement> measurementsList =
-        measurements.map((c) => Measurement.fromMap(c)).toList();
+    List<MeasurementCompleted> measurementsList =
+        measurements.map((c) => MeasurementCompleted.fromMap(c)).toList();
     return measurementsList;
   }
 
   @Deprecated(
       'Ainda não possui utilidade, possivelmente insere errado visto que o id do banco local é auto incremental e deve ser substituido pelo id do banco remoto')
-  Future<int> updateMeasurement(Measurement measurement) async {
+  Future<int> updateMeasurement(MeasurementCompleted measurement) async {
     Database db = await DatabaseHelper.instance.database;
     return await db.update(
       'measurements',
@@ -185,13 +175,13 @@ class DatabaseHelper {
   }
 
   /// Insere as credenciais no banco, se já existirem sobreescreve
-  Future<bool> insertCredentials(String email, String password) async {
+  Future<bool> insertCredentials(String client_id, String refresh_token) async {
     Database db = await DatabaseHelper.instance.database;
     return await db.insert(
           'credentials',
           {
-            'email': email,
-            'password': password,
+            'clientid': client_id,
+            'refreshtoken': refresh_token,
             // inclui um marcador de último acesso pra poder selecionar
             // o usuário mais recentemente logado no caso de possibilitar
             // login com múltiplas contas no futuro
@@ -203,24 +193,26 @@ class DatabaseHelper {
   }
 
   /// Busca pelas credenciais mais recentes no banco,
-  /// se encontrar retorna um mapa contendo email e senha,
+  /// se encontrar retorna um mapa contendo client_id e refresh_token,
   /// caso contrário retorna null
   Future<Map<String, String>?> queryCredentials() async {
     Database db = await DatabaseHelper.instance.database;
     List<Map<String, Object?>> credentials = await db.query('credentials',
-        columns: ['email', 'password'], orderBy: 'lastlogin DESC', limit: 1);
+        columns: ['clientid', 'refreshtoken'],
+        orderBy: 'lastlogin DESC',
+        limit: 1);
     return credentials.isEmpty
         ? null
         : credentials.first.cast<String, String>();
   }
 
-  /// Remove do banco as credenciais relativas ao email em questão
-  Future<bool> deleteCredentials(String email) async {
+  /// Remove do banco as credenciais relativas ao client_id em questão
+  Future<bool> deleteCredentials(String client_id) async {
     Database db = await DatabaseHelper.instance.database;
     return await db.delete(
           'credentials',
-          where: 'email = ?',
-          whereArgs: [email],
+          where: 'clientid = ?',
+          whereArgs: [client_id],
         ) !=
         0;
   }
