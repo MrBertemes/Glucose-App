@@ -5,6 +5,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:async_button_builder/async_button_builder.dart';
 import 'package:gluco/db/databasehelper.dart';
+import 'package:gluco/models/measurement.dart';
 import 'package:gluco/services/api.dart';
 import 'package:gluco/styles/defaultappbar.dart';
 import 'package:gluco/styles/mainbottomappbar.dart';
@@ -112,7 +113,7 @@ class _HomePageState extends State<HomePage> {
                         ),
                         data: HistoryVO.currentMeasurement.id != -1
                             ? Text(
-                                '${HistoryVO.currentMeasurement.sats}%',
+                                '${HistoryVO.currentMeasurement.spo2}%',
                                 style: TextStyle(
                                   color: Colors.grey[700],
                                   fontWeight: FontWeight.bold,
@@ -138,7 +139,7 @@ class _HomePageState extends State<HomePage> {
                         ),
                         data: HistoryVO.currentMeasurement.id != -1
                             ? Text(
-                                '${HistoryVO.currentMeasurement.bpm} bpm',
+                                '${HistoryVO.currentMeasurement.pr_rpm} bpm',
                                 style: TextStyle(
                                   color: Colors.grey[700],
                                   fontWeight: FontWeight.bold,
@@ -172,11 +173,14 @@ class _HomePageState extends State<HomePage> {
                 color: Colors.white,
               ),
               onPressed: () async {
-                // só pra dar tempo de ver a animação de carregando
-                await Future.delayed(Duration(seconds: 1));
-                setState(() {
-                  readData();
-                });
+                // setState(() { // setstate não pode ser async
+                MeasurementCollected measurement = await readData();
+                print('---readdata---\n' +
+                    measurement.toMap().toString() +
+                    '\n---readdata---\n');
+                print(
+                    'Status do envio da medição: ${await API.instance.postMeasurements(measurement)}');
+                // });
               },
               builder: (context, child, callback, _) {
                 return TextButton(
@@ -199,27 +203,27 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  void readData() async {
-    HistoryVO.currentMeasurement.id++;
-    HistoryVO.currentMeasurement.bpm = random.nextInt(110) + 60;
-    HistoryVO.currentMeasurement.date = DateTime.now();
-    HistoryVO.currentMeasurement.glucose =
-        (((random.nextInt(110) + 60) + random.nextDouble()) * 100)
-                .truncateToDouble() /
-            100;
-    HistoryVO.currentMeasurement.sats = random.nextInt(101) + 96;
-    HistoryVO.currentMeasurement.temperature =
-        (((random.nextInt(38) + 35) + random.nextDouble()) * 100)
-                .truncateToDouble() /
-            100;
-
-    HistoryVO.updateMeasurementsMap();
-
-    if (await db.insertMeasurement(
-        API.instance.currentUser!, HistoryVO.currentMeasurement)) {
-      print('Success :D');
-    } else {
-      throw ('Error while adding measurements to database!');
+  Future<MeasurementCollected> readData() async {
+    List<double> m_4p = <double>[];
+    List<double> f_4p = <double>[];
+    for (int i = 1; i <= 24; i++) {
+      m_4p.add((random.nextDouble() * 10000).truncateToDouble() / 1000 + 5);
+      f_4p.add((random.nextDouble() * 10000).truncateToDouble() / 1000 + 5);
     }
+    return MeasurementCollected(
+      id: -1,
+      apparent_glucose:
+          (((random.nextInt(110) + 60) + random.nextDouble()) * 100)
+                  .truncateToDouble() /
+              100,
+      spo2: random.nextInt(101) + 96,
+      pr_rpm: random.nextInt(110) + 60,
+      temperature: (((random.nextInt(38) + 35) + random.nextDouble()) * 100)
+              .truncateToDouble() /
+          100,
+      m_4p: m_4p,
+      f_4p: f_4p,
+      date: DateTime.now(),
+    );
   }
 }
