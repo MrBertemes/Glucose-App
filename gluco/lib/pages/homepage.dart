@@ -5,7 +5,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:async_button_builder/async_button_builder.dart';
 import 'package:gluco/db/databasehelper.dart';
-import 'package:gluco/services/authapi.dart';
+import 'package:gluco/services/api.dart';
 import 'package:gluco/styles/defaultappbar.dart';
 import 'package:gluco/styles/mainbottomappbar.dart';
 import 'package:gluco/styles/customcolors.dart';
@@ -216,7 +216,8 @@ class _HomePageState extends State<HomePage> {
     HistoryVO.updateMeasurementsMap();
 
     if (await db.insertMeasurement(
-        AuthAPI.instance.currentUser!, HistoryVO.currentMeasurement)) {
+        API.instance.currentUser!, HistoryVO.currentMeasurement)) {
+      print('Success :D');
     } else {
       throw ('Error while adding measurement to database!');
     }
