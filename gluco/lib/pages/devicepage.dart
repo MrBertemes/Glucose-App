@@ -3,8 +3,6 @@
 import 'dart:convert';
 import 'package:flutter_blue/gen/flutterblue.pbenum.dart';
 import 'package:flutter_blue/gen/flutterblue.pbjson.dart';
-
-import '../services/bluehelper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_blue/flutter_blue.dart';
 import 'package:gluco/styles/defaultappbar.dart';
@@ -22,18 +20,72 @@ class DevicePage extends StatefulWidget {
 }
 
 class _DevicePageState extends State<DevicePage> {
-  final BlueHelper blueHelp = BlueHelper();
-  List<BluetoothDevice> _dvc = [];
+  FlutterBlue blue = FlutterBlue.instance;
+  List<BluetoothDevice> _devices = [];
+  late Device connectedDevice;
   final String _devicesMsg = "Não há dispositivos por perto";
   final f = NumberFormat("\$###,###.00", "en_US");
 
+  Future<void> initScan() async {
+    // Start scanning
+    blue.startScan(timeout: Duration(seconds: 4));
+
+    // Listen to scan results
+    var subscription = blue.scanResults.listen(
+      (results) {
+        // do something with scan results
+        for (ScanResult r in results) {
+          print("${r.device.name} found: ${r.hashCode}");
+          _devices.add(r.device);
+        }
+      },
+    );
+    // Stop scanning
+    blue.stopScan();
+  }
+  Future<bool> thereIsDeviceConnected() async {
+    var devicesConnected = await blue.connectedDevices;
+    for (var dvc in devicesConnected) {
+      for (var deviceFound in _devices) {
+        if (dvc == deviceFound) {
+          return true;
+        }
+      }
+    }
+    return false;
+  }
+
+  Future<void> connectDeviceOrDisconnect(BluetoothDevice device) async {
+    await device
+        .connect(
+          timeout: Duration(
+            seconds: 10,
+          ),
+        )
+        .whenComplete(
+          () => {
+            connectedDevice = Device(
+                connected: true, identifier: device.id, name: device.name),
+          },
+        );
+    String bit = '';
+    List<BluetoothService> services = await device.discoverServices();
+    services.forEach((service) async {
+      var characteristics = service.characteristics;
+      for (BluetoothCharacteristic c in characteristics) {
+        List<int> value = await c.read();
+        bit = utf8.decode(value);
+        print("string recebida: $bit");
+      }
+    });
+  }
+
   void scan() async {
-    blueHelp.initScan();
-    _dvc = blueHelp.getDevices;
+    await initScan();
   }
 
   void toggleButton(dynamic dvc) {
-    blueHelp.connectDeviceOrDisconnect(dvc);
+    connectDeviceOrDisconnect(dvc);
   }
 
   @override
@@ -58,7 +110,7 @@ class _DevicePageState extends State<DevicePage> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Visibility(
-            visible: _dvc.isNotEmpty,
+            visible: _devices.isNotEmpty,
             child: Padding(
               padding: EdgeInsets.only(left: 20.0, top: 5.0, bottom: 10.0),
               child: Text(
@@ -77,7 +129,7 @@ class _DevicePageState extends State<DevicePage> {
                   topRight: Radius.circular(25),
                 ),
               ),
-              child: _dvc.isEmpty
+              child: _devices.isEmpty
                   ? Center(
                       child: Text(
                         _devicesMsg,
@@ -86,20 +138,20 @@ class _DevicePageState extends State<DevicePage> {
                     )
                   // esse eu fiz na louca não tinha como testar
                   : ListView.separated(
-                      itemCount: _dvc.length,
+                      itemCount: _devices.length,
                       itemBuilder: (context, i) {
                         return ListTile(
                           trailing: IconButton(
                             icon: Icon(Icons.settings),
                             onPressed: () => {},
                           ),
-                          title: Text(_dvc[i].name),
-                          subtitle: Text(_dvc[i].id.toString()),
+                          title: Text(_devices[i].name),
+                          subtitle: Text(_devices[i].id.toString()),
                           onTap: () {
                             showDialog(
                               context: context,
                               builder: (context) => AlertDialog(
-                                title: Text(_dvc[i].name),
+                                title: Text(_devices[i].name),
                                 actions: [
                                   Center(
                                     child: AnimatedContainer(
@@ -118,19 +170,19 @@ class _DevicePageState extends State<DevicePage> {
                                                 Duration(milliseconds: 1000),
                                             curve: Curves.easeIn,
                                             top: 1.5,
-                                            left: _dvc[i].id ==
-                                                    blueHelp.connectedDevice
+                                            left: _devices[i].id ==
+                                                    connectedDevice
                                                         .identifier
                                                 ? 60.0
                                                 : 0.0,
-                                            right: _dvc[i].id ==
-                                                    blueHelp.connectedDevice
+                                            right: _devices[i].id ==
+                                                    connectedDevice
                                                         .identifier
                                                 ? 60.0
                                                 : 0.0,
                                             child: InkWell(
                                               onTap: () {
-                                                toggleButton(_dvc[i]);
+                                                toggleButton(_devices[i]);
                                               },
                                               child: AnimatedSwitcher(
                                                   duration: Duration(
@@ -144,9 +196,8 @@ class _DevicePageState extends State<DevicePage> {
                                                       turns: animation,
                                                     );
                                                   },
-                                                  child: _dvc[i].id ==
-                                                          blueHelp
-                                                              .connectedDevice
+                                                  child: _devices[i].id ==
+                                                          connectedDevice
                                                               .identifier
                                                       ? Icon(
                                                           Icons.check_circle,
