@@ -9,12 +9,20 @@ import 'package:intl/intl.dart';
 /// Possui os dados da medição propriamente ditos e o atributo isExpanded
 /// para controlar o estado do painel expandido/colapsado na tela de histórico
 class MeasurementVO {
-  final Measurement data;
-  bool isExpanded;
-  MeasurementVO({
-    required this.data,
-    this.isExpanded = false,
-  });
+  late double glucose;
+  late int spo2;
+  late int pr_rpm;
+  late DateTime date;
+  bool isExpanded = false;
+
+  MeasurementVO(
+    MeasurementCompleted measurement,
+  ) {
+    glucose = measurement.glucose;
+    spo2 = measurement.spo2;
+    pr_rpm = measurement.pr_rpm;
+    date = measurement.date;
+  }
 }
 
 /// Armazena as medições em memória em um mapa de meses para viabilizar a
@@ -30,12 +38,11 @@ abstract class HistoryVO {
   /// Medição mais recente, utilizada na visualização da home
   /// (eu quis tirar o collected da inicialização na main pra não ter que passar
   /// pra home por parametro, mas não sei se faz sentido ela ficar aqui)
-  static final Measurement currentMeasurement = Measurement(
+  static final MeasurementCompleted currentMeasurement = MeasurementCompleted(
     id: -1,
-    sats: 0,
-    bpm: 0,
+    spo2: 0,
+    pr_rpm: 0,
     glucose: 0,
-    temperature: 0,
     date: DateTime.now(), // talvez não faça sentido
   );
 
@@ -46,23 +53,14 @@ abstract class HistoryVO {
 
   /// Mapeia Measurement para uma instância de MeasurementVO
   /// e insere no mapa de visualização
-  static bool _insertMeasurementVO(Measurement measurement) {
+  static bool _insertMeasurementVO(MeasurementCompleted measurement) {
     if (measurement.id != -1) {
       // faz uma copia pq a inclusão é por referência
-      MeasurementVO _measurementVO = MeasurementVO(
-        data: Measurement(
-          id: measurement.id,
-          sats: measurement.sats,
-          bpm: measurement.bpm,
-          glucose: measurement.glucose,
-          temperature: measurement.temperature,
-          date: measurement.date,
-        ),
-      );
+      MeasurementVO _measurementVO = MeasurementVO(measurement);
       String MMMMy = // 'mes, ano'
-          DateFormat('MMMM, y', 'pt_BR').format(_measurementVO.data.date);
+          DateFormat('MMMM, y', 'pt_BR').format(_measurementVO.date);
       String EEEEd = // 'diasemana, diames'
-          DateFormat('EEEE, d', 'pt_BR').format(_measurementVO.data.date);
+          DateFormat('EEEE, d', 'pt_BR').format(_measurementVO.date);
       // Capitalização dos nomes de mês e dia
       MMMMy = MMMMy.replaceRange(0, 1, MMMMy[0].toUpperCase());
       EEEEd = EEEEd.replaceRange(0, 1, EEEEd[0].toUpperCase());
@@ -71,7 +69,7 @@ abstract class HistoryVO {
       if (index != -1) {
         EEEEd = EEEEd.replaceRange(index, index + 6, '');
       }
-      EEEEd = EEEEd.split('-')[0];
+      EEEEd = EEEEd.split('-')[0]; // tá certo isso?
       // Insere a medição no mapa
       if (!measurementsVOMap.containsKey(MMMMy)) {
         measurementsVOMap[MMMMy] = {};
@@ -89,7 +87,7 @@ abstract class HistoryVO {
   /// Busca as medições recentes do usuário no banco e mapeia em memória,
   /// utilizada no login
   static Future<bool> fetchHistory() async {
-    List<Measurement> measurementsList = await DatabaseHelper.instance
+    List measurementsList = await DatabaseHelper.instance
         .queryMeasurements(API.instance.currentUser!);
 
     if (measurementsList.isNotEmpty) {
@@ -99,14 +97,13 @@ abstract class HistoryVO {
       // no lugar certo, então fiz a measurementsList ser inserida invertida (reversed)
       // pra funcionar, não quis fazer a queryMeasurements retornar uma lista
       // já ordenada da mais antiga pra mais recente pq não faria sentido, ou faria?
-      for (Measurement measurement in measurementsList.reversed) {
+      for (MeasurementCompleted measurement in measurementsList.reversed) {
         _insertMeasurementVO(measurement);
       }
       currentMeasurement.id = measurementsList.first.id;
       currentMeasurement.glucose = measurementsList.first.glucose;
-      currentMeasurement.sats = measurementsList.first.sats;
-      currentMeasurement.bpm = measurementsList.first.bpm;
-      currentMeasurement.temperature = measurementsList.first.temperature;
+      currentMeasurement.spo2 = measurementsList.first.spo2;
+      currentMeasurement.pr_rpm = measurementsList.first.pr_rpm;
       currentMeasurement.date = measurementsList.first.date;
       return true;
     }
@@ -119,9 +116,8 @@ abstract class HistoryVO {
     measurementsVOMap.clear();
     currentMeasurement.id = -1;
     currentMeasurement.glucose = 0;
-    currentMeasurement.sats = 0;
-    currentMeasurement.bpm = 0;
-    currentMeasurement.temperature = 0;
+    currentMeasurement.spo2 = 0;
+    currentMeasurement.pr_rpm = 0;
     currentMeasurement.date = DateTime.now();
   }
 }

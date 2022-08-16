@@ -1,8 +1,6 @@
 // ignore_for_file: use_key_in_widget_constructors, prefer_const_constructors, prefer_const_literals_to_create_immutables, deprecated_member_use
 
 import 'package:flutter/material.dart';
-import 'package:gluco/pages/testeblue.dart';
-import 'package:gluco/services/autenticacaoteste.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:gluco/pages/splashscreen.dart';
 import 'package:gluco/pages/loginpage.dart';
@@ -12,7 +10,6 @@ import 'package:gluco/pages/profilepage.dart';
 import 'package:gluco/pages/historypage.dart';
 import 'package:gluco/pages/devicepage.dart';
 import 'package:gluco/pages/firstloginpage.dart';
-import 'package:gluco/views/historyvo.dart';
 import 'package:gluco/styles/customcolors.dart';
 import 'package:gluco/services/api.dart';
 
@@ -22,20 +19,17 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await initializeDateFormatting('pt_BR', null);
 
-  // puxa pra memória o banco simulado em shared preferences
-  // pro tryCredentials poder retornar true
-  await AutenticacaoTeste.logaAutomaticoPraNaoFicarIrritante();
-
   if (await API.instance.tryCredentials()) {
-    switch (API.instance.responseMessage) {
-      case 'Success':
-        _defaultHome = '/home';
-        await HistoryVO.fetchHistory();
-        break;
-      case 'Empty profile':
-        _defaultHome = '/welcome';
-        break;
-    }
+    _defaultHome = '/home';
+    // switch (API.instance.responseMessage) { // não tem perfil ainda
+    //   case 'Success':
+    //     _defaultHome = '/home';
+    //     await HistoryVO.fetchHistory();
+    //     break;
+    //   case 'Empty profile':
+    //     _defaultHome = '/welcome';
+    //     break;
+    // }
   }
 
   runApp(

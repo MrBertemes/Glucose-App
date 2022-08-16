@@ -3,7 +3,6 @@
 import 'dart:convert';
 import 'package:flutter_blue/gen/flutterblue.pbenum.dart';
 import 'package:flutter_blue/gen/flutterblue.pbjson.dart';
-import '../services/bluehelper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_blue/flutter_blue.dart';
 import 'package:gluco/styles/defaultappbar.dart';

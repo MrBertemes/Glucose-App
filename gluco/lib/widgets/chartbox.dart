@@ -6,7 +6,7 @@ import '../models/measurement.dart';
 
 class ChartBox extends StatelessWidget {
   int valor = 0;
-  Measurement collectedData;
+  MeasurementCompleted collectedData;
 
   ChartBox({
     required this.collectedData,
@@ -37,20 +37,20 @@ class ChartBox extends StatelessWidget {
                   children: <Widget>[
                     ValuesCard(
                       label: 'BPM',
-                      dados: collectedData.bpm,
+                      dados: collectedData.pr_rpm,
                     ),
                     ValuesCard(
                       label: 'SpO2',
-                      dados: collectedData.sats,
+                      dados: collectedData.spo2,
                     ),
                     ValuesCard(
                       label: 'Glicose',
                       dados: collectedData.glucose,
                     ),
-                    ValuesCard(
-                      label: 'Temperatura',
-                      dados: collectedData.temperature,
-                    ),
+                    // ValuesCard(
+                    //   label: 'Temperatura',
+                    //   dados: collectedData.temperature,
+                    // ),
                   ],
                 ),
               ),
