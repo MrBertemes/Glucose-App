@@ -19,3 +19,15 @@ AppBar defaultAppBar({title, trailing, bool centertitle = false}) => AppBar(
         ),
       ),
     );
+
+AppBar imageAppBar({imagename, trailing, width}) => AppBar(
+      elevation: 0,
+      backgroundColor: Colors.transparent,
+      foregroundColor: Colors.grey[800],
+      actions: trailing,
+      centerTitle: true,
+      title: Image(
+        image: AssetImage(imagename),
+        width: width,
+      ),
+    );
