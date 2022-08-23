@@ -1,5 +1,6 @@
 // ignore_for_file: must_be_immutable, prefer_const_constructors, use_key_in_widget_constructors
 
+import 'package:async_button_builder/async_button_builder.dart';
 import 'package:flutter/material.dart';
 import 'package:gluco/services/api.dart';
 import 'package:gluco/styles/customcolors.dart';
@@ -64,15 +65,20 @@ class _LoginPageState extends State<LoginPage> {
                         ),
                       ),
                       child: Center(
-                        child: Text(
-                          'EGLUCO', // placeholder
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            color: Colors.black,
-                            fontSize: 40,
-                            inherit: false,
-                          ),
+                        heightFactor: 1.7,
+                        child: Image(
+                          image: AssetImage('assets/images/logoblue.png'),
+                          width: MediaQuery.of(context).size.width * 0.5,
                         ),
+                        // child: Text(
+                        //   'EGLUCO', // placeholder
+                        //   textAlign: TextAlign.center,
+                        //   style: TextStyle(
+                        //     color: Colors.black,
+                        //     fontSize: 40,
+                        //     inherit: false,
+                        //   ),
+                        // ),
                       ),
                     ),
                   ),
@@ -170,20 +176,17 @@ class _LoginPageState extends State<LoginPage> {
                         // ),
                         // Padding(padding: EdgeInsets.all(10.0)),
                         Padding(padding: EdgeInsets.all(30.0)),
-                        TextButton(
-                          child: const Text('Entrar'),
-                          style: TextButton.styleFrom(
-                            textStyle: TextStyle(
+                        AsyncButtonBuilder(
+                          child: Text(
+                            'Entrar',
+                            style: TextStyle(
                               fontSize: 16.0,
                               fontWeight: FontWeight.bold,
                             ),
-                            primary: Colors.white,
-                            backgroundColor: CustomColors.lightBlue,
-                            padding: EdgeInsets.all(10.0),
-                            minimumSize: Size(viewportConstraints.maxWidth, 60),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(8),
-                            ),
+                          ),
+                          loadingWidget: CircularProgressIndicator(
+                            color: Colors.white,
+                            strokeWidth: 3.0,
                           ),
                           onPressed: () async {
                             if (await API.instance.login(
@@ -221,7 +224,25 @@ class _LoginPageState extends State<LoginPage> {
                                   );
                                   break;
                               }
+                              // só pro botão dar a mensagem certa, não sabia outra forma de fazer
+                              throw 'Erro no login';
                             }
+                          },
+                          builder: (context, child, callback, _) {
+                            return TextButton(
+                              style: TextButton.styleFrom(
+                                primary: Colors.white,
+                                backgroundColor: CustomColors.lightBlue,
+                                padding: EdgeInsets.all(10.0),
+                                minimumSize:
+                                    Size(viewportConstraints.maxWidth, 60),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                              ),
+                              onPressed: callback,
+                              child: child,
+                            );
                           },
                         ),
                         Row(

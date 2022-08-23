@@ -1,5 +1,6 @@
 // ignore_for_file: must_be_immutable, use_key_in_widget_constructors, prefer_const_constructors
 
+import 'package:async_button_builder/async_button_builder.dart';
 import 'package:flutter/material.dart';
 import 'package:gluco/services/api.dart';
 import 'package:gluco/styles/customcolors.dart';
@@ -76,15 +77,19 @@ class _SignUpPageState extends State<SignUpPage> {
                         ),
                       ),
                       child: Center(
-                        child: Text(
-                          'EGLUCO', // placeholder
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            color: Colors.black,
-                            fontSize: 40,
-                            inherit: false,
-                          ),
+                        child: Image(
+                          image: AssetImage('assets/images/logoblue.png'),
+                          width: MediaQuery.of(context).size.width * 0.4,
                         ),
+                        // child: Text(
+                        //   'EGLUCO', // placeholder
+                        //   textAlign: TextAlign.center,
+                        //   style: TextStyle(
+                        //     color: Colors.black,
+                        //     fontSize: 40,
+                        //     inherit: false,
+                        //   ),
+                        // ),
                       ),
                     ),
                   ),
@@ -256,25 +261,21 @@ class _SignUpPageState extends State<SignUpPage> {
                                       ),
                                     ),
                                   ),
-                                  TextButton(
-                                    child: const Text('Concluir Cadastro'),
-                                    style: TextButton.styleFrom(
-                                      primary: Colors.white,
-                                      textStyle: TextStyle(
+                                  AsyncButtonBuilder(
+                                    child: Text(
+                                      'Concluir Cadastro',
+                                      style: TextStyle(
                                         color: Colors.white,
                                         // a cor tá errada, aparecendo cinza por algum motivo (por estar desabilitado será?)
                                         fontSize: 16.0,
                                         fontWeight: FontWeight.bold,
                                       ),
-                                      backgroundColor: isValid
-                                          ? CustomColors.lightGreen
-                                          : Colors.grey,
-                                      padding: EdgeInsets.all(10.0),
-                                      minimumSize: Size.fromHeight(60),
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(8),
-                                      ),
                                     ),
+                                    loadingWidget: CircularProgressIndicator(
+                                      color: Colors.white,
+                                      strokeWidth: 3.0,
+                                    ),
+                                    disabled: !isValid,
                                     onPressed: !isValid
                                         ? null
                                         : () async {
@@ -326,6 +327,24 @@ class _SignUpPageState extends State<SignUpPage> {
                                               }
                                             }
                                           },
+                                    builder: (context, child, callback, _) {
+                                      return TextButton(
+                                        style: TextButton.styleFrom(
+                                          primary: Colors.white,
+                                          backgroundColor: isValid
+                                              ? CustomColors.lightGreen
+                                              : Colors.grey,
+                                          padding: EdgeInsets.all(10.0),
+                                          minimumSize: Size.fromHeight(60),
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(8),
+                                          ),
+                                        ),
+                                        onPressed: callback,
+                                        child: child,
+                                      );
+                                    },
                                   ),
                                 ],
                               );

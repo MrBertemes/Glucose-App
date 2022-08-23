@@ -28,7 +28,10 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: defaultAppBar(title: 'E-Gluco', centertitle: true),
+      appBar: imageAppBar(
+        imagename: 'assets/images/logoblue.png',
+        width: MediaQuery.of(context).size.width * 0.25,
+      ),
       bottomNavigationBar: mainBottomAppBar(context, MainBottomAppBar.home),
       drawer: SideBar(),
       body: Container(

@@ -33,10 +33,13 @@ class _SideBarState extends State<SideBar> {
             decoration: BoxDecoration(
               color: CustomColors.blueGreen,
             ),
-            child: Text(
-              'E-Gluco',
-              style: Theme.of(context).textTheme.headline6,
+            child: Image(
+              image: AssetImage('assets/images/logoblue.png'),
             ),
+            // child: Text(
+            //   'E-Gluco',
+            //   style: Theme.of(context).textTheme.headline6,
+            // ),
           ),
           /*// perfil ainda não funciona pois não tem os endpoints
           ListTile(
