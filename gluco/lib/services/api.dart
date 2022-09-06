@@ -123,9 +123,14 @@ class API {
       return true;
     } else {
       //
-      print(response.reasonPhrase!);
+      print("-reasonphrase: " + (response.reasonPhrase ?? ''));
+      // print("-body: " + responseBody['detail'][0]['msg']);
       //
-      _responseMessage = responseBody['detail'];
+      try {
+        _responseMessage = responseBody['detail'];
+      } catch (e) {
+        _responseMessage = responseBody['detail'][0]['msg'];
+      }
     }
 
     return false;
@@ -319,4 +324,5 @@ abstract class APIResponseMessages {
   static const String notRegistered = 'Invalid username';
   static const String wrongPassword = 'Invalid password';
   static const String tokenExpired = 'Token expired';
+  static const String invalidFields = 'value is not a valid email address';
 }

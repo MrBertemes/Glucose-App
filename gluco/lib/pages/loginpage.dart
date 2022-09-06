@@ -19,8 +19,9 @@ class _LoginPageState extends State<LoginPage> {
   late final TextEditingController _password;
 
   bool _hidePassword = true;
-  bool _invalidEmail = false;
+  bool _nonexistentEmail = false;
   bool _invalidPassword = false;
+  bool _invalidEmail = false;
 
   @override
   void initState() {
@@ -109,8 +110,11 @@ class _LoginPageState extends State<LoginPage> {
                           ),
                           autovalidateMode: AutovalidateMode.always,
                           validator: (text) {
-                            if (_invalidEmail) {
+                            if (_nonexistentEmail) {
                               return '*Não há conta nesse e-mail';
+                            }
+                            if (_invalidEmail) {
+                              return '*E-mail inválido';
                             }
                             return null;
                           },
@@ -210,16 +214,27 @@ class _LoginPageState extends State<LoginPage> {
                                 case APIResponseMessages.notRegistered:
                                   setState(
                                     () {
-                                      _invalidEmail = true;
+                                      _nonexistentEmail = true;
                                       _invalidPassword = false;
+                                      _invalidEmail = false;
                                     },
                                   );
                                   break;
                                 case APIResponseMessages.wrongPassword:
                                   setState(
                                     () {
-                                      _invalidEmail = false;
+                                      _nonexistentEmail = false;
                                       _invalidPassword = true;
+                                      _invalidEmail = false;
+                                    },
+                                  );
+                                  break;
+                                case APIResponseMessages.invalidFields:
+                                  setState(
+                                    () {
+                                      _nonexistentEmail = false;
+                                      _invalidPassword = false;
+                                      _invalidEmail = true;
                                     },
                                   );
                                   break;

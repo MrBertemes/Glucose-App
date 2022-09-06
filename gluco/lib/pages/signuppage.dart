@@ -324,7 +324,12 @@ class _SignUpPageState extends State<SignUpPage> {
                                                     });
                                                     break;
                                                 }
+                                                // só pro botão dar a mensagem certa, não sabia outra forma de fazer
+                                                throw 'Erro no signup';
                                               }
+                                            } else {
+                                              // só pro botão dar a mensagem certa, não sabia outra forma de fazer
+                                              throw 'Erro no signup';
                                             }
                                           },
                                     builder: (context, child, callback, _) {
