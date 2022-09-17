@@ -1,17 +1,18 @@
-// ignore_for_file: use_key_in_widget_constructors, prefer_const_constructors, prefer_const_literals_to_create_immutables, deprecated_member_use
+// ignore_for_file: use_key_in_widget_constructors, prefer_const_constructors, prefer_const_literals_to_create_immutables
 
 import 'package:flutter/material.dart';
+import 'package:gluco/services/bluetoothhelper.dart';
 import 'package:intl/date_symbol_data_local.dart';
-import 'package:gluco/pages/splashscreen.dart';
-import 'package:gluco/pages/loginpage.dart';
-import 'package:gluco/pages/signuppage.dart';
-import 'package:gluco/pages/homepage.dart';
-import 'package:gluco/pages/profilepage.dart';
-import 'package:gluco/pages/historypage.dart';
 import 'package:gluco/pages/devicepage.dart';
 import 'package:gluco/pages/firstloginpage.dart';
-import 'package:gluco/styles/customcolors.dart';
+import 'package:gluco/pages/historypage.dart';
+import 'package:gluco/pages/homepage.dart';
+import 'package:gluco/pages/loginpage.dart';
+import 'package:gluco/pages/profilepage.dart';
+import 'package:gluco/pages/signuppage.dart';
+import 'package:gluco/pages/splashscreen.dart';
 import 'package:gluco/services/api.dart';
+import 'package:gluco/styles/customcolors.dart';
 
 String _defaultHome = '/login';
 
@@ -31,6 +32,8 @@ void main() async {
     //     break;
     // }
   }
+
+  BluetoothHelper.instance.autoConnect();
 
   runApp(
     MaterialApp(

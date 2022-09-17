@@ -1,16 +1,11 @@
-// ignore_for_file: invalid_null_aware_operator, prefer_const_constructors_in_immutables, use_key_in_widget_constructors, avoid_unnecessary_containers, prefer_const_constructors, unused_local_variable, avoid_print, unused_import
+// ignore_for_file: prefer_const_constructors_in_immutables, use_key_in_widget_constructors, prefer_const_constructors
+import 'dart:async';
 
-import 'dart:convert';
-import 'package:flutter_blue/gen/flutterblue.pbenum.dart';
-import 'package:flutter_blue/gen/flutterblue.pbjson.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_blue/flutter_blue.dart';
+import 'package:gluco/models/device.dart';
+import 'package:gluco/services/bluetoothhelper.dart';
+import 'package:gluco/styles/customcolors.dart';
 import 'package:gluco/styles/defaultappbar.dart';
-import '../models/device.dart';
-import 'package:intl/intl.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import '../styles/customcolors.dart';
-// import 'package:slider_button/slider_button.dart';
 
 class DevicePage extends StatefulWidget {
   DevicePage();
@@ -20,78 +15,37 @@ class DevicePage extends StatefulWidget {
 }
 
 class _DevicePageState extends State<DevicePage> {
-  FlutterBlue blue = FlutterBlue.instance;
-  List<BluetoothDevice> _devices = [];
-  late Device connectedDevice;
-  final String _devicesMsg = "Não há dispositivos por perto";
-  final f = NumberFormat("\$###,###.00", "en_US");
-
-  Future<void> initScan() async {
-    // Start scanning
-    blue.startScan(timeout: Duration(seconds: 4));
-
-    // Listen to scan results
-    var subscription = blue.scanResults.listen(
-      (results) {
-        // do something with scan results
-        for (ScanResult r in results) {
-          print("${r.device.name} found: ${r.hashCode}");
-          _devices.add(r.device);
-        }
-      },
-    );
-    // Stop scanning
-    blue.stopScan();
+  void initScan() async {
+    await BluetoothHelper.instance.scan();
+    devices.clear();
+    devices.addAll(BluetoothHelper.instance.devices);
   }
-  Future<bool> thereIsDeviceConnected() async {
-    var devicesConnected = await blue.connectedDevices;
-    for (var dvc in devicesConnected) {
-      for (var deviceFound in _devices) {
-        if (dvc == deviceFound) {
-          return true;
-        }
-      }
+
+  final List<Device> devices = [];
+
+  late Stream<bool> btState;
+  late Stream<bool> btScan;
+  late Stream<bool> btConn;
+
+  StreamController<bool> connecting = StreamController<bool>.broadcast();
+  void connectDevice(bool cnt, int i) async {
+    connecting.add(true);
+    for (final dvc in devices) {
+      dvc.connected = false;
     }
-    return false;
-  }
-
-  Future<void> connectDeviceOrDisconnect(BluetoothDevice device) async {
-    await device
-        .connect(
-          timeout: Duration(
-            seconds: 10,
-          ),
-        )
-        .whenComplete(
-          () => {
-            connectedDevice = Device(
-                connected: true, identifier: device.id, name: device.name),
-          },
-        );
-    String bit = '';
-    List<BluetoothService> services = await device.discoverServices();
-    services.forEach((service) async {
-      var characteristics = service.characteristics;
-      for (BluetoothCharacteristic c in characteristics) {
-        List<int> value = await c.read();
-        bit = utf8.decode(value);
-        print("string recebida: $bit");
-      }
-    });
-  }
-
-  void scan() async {
-    await initScan();
-  }
-
-  void toggleButton(dynamic dvc) {
-    connectDeviceOrDisconnect(dvc);
+    await BluetoothHelper.instance.disconnect();
+    if (cnt) {
+      devices[i].connected = await BluetoothHelper.instance.connect(devices[i]);
+    }
+    connecting.add(false);
   }
 
   @override
   void initState() {
+    btState = BluetoothHelper.instance.state;
+    btScan = BluetoothHelper.instance.scanning;
+    btConn = BluetoothHelper.instance.connected;
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) async => {scan()});
   }
 
   @override
@@ -109,16 +63,23 @@ class _DevicePageState extends State<DevicePage> {
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Visibility(
-            visible: _devices.isNotEmpty,
-            child: Padding(
-              padding: EdgeInsets.only(left: 20.0, top: 5.0, bottom: 10.0),
-              child: Text(
-                'Dispositivos Disponíveis',
-                style: TextStyle(fontWeight: FontWeight.bold),
-              ),
-            ),
-          ),
+          StreamBuilder<bool>(
+              stream: btScan,
+              initialData: false,
+              builder: (context, snapshot) {
+                return Visibility(
+                  // se desligar o bluetooth, a mensagem continua aparecendo
+                  visible: !snapshot.data! && devices.isNotEmpty,
+                  child: Padding(
+                    padding:
+                        EdgeInsets.only(left: 20.0, top: 5.0, bottom: 10.0),
+                    child: Text(
+                      'Dispositivos Disponíveis',
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                  ),
+                );
+              }),
           Expanded(
             child: Container(
               padding: EdgeInsets.only(top: 10.0),
@@ -129,112 +90,218 @@ class _DevicePageState extends State<DevicePage> {
                   topRight: Radius.circular(25),
                 ),
               ),
-              child: _devices.isEmpty
-                  ? Center(
+              child: StreamBuilder<bool>(
+                stream: btState,
+                initialData: false,
+                builder: (context, snapshot) {
+                  if (!snapshot.data!) {
+                    return Center(
+                      // se ligar e desligar o bluetooth pode ocorrer DeadObjectException
                       child: Text(
-                        _devicesMsg,
+                        'O Bluetooth está desabilitado...',
                         style: Theme.of(context).textTheme.headline6,
                       ),
-                    )
-                  // esse eu fiz na louca não tinha como testar
-                  : ListView.separated(
-                      itemCount: _devices.length,
-                      itemBuilder: (context, i) {
-                        return ListTile(
-                          trailing: IconButton(
-                            icon: Icon(Icons.settings),
-                            onPressed: () => {},
-                          ),
-                          title: Text(_devices[i].name),
-                          subtitle: Text(_devices[i].id.toString()),
-                          onTap: () {
-                            showDialog(
-                              context: context,
-                              builder: (context) => AlertDialog(
-                                title: Text(_devices[i].name),
-                                actions: [
-                                  Center(
-                                    child: AnimatedContainer(
-                                      duration: Duration(milliseconds: 500),
-                                      height: 20,
-                                      width: 50,
-                                      decoration: BoxDecoration(
-                                        borderRadius: BorderRadius.circular(10),
-                                        color: CustomColors.lightGreen,
-                                      ),
-                                      child: Stack(
-                                        // ignore: prefer_const_literals_to_create_immutables
-                                        children: [
-                                          AnimatedPositioned(
-                                            duration:
-                                                Duration(milliseconds: 1000),
-                                            curve: Curves.easeIn,
-                                            top: 1.5,
-                                            left: _devices[i].id ==
-                                                    connectedDevice
-                                                        .identifier
-                                                ? 60.0
-                                                : 0.0,
-                                            right: _devices[i].id ==
-                                                    connectedDevice
-                                                        .identifier
-                                                ? 60.0
-                                                : 0.0,
-                                            child: InkWell(
-                                              onTap: () {
-                                                toggleButton(_devices[i]);
-                                              },
-                                              child: AnimatedSwitcher(
-                                                  duration: Duration(
-                                                      milliseconds: 1000),
-                                                  transitionBuilder:
-                                                      (Widget child,
-                                                          Animation<double>
-                                                              animation) {
-                                                    return RotationTransition(
-                                                      child: child,
-                                                      turns: animation,
-                                                    );
-                                                  },
-                                                  child: _devices[i].id ==
-                                                          connectedDevice
-                                                              .identifier
-                                                      ? Icon(
-                                                          Icons.check_circle,
-                                                          color: CustomColors
-                                                              .lightGreen,
-                                                          size: 15.0,
-                                                          key: UniqueKey(),
-                                                        )
-                                                      : Icon(
-                                                          Icons
-                                                              .remove_circle_outline,
-                                                          color: CustomColors
-                                                              .scaffWhite,
-                                                          size: 15.0,
-                                                          key: UniqueKey(),
-                                                        )),
-                                            ),
-                                          ),
-                                        ],
-                                      ),
+                    );
+                  } else {
+                    initScan();
+                    return StreamBuilder<bool>(
+                      stream: btScan,
+                      initialData: true,
+                      builder: (context, snapshot) {
+                        if (snapshot.data!) {
+                          return Center(
+                            child: CircularProgressIndicator(
+                              color: CustomColors.lightBlue,
+                            ),
+                          );
+                        } else {
+                          return devices.isEmpty
+                              ? Center(
+                                  child: Padding(
+                                    padding:
+                                        EdgeInsets.symmetric(horizontal: 20),
+                                    child: Text(
+                                      'Nenhum dispositivo Bluetooth encontrado...',
+                                      textAlign: TextAlign.center,
+                                      style:
+                                          Theme.of(context).textTheme.headline6,
                                     ),
-                                  )
-                                ],
-                              ),
-                            );
-                          },
-                        );
+                                  ),
+                                )
+                              : StreamBuilder<bool>(
+                                  stream: btConn,
+                                  initialData: false,
+                                  builder: (context, snapshot) {
+                                    return ListView.separated(
+                                      padding:
+                                          EdgeInsets.symmetric(horizontal: 20),
+                                      itemCount: devices.length,
+                                      itemBuilder: (context, i) {
+                                        return ListTile(
+                                          title: Text(devices[i].name,
+                                              style: TextStyle(
+                                                  color: devices[i].connected &&
+                                                          snapshot.data!
+                                                      ? CustomColors.lightGreen
+                                                      : Colors.black)),
+                                          subtitle: Text(
+                                              devices[i].connected &&
+                                                      snapshot.data!
+                                                  ? 'Conectado'
+                                                  : 'Não conectado',
+                                              style: TextStyle(
+                                                  color: devices[i].connected &&
+                                                          snapshot.data!
+                                                      ? CustomColors.lightGreen
+                                                      : Colors.black)),
+                                          trailing: IconButton(
+                                            icon: Icon(Icons.settings,
+                                                color: devices[i].connected &&
+                                                        snapshot.data!
+                                                    ? CustomColors.lightGreen
+                                                    : Colors.black),
+                                            onPressed: () {
+                                              showDialog(
+                                                context: context,
+                                                builder: (context) {
+                                                  return AlertDialog(
+                                                    title: Row(
+                                                      mainAxisAlignment:
+                                                          MainAxisAlignment
+                                                              .spaceBetween,
+                                                      children: [
+                                                        StreamBuilder<bool>(
+                                                          stream: btConn,
+                                                          initialData: false,
+                                                          builder: (context,
+                                                              snapshot) {
+                                                            return RichText(
+                                                              text: TextSpan(
+                                                                text: devices[i]
+                                                                    .name,
+                                                                style: TextStyle(
+                                                                    fontSize:
+                                                                        20,
+                                                                    color: devices[i].connected &&
+                                                                            snapshot
+                                                                                .data!
+                                                                        ? CustomColors
+                                                                            .lightGreen
+                                                                        : Colors
+                                                                            .black),
+                                                                children: [
+                                                                  TextSpan(
+                                                                    text: devices[i].connected &&
+                                                                            snapshot.data!
+                                                                        ? '\nConectado'
+                                                                        : '\nNão conectado',
+                                                                    style:
+                                                                        TextStyle(
+                                                                      fontSize:
+                                                                          16,
+                                                                      fontStyle:
+                                                                          FontStyle
+                                                                              .italic,
+                                                                    ),
+                                                                  )
+                                                                ],
+                                                              ),
+                                                            );
+                                                          },
+                                                        ),
+                                                        StreamBuilder<bool>(
+                                                          stream:
+                                                              connecting.stream,
+                                                          initialData: false,
+                                                          builder: (context,
+                                                              snapshot) {
+                                                            if (snapshot
+                                                                .data!) {
+                                                              return CircularProgressIndicator(
+                                                                color: CustomColors
+                                                                    .lightBlue,
+                                                              );
+                                                            } else {
+                                                              return Switch(
+                                                                activeColor:
+                                                                    CustomColors
+                                                                        .lightGreen,
+                                                                value: devices[
+                                                                        i]
+                                                                    .connected,
+                                                                onChanged:
+                                                                    (value) {
+                                                                  connectDevice(
+                                                                      value, i);
+                                                                },
+                                                              );
+                                                            }
+                                                          },
+                                                        ),
+                                                      ],
+                                                    ),
+                                                    actionsAlignment:
+                                                        MainAxisAlignment.start,
+                                                    actions: [
+                                                      IconButton(
+                                                        icon: Icon(
+                                                            Icons.arrow_back),
+                                                        onPressed: () {
+                                                          Navigator.pop(
+                                                              context);
+                                                        },
+                                                      ),
+                                                    ],
+                                                  );
+                                                },
+                                              );
+                                            },
+                                          ),
+                                        );
+                                      },
+                                      separatorBuilder: (context, i) {
+                                        return Divider(
+                                          color: Colors.grey,
+                                        );
+                                      },
+                                    );
+                                  },
+                                );
+                        }
                       },
-                      separatorBuilder: (context, i) {
-                        return Divider(
-                          color: Colors.grey,
-                        );
-                      },
-                    ),
+                    );
+                  }
+                },
+              ),
             ),
           ),
         ],
+      ),
+      floatingActionButton: StreamBuilder<bool>(
+        stream: btState,
+        initialData: false,
+        builder: (context, snapshot) {
+          return Visibility(
+            visible: snapshot.data!,
+            child: StreamBuilder<bool>(
+              stream: btScan,
+              initialData: false,
+              builder: (context, snapshot) {
+                VoidCallback? onPressed;
+                Color color = Colors.grey;
+                if (!snapshot.data!) {
+                  color = CustomColors.lightBlue;
+                  onPressed = initScan;
+                }
+                return FloatingActionButton(
+                  backgroundColor: color,
+                  child: Icon(Icons.refresh),
+                  onPressed: onPressed,
+                );
+              },
+            ),
+          );
+        },
       ),
     );
   }

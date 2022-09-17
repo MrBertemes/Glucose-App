@@ -1,10 +1,7 @@
-import 'package:flutter_blue/flutter_blue.dart';
-
 class Device {
-  String? name;
-  int? id;
-  bool? connected;
-  DeviceIdentifier? identifier;
+  String id;
+  String name;
+  bool connected;
 
-  Device({this.id, this.name, this.connected, this.identifier});
+  Device({required this.id, required this.name, this.connected = false});
 }

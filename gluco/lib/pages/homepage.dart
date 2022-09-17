@@ -1,12 +1,11 @@
 // ignore_for_file: use_key_in_widget_constructors, must_be_immutable, prefer_const_constructors
 
-import 'dart:async';
-import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:async_button_builder/async_button_builder.dart';
-import 'package:gluco/db/databasehelper.dart';
+// import 'package:gluco/db/databasehelper.dart';
 import 'package:gluco/models/measurement.dart';
 import 'package:gluco/services/api.dart';
+import 'package:gluco/services/bluetoothhelper.dart';
 import 'package:gluco/styles/defaultappbar.dart';
 import 'package:gluco/styles/mainbottomappbar.dart';
 import 'package:gluco/styles/customcolors.dart';
@@ -23,8 +22,14 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  Random random = Random();
-  DatabaseHelper db = DatabaseHelper.instance;
+  late Stream<bool> btConn;
+
+  @override
+  void initState() {
+    btConn = BluetoothHelper.instance.connected;
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -109,7 +114,7 @@ class _HomePageState extends State<HomePage> {
                         label: Text(
                           'Saturação de Oxigênio',
                           style: TextStyle(
-                            fontSize: 18.0,
+                            fontSize: 16.0,
                             fontWeight: FontWeight.bold,
                             fontStyle: FontStyle.italic,
                           ),
@@ -135,7 +140,7 @@ class _HomePageState extends State<HomePage> {
                         label: Text(
                           'Frequência Cardíaca',
                           style: TextStyle(
-                            fontSize: 18.0,
+                            fontSize: 16.0,
                             fontWeight: FontWeight.bold,
                             fontStyle: FontStyle.italic,
                           ),
@@ -158,75 +163,176 @@ class _HomePageState extends State<HomePage> {
                 ),
               ],
             ),
-            AsyncButtonBuilder(
-              child: Text(
-                'Medir',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 22.0,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              loadingWidget: CircularProgressIndicator(
-                color: Colors.white,
-                strokeWidth: 3.0,
-              ),
-              successWidget: Icon(
-                Icons.check,
-                color: Colors.white,
-              ),
-              onPressed: () async {
-                // setState(() { // setstate não pode ser async
-                MeasurementCollected measurement = await readData();
-                print('---readdata---\n' +
-                    measurement.toMap().toString() +
-                    '\n---readdata---\n');
-                print(
-                    'Status do envio da medição: ${await API.instance.postMeasurements(measurement)}');
-                // });
-              },
-              builder: (context, child, callback, _) {
-                return TextButton(
-                  style: TextButton.styleFrom(
-                    backgroundColor: CustomColors.greenBlue.withOpacity(1.0),
-                    minimumSize: Size.fromHeight(
-                        MediaQuery.of(context).size.height * 0.12),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
+            StreamBuilder<bool>(
+              stream: btConn,
+              initialData: false,
+              builder: (context, snapshot) {
+                return AsyncButtonBuilder(
+                  child: Text(
+                    'Medir',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 22.0,
+                      fontWeight: FontWeight.bold,
                     ),
                   ),
-                  onPressed: callback,
-                  child: child,
+                  loadingWidget: CircularProgressIndicator(
+                    color: Colors.white,
+                    strokeWidth: 3.0,
+                  ),
+                  successWidget: Icon(
+                    Icons.check,
+                    color: Colors.white,
+                  ),
+                  onPressed: () async {
+                    late MeasurementCollected measurement;
+                    try {
+                      measurement = await BluetoothHelper.instance.collect();
+                    } catch (e) {
+                      showDialog(
+                          useRootNavigator: false,
+                          barrierDismissible: false,
+                          context: context,
+                          builder: (context) {
+                            return AlertDialog(
+                                title: Text(
+                                    'Ocorreu um erro na coleta dos dados do dispositivo Bluetooth...'),
+                                actions: [
+                                  TextButton(
+                                    child: Text('Retornar'),
+                                    onPressed: (() {
+                                      Navigator.pop(context);
+                                    }),
+                                  )
+                                ]);
+                          });
+                      throw 'Erro na coleta da medição';
+                    }
+                    try {
+                      if (await API.instance.postMeasurements(measurement)) {
+                        showDialog(
+                            useRootNavigator: false,
+                            barrierDismissible: false,
+                            context: context,
+                            builder: (context) {
+                              return AlertDialog(
+                                  title: Text('Medição enviada com sucesso'),
+                                  content: SingleChildScrollView(
+                                    child: Column(
+                                      children: [
+                                            Text(
+                                              'Dados enviados:\n',
+                                            ),
+                                          ] +
+                                          measurement
+                                              .toMap()
+                                              .entries
+                                              .map((e) =>
+                                                  Text('${e.key}: ${e.value}'))
+                                              .toList(),
+                                    ),
+                                  ),
+                                  actions: [
+                                    TextButton(
+                                      child: Text('Ok!'),
+                                      onPressed: (() {
+                                        Navigator.pop(context);
+                                      }),
+                                    )
+                                  ]);
+                            });
+                      } else {
+                        throw 'Erro no envio da medição';
+                      }
+                    } catch (e) {
+                      showDialog(
+                          useRootNavigator: false,
+                          barrierDismissible: false,
+                          context: context,
+                          builder: (context) {
+                            return AlertDialog(
+                                title: Text(
+                                    'Ocorreu um erro no envio dos dados coletados...'),
+                                content: SingleChildScrollView(
+                                  child: Column(
+                                    children: [
+                                          Text(
+                                            'Dados coletados:\n',
+                                          ),
+                                        ] +
+                                        measurement
+                                            .toMap()
+                                            .entries
+                                            .map((e) =>
+                                                Text('${e.key}: ${e.value}'))
+                                            .toList(),
+                                  ),
+                                ),
+                                actions: [
+                                  TextButton(
+                                    child: Text('Retornar'),
+                                    onPressed: (() {
+                                      Navigator.pop(context);
+                                    }),
+                                  )
+                                ]);
+                          });
+                      throw 'Erro ao realizar medição';
+                    }
+                    /////////////////// futuro
+                    // MeasurementCompleted measurement = await API.instance.getMeasurement();
+                    // DatabaseHelper.instance
+                    //     .insertMeasurement(API.instance.currentUser!, measurement);
+                    ///////////////////
+                  },
+                  builder: (context, child, callback, _) {
+                    Color color = CustomColors.greenBlue.withOpacity(1.0);
+                    if (!snapshot.data!) {
+                      color = Colors.grey;
+                      callback = () async {
+                        showDialog(
+                          useRootNavigator: false,
+                          context: context,
+                          builder: (context) {
+                            return AlertDialog(
+                              title: Text('Dispositivo não conectado'),
+                              content: Text(
+                                  'Escolha um dispositivo para conectar na página de dispositivos...'),
+                              actions: [
+                                TextButton(
+                                  child: Text('Ir à página de dispositivos'),
+                                  onPressed: () async {
+                                    await Navigator.popAndPushNamed(
+                                      context,
+                                      '/devices',
+                                    );
+                                  },
+                                )
+                              ],
+                            );
+                          },
+                        );
+                      };
+                    }
+                    return TextButton(
+                      style: TextButton.styleFrom(
+                        backgroundColor: color,
+                        minimumSize: Size.fromHeight(
+                            MediaQuery.of(context).size.height * 0.12),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                      ),
+                      onPressed: callback,
+                      child: child,
+                    );
+                  },
                 );
               },
             ),
           ],
         ),
       ),
-    );
-  }
-
-  Future<MeasurementCollected> readData() async {
-    List<double> m_4p = <double>[];
-    List<double> f_4p = <double>[];
-    for (int i = 1; i <= 24; i++) {
-      m_4p.add((random.nextDouble() * 10000).truncateToDouble() / 1000 + 5);
-      f_4p.add((random.nextDouble() * 10000).truncateToDouble() / 1000 + 5);
-    }
-    return MeasurementCollected(
-      id: -1,
-      apparent_glucose:
-          (((random.nextInt(110) + 60) + random.nextDouble()) * 100)
-                  .truncateToDouble() /
-              100,
-      spo2: random.nextInt(101) + 96,
-      pr_rpm: random.nextInt(110) + 60,
-      temperature: (((random.nextInt(38) + 35) + random.nextDouble()) * 100)
-              .truncateToDouble() /
-          100,
-      m_4p: m_4p,
-      f_4p: f_4p,
-      date: DateTime.now(),
     );
   }
 }
