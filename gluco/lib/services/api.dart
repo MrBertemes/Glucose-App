@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'package:gluco/models/measurement.dart';
 import 'package:http/http.dart';
@@ -87,7 +88,23 @@ class API {
         id: -1); // ainda não tem endpoints para recuperar dados do usuario
     await DatabaseHelper.instance
         .insertCredentials(_client_id!, _refresh_token!);
+    _autoRefresh();
     return true;
+  }
+
+  @Deprecated('ter que ficar logando a cada 10 min tava me irritando')
+  void _autoRefresh() async {
+    Timer.periodic(Duration(minutes: 8), (timer) {
+      _autoSave();
+    });
+  }
+
+  @Deprecated('a função do timer do autorefresh não podia ser async')
+  void _autoSave() async {
+    if (await _refreshToken()) {
+      await DatabaseHelper.instance
+          .insertCredentials(_client_id!, _refresh_token!);
+    }
   }
 
   /// Requisição para autenticação do usuário
