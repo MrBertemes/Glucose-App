@@ -1,5 +1,5 @@
 import 'dart:async';
-// import 'dart:convert';
+import 'dart:convert';
 import 'dart:math';
 import 'package:flutter_blue/flutter_blue.dart';
 import 'package:gluco/models/device.dart';
@@ -104,7 +104,7 @@ class BluetoothHelper {
       (results) {
         _devices.clear();
         for (ScanResult r in results) {
-          if (RegExp(r'.', dotAll: true).hasMatch(r.device.name)) {
+          if (RegExp(r'MXCHIP.*', dotAll: true).hasMatch(r.device.name)) {
             _devices.add(r.device);
             print("--- nome: ${r.device.name} id: ${r.device.id.id}");
           }
@@ -173,44 +173,55 @@ class BluetoothHelper {
   }
 
   /// Faz a leitura dos dados da medição do dispositivo conectado
-  Future<MeasurementCollected> collect() async {
+  // Future<MeasurementCollected> collect() async {
+  Future<Map<String, String>> collect() async {
     assert(_connectedDevice != null);
-    //// testing
-    // String bit = 'nda';
-    // List<BluetoothService> services =
-    //     await _connectedDevice!.discoverServices();
-    // for (BluetoothService s in services) {
-    //   List<BluetoothCharacteristic> characteristics = s.characteristics;
-    //   for (BluetoothCharacteristic c in characteristics) {
-    //     List<int> value = await c.read();
-    //     bit = utf8.decode(value);
-    //     print("string recebida: $bit");
-    //   }
-    // }
+    //
+    Map<String, String> measure = {};
+    //
+    List<BluetoothService> services =
+        await _connectedDevice!.discoverServices();
+    // Busca pelos descritores das características uma que corresponda
+    // com RXD Port e salva o dado lido da característica no mapa
+    for (BluetoothService s in services) {
+      List<BluetoothCharacteristic> characteristics = s.characteristics;
+      for (BluetoothCharacteristic c in characteristics) {
+        List<BluetoothDescriptor> descriptors = c.descriptors;
+        for (BluetoothDescriptor d in descriptors) {
+          List<int> hex = await d.read();
+          String value = utf8.decode(hex);
+          if (value == 'RXD Port') {
+            hex = await c.read();
+            value = utf8.decode(hex);
+            measure[c.uuid.toString()] = value;
+          }
+        }
+      }
+    }
 
     ////////////////////////////////////////////////////////////
-    Random random = Random();
-    List<double> m_4p = <double>[];
-    List<double> f_4p = <double>[];
-    for (int i = 1; i <= 24; i++) {
-      m_4p.add((random.nextDouble() * 10000).truncateToDouble() / 1000 + 5);
-      f_4p.add((random.nextDouble() * 10000).truncateToDouble() / 1000 + 5);
-    }
-    MeasurementCollected measure = MeasurementCollected(
-      id: -1,
-      apparent_glucose:
-          (((random.nextInt(110) + 60) + random.nextDouble()) * 100)
-                  .truncateToDouble() /
-              100,
-      spo2: random.nextInt(101) + 96,
-      pr_rpm: random.nextInt(110) + 60,
-      temperature: (((random.nextInt(38) + 35) + random.nextDouble()) * 100)
-              .truncateToDouble() /
-          100,
-      m_4p: m_4p,
-      f_4p: f_4p,
-      date: DateTime.now(),
-    );
+    // Random random = Random();
+    // List<double> m_4p = <double>[];
+    // List<double> f_4p = <double>[];
+    // for (int i = 1; i <= 24; i++) {
+    //   m_4p.add((random.nextDouble() * 10000).truncateToDouble() / 1000 + 5);
+    //   f_4p.add((random.nextDouble() * 10000).truncateToDouble() / 1000 + 5);
+    // }
+    // MeasurementCollected measure = MeasurementCollected(
+    //   id: -1,
+    //   apparent_glucose:
+    //       (((random.nextInt(110) + 60) + random.nextDouble()) * 100)
+    //               .truncateToDouble() /
+    //           100,
+    //   spo2: random.nextInt(101) + 96,
+    //   pr_rpm: random.nextInt(110) + 60,
+    //   temperature: (((random.nextInt(38) + 35) + random.nextDouble()) * 100)
+    //           .truncateToDouble() /
+    //       100,
+    //   m_4p: m_4p,
+    //   f_4p: f_4p,
+    //   date: DateTime.now(),
+    // );
     ////////////////////////////////////////////////////////////
     return measure;
   }

@@ -99,6 +99,7 @@ class _DevicePageState extends State<DevicePage> {
                       // se ligar e desligar o bluetooth pode ocorrer DeadObjectException
                       child: Text(
                         'O Bluetooth está desabilitado...',
+                        textAlign: TextAlign.center,
                         style: Theme.of(context).textTheme.headline6,
                       ),
                     );
