@@ -85,6 +85,7 @@ class _HomePageState extends State<HomePage> {
                   icon: Icon(Icons.hub_outlined, color: Colors.white),
                   label: Text(
                     'Glicose',
+                    textAlign: TextAlign.center,
                     style: TextStyle(
                       fontSize: 20.0,
                       fontWeight: FontWeight.bold,
@@ -113,6 +114,7 @@ class _HomePageState extends State<HomePage> {
                         icon: Icon(Icons.air, color: Colors.white),
                         label: Text(
                           'Saturação de Oxigênio',
+                          textAlign: TextAlign.center,
                           style: TextStyle(
                             fontSize: 16.0,
                             fontWeight: FontWeight.bold,
@@ -139,6 +141,7 @@ class _HomePageState extends State<HomePage> {
                         icon: Icon(Icons.favorite, color: Colors.white),
                         label: Text(
                           'Frequência Cardíaca',
+                          textAlign: TextAlign.center,
                           style: TextStyle(
                             fontSize: 16.0,
                             fontWeight: FontWeight.bold,
@@ -185,7 +188,9 @@ class _HomePageState extends State<HomePage> {
                     color: Colors.white,
                   ),
                   onPressed: () async {
-                    late MeasurementCollected measurement;
+                    // mapa com o que é lido do stm
+                    late Map measurement;
+                    // late MeasurementCollected measurement;
                     try {
                       measurement = await BluetoothHelper.instance.collect();
                     } catch (e) {
@@ -209,7 +214,10 @@ class _HomePageState extends State<HomePage> {
                       throw 'Erro na coleta da medição';
                     }
                     try {
-                      if (await API.instance.postMeasurements(measurement)) {
+                      // if (await API.instance.postMeasurements(measurement)) {
+                      // ignore: dead_code
+                      if (false) {
+                        //não é pra enviar nada por enquanto
                         showDialog(
                             useRootNavigator: false,
                             barrierDismissible: false,
@@ -225,7 +233,7 @@ class _HomePageState extends State<HomePage> {
                                             ),
                                           ] +
                                           measurement
-                                              .toMap()
+                                              // .toMap()
                                               .entries
                                               .map((e) =>
                                                   Text('${e.key}: ${e.value}'))
@@ -261,7 +269,7 @@ class _HomePageState extends State<HomePage> {
                                           ),
                                         ] +
                                         measurement
-                                            .toMap()
+                                            // .toMap()
                                             .entries
                                             .map((e) =>
                                                 Text('${e.key}: ${e.value}'))
