@@ -13,6 +13,7 @@ import 'package:gluco/views/historyvo.dart';
 import 'package:gluco/widgets/iconcard.dart';
 import 'package:gluco/widgets/sidebar.dart';
 import 'package:intl/intl.dart';
+import 'package:gluco/app_icons.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage();
@@ -82,7 +83,7 @@ class _HomePageState extends State<HomePage> {
             Column(
               children: [
                 IconCard(
-                  icon: Icon(Icons.hub_outlined, color: Colors.white),
+                  icon: Icon(AppIcons.molecula, color: Colors.white, size: 32),
                   label: Text(
                     'Glicose',
                     textAlign: TextAlign.center,
@@ -326,7 +327,7 @@ class _HomePageState extends State<HomePage> {
                       style: TextButton.styleFrom(
                         backgroundColor: color,
                         minimumSize: Size.fromHeight(
-                            MediaQuery.of(context).size.height * 0.12),
+                            MediaQuery.of(context).size.height * 0.09),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(8),
                         ),

@@ -5,6 +5,7 @@ import 'package:gluco/styles/customcolors.dart';
 import 'package:gluco/styles/mainbottomappbar.dart';
 import 'package:gluco/styles/defaultappbar.dart';
 import 'package:gluco/views/historyvo.dart';
+import 'package:gluco/app_icons.dart';
 
 class HistoryPage extends StatefulWidget {
   HistoryPage();
@@ -138,10 +139,8 @@ class _HistoryPageState extends State<HistoryPage> {
                                           leading: CircleAvatar(
                                             backgroundColor:
                                                 CustomColors.lightBlue,
-                                            child: Icon(
-                                              Icons.hub_outlined,
-                                              color: Colors.white,
-                                            ),
+                                            child: Icon(AppIcons.molecula,
+                                                color: Colors.white, size: 32),
                                           ),
                                         );
                                       }),

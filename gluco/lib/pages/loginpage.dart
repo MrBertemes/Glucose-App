@@ -40,7 +40,7 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: CustomColors.notwhite,
       body: LayoutBuilder(
         builder: (BuildContext context, BoxConstraints viewportConstraints) {
           return SingleChildScrollView(
@@ -54,14 +54,16 @@ class _LoginPageState extends State<LoginPage> {
                   ClipPath(
                     clipper: CubicClipper(),
                     child: Container(
-                      height: MediaQuery.of(context).size.height * 0.4,
+                      height: MediaQuery.of(context).size.height * 0.43,
                       decoration: BoxDecoration(
                         gradient: LinearGradient(
                           begin: Alignment.topCenter,
                           end: Alignment.bottomCenter,
                           colors: [
-                            CustomColors.lightBlue,
-                            CustomColors.lightGreen,
+                            CustomColors.blueGreen.withOpacity(0.40),
+                            CustomColors.lightBlue.withOpacity(0.20),
+                            CustomColors.greenBlue.withOpacity(0.20),
+                            CustomColors.lightGreen.withOpacity(0.20),
                           ],
                         ),
                       ),
@@ -93,6 +95,41 @@ class _LoginPageState extends State<LoginPage> {
                           decoration: InputDecoration(
                             label: Text(
                               'E-mail',
+                              style: TextStyle(color: CustomColors.lightGreen),
+                            ),
+                            enabledBorder: UnderlineInputBorder(
+                              borderSide: BorderSide(
+                                width: 2,
+                                color: CustomColors.lightGreen,
+                              ),
+                            ),
+                            focusedBorder: UnderlineInputBorder(
+                              borderSide: BorderSide(
+                                width: 3,
+                                color: CustomColors.lightGreen,
+                              ),
+                            ),
+                          ),
+                          autovalidateMode: AutovalidateMode.always,
+                          validator: (text) {
+                            if (_nonexistentEmail) {
+                              return '*Não há conta nesse e-mail';
+                            }
+                            if (_invalidEmail) {
+                              return '*E-mail inválido';
+                            }
+                            return null;
+                          },
+                          cursorColor: CustomColors.lightGreen,
+                          keyboardType: TextInputType.emailAddress,
+                        ),
+                        Padding(padding: EdgeInsets.all(8.0)),
+                        TextFormField(
+                          controller: _password,
+                          obscureText: _hidePassword,
+                          decoration: InputDecoration(
+                            label: Text(
+                              'Senha',
                               style: TextStyle(color: CustomColors.greenBlue),
                             ),
                             enabledBorder: UnderlineInputBorder(
@@ -107,41 +144,6 @@ class _LoginPageState extends State<LoginPage> {
                                 color: CustomColors.greenBlue,
                               ),
                             ),
-                          ),
-                          autovalidateMode: AutovalidateMode.always,
-                          validator: (text) {
-                            if (_nonexistentEmail) {
-                              return '*Não há conta nesse e-mail';
-                            }
-                            if (_invalidEmail) {
-                              return '*E-mail inválido';
-                            }
-                            return null;
-                          },
-                          cursorColor: CustomColors.greenBlue,
-                          keyboardType: TextInputType.emailAddress,
-                        ),
-                        Padding(padding: EdgeInsets.all(8.0)),
-                        TextFormField(
-                          controller: _password,
-                          obscureText: _hidePassword,
-                          decoration: InputDecoration(
-                            label: Text(
-                              'Senha',
-                              style: TextStyle(color: CustomColors.lightBlue),
-                            ),
-                            enabledBorder: UnderlineInputBorder(
-                              borderSide: BorderSide(
-                                width: 2,
-                                color: CustomColors.lightBlue,
-                              ),
-                            ),
-                            focusedBorder: UnderlineInputBorder(
-                              borderSide: BorderSide(
-                                width: 3,
-                                color: CustomColors.lightBlue,
-                              ),
-                            ),
                             suffixIcon: IconButton(
                                 onPressed: () {
                                   setState(
@@ -153,7 +155,7 @@ class _LoginPageState extends State<LoginPage> {
                                 icon: Icon(_hidePassword
                                     ? Icons.visibility_off
                                     : Icons.visibility),
-                                color: CustomColors.lightBlue),
+                                color: CustomColors.greenBlue),
                           ),
                           autovalidateMode: AutovalidateMode.always,
                           validator: (text) {
@@ -162,7 +164,7 @@ class _LoginPageState extends State<LoginPage> {
                             }
                             return null;
                           },
-                          cursorColor: CustomColors.lightBlue,
+                          cursorColor: CustomColors.greenBlue,
                           enableSuggestions: false,
                           autocorrect: false,
                         ),
@@ -189,7 +191,7 @@ class _LoginPageState extends State<LoginPage> {
                             ),
                           ),
                           loadingWidget: CircularProgressIndicator(
-                            color: Colors.white,
+                            color: CustomColors.notwhite,
                             strokeWidth: 3.0,
                           ),
                           onPressed: () async {
@@ -246,7 +248,7 @@ class _LoginPageState extends State<LoginPage> {
                           builder: (context, child, callback, _) {
                             return TextButton(
                               style: TextButton.styleFrom(
-                                primary: Colors.white,
+                                primary: CustomColors.notwhite,
                                 backgroundColor: CustomColors.lightBlue,
                                 padding: EdgeInsets.all(10.0),
                                 minimumSize:
@@ -269,8 +271,8 @@ class _LoginPageState extends State<LoginPage> {
                                 decoration: BoxDecoration(
                                   gradient: LinearGradient(
                                     colors: [
-                                      Colors.transparent,
-                                      CustomColors.lightBlue,
+                                      Color.fromARGB(0, 252, 247, 247),
+                                      CustomColors.blueGreen,
                                     ],
                                   ),
                                 ),
@@ -279,10 +281,10 @@ class _LoginPageState extends State<LoginPage> {
                             Padding(
                               padding: EdgeInsets.all(15),
                               child: Text(
-                                "ou",
+                                "OU",
                                 style: TextStyle(
-                                  color: CustomColors.lightBlue,
-                                  fontSize: 16.0,
+                                  color: CustomColors.blueGreen,
+                                  fontSize: 12.0,
                                 ),
                               ),
                             ),
@@ -292,8 +294,8 @@ class _LoginPageState extends State<LoginPage> {
                                 decoration: BoxDecoration(
                                   gradient: LinearGradient(
                                     colors: [
-                                      CustomColors.lightBlue,
-                                      Colors.transparent,
+                                      CustomColors.blueGreen,
+                                      Color.fromARGB(0, 251, 249, 249),
                                     ],
                                   ),
                                 ),
@@ -307,13 +309,13 @@ class _LoginPageState extends State<LoginPage> {
                             textStyle: TextStyle(
                               fontSize: 16.0,
                             ),
-                            primary: CustomColors.lightBlue,
-                            backgroundColor: Colors.white,
+                            primary: CustomColors.blueGreen,
+                            backgroundColor: CustomColors.notwhite,
                             padding: EdgeInsets.all(10.0),
                             minimumSize: Size(viewportConstraints.maxWidth, 60),
                             shape: RoundedRectangleBorder(
                               side: BorderSide(
-                                  color: CustomColors.lightBlue, width: 2.0),
+                                  color: CustomColors.blueGreen, width: 2.0),
                               borderRadius: BorderRadius.circular(8),
                             ),
                           ),

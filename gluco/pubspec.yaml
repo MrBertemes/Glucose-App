@@ -105,5 +105,10 @@ flutter:
         - asset: ./assets/fonts/Quicksand-Bold.ttf
           weight: 700
 
+    - family: AppIcons
+      fonts:
+        - asset: ./assets/fonts/custom_fonts/fonts/AppIcons.ttf
+
+
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/custom-fonts/#from-packages

@@ -51,7 +51,7 @@ class _SignUpPageState extends State<SignUpPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: CustomColors.notwhite,
       body: LayoutBuilder(
         builder: (BuildContext context, BoxConstraints viewportConstraints) {
           return SingleChildScrollView(
@@ -71,15 +71,17 @@ class _SignUpPageState extends State<SignUpPage> {
                           begin: Alignment.topCenter,
                           end: Alignment.bottomCenter,
                           colors: [
-                            CustomColors.lightBlue,
-                            CustomColors.lightGreen,
+                            CustomColors.blueGreen.withOpacity(0.40),
+                            CustomColors.lightBlue.withOpacity(0.20),
+                            CustomColors.greenBlue.withOpacity(0.20),
+                            CustomColors.lightGreen.withOpacity(0.20),
                           ],
                         ),
                       ),
                       child: Center(
                         child: Image(
                           image: AssetImage('assets/images/logoblue.png'),
-                          width: MediaQuery.of(context).size.width * 0.4,
+                          width: MediaQuery.of(context).size.width * 0.43,
                         ),
                         // child: Text(
                         //   'EGLUCO', // placeholder
@@ -155,18 +157,18 @@ class _SignUpPageState extends State<SignUpPage> {
                             decoration: InputDecoration(
                               label: Text(
                                 'E-mail',
-                                style: TextStyle(color: CustomColors.greenBlue),
+                                style: TextStyle(color: CustomColors.blueGreen),
                               ),
                               enabledBorder: UnderlineInputBorder(
                                 borderSide: BorderSide(
                                   width: 2,
-                                  color: CustomColors.greenBlue,
+                                  color: CustomColors.blueGreen,
                                 ),
                               ),
                               focusedBorder: UnderlineInputBorder(
                                 borderSide: BorderSide(
                                   width: 3,
-                                  color: CustomColors.greenBlue,
+                                  color: CustomColors.blueGreen,
                                 ),
                               ),
                             ),
@@ -265,14 +267,14 @@ class _SignUpPageState extends State<SignUpPage> {
                                     child: Text(
                                       'Concluir Cadastro',
                                       style: TextStyle(
-                                        color: Colors.white,
+                                        color: CustomColors.notwhite,
                                         // a cor tá errada, aparecendo cinza por algum motivo (por estar desabilitado será?)
                                         fontSize: 16.0,
                                         fontWeight: FontWeight.bold,
                                       ),
                                     ),
                                     loadingWidget: CircularProgressIndicator(
-                                      color: Colors.white,
+                                      color: CustomColors.notwhite,
                                       strokeWidth: 3.0,
                                     ),
                                     disabled: !isValid,
@@ -335,7 +337,7 @@ class _SignUpPageState extends State<SignUpPage> {
                                     builder: (context, child, callback, _) {
                                       return TextButton(
                                         style: TextButton.styleFrom(
-                                          primary: Colors.white,
+                                          primary: CustomColors.notwhite,
                                           backgroundColor: isValid
                                               ? CustomColors.lightGreen
                                               : Colors.grey,
@@ -364,7 +366,7 @@ class _SignUpPageState extends State<SignUpPage> {
                                   decoration: BoxDecoration(
                                     gradient: LinearGradient(
                                       colors: [
-                                        Colors.transparent,
+                                        Color.fromARGB(0, 255, 251, 251),
                                         CustomColors.lightGreen,
                                       ],
                                     ),
@@ -374,10 +376,10 @@ class _SignUpPageState extends State<SignUpPage> {
                               Padding(
                                 padding: EdgeInsets.all(15),
                                 child: Text(
-                                  'ou',
+                                  'OU',
                                   style: TextStyle(
                                     color: CustomColors.lightGreen,
-                                    fontSize: 16.0,
+                                    fontSize: 12.0,
                                   ),
                                 ),
                               ),
@@ -388,7 +390,7 @@ class _SignUpPageState extends State<SignUpPage> {
                                     gradient: LinearGradient(
                                       colors: [
                                         CustomColors.lightGreen,
-                                        Colors.transparent,
+                                        Color.fromARGB(0, 255, 250, 250),
                                       ],
                                     ),
                                   ),
@@ -403,7 +405,7 @@ class _SignUpPageState extends State<SignUpPage> {
                                 fontSize: 16.0,
                               ),
                               primary: CustomColors.lightGreen,
-                              backgroundColor: Colors.white,
+                              backgroundColor: CustomColors.notwhite,
                               padding: EdgeInsets.all(10.0),
                               minimumSize:
                                   Size(viewportConstraints.maxWidth, 60),

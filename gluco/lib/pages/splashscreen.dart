@@ -62,8 +62,8 @@ class _SplashScreenState extends State<SplashScreen>
             radius: 2.0,
             colors: [
               Colors.white,
-              CustomColors.blueGreen,
-              CustomColors.greenBlue,
+              CustomColors.blueGreen.withOpacity(0.40),
+              CustomColors.greenBlue.withOpacity(0.40),
             ],
           ),
         ),
@@ -74,7 +74,7 @@ class _SplashScreenState extends State<SplashScreen>
             position: _offsetAnimation,
             child: Image.asset(
               'assets/images/splashicon.png',
-              scale: 2.5,
+              scale: 7.0,
             ),
           ),
         ),
