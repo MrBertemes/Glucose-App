@@ -3,5 +3,5 @@ class Device {
   String name;
   bool connected;
 
-  Device({required this.id, required this.name, this.connected = false});
+  Device({required this.id, this.name = '', this.connected = false});
 }
