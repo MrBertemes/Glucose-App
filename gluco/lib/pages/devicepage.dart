@@ -131,7 +131,7 @@ class _DevicePageState extends State<DevicePage> {
                                 )
                               : StreamBuilder<bool>(
                                   stream: btConn,
-                                  initialData: false,
+                                  initialData: true,
                                   builder: (context, snapshot) {
                                     return ListView.separated(
                                       padding:
@@ -173,7 +173,7 @@ class _DevicePageState extends State<DevicePage> {
                                                       children: [
                                                         StreamBuilder<bool>(
                                                           stream: btConn,
-                                                          initialData: false,
+                                                          initialData: true,
                                                           builder: (context,
                                                               snapshot) {
                                                             return RichText(

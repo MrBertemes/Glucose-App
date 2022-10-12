@@ -12,6 +12,7 @@ import 'package:gluco/pages/profilepage.dart';
 import 'package:gluco/pages/signuppage.dart';
 import 'package:gluco/pages/splashscreen.dart';
 import 'package:gluco/services/api.dart';
+// import 'package:gluco/services/defblue.dart';
 import 'package:gluco/styles/customcolors.dart';
 
 String _defaultHome = '/login';
@@ -85,6 +86,7 @@ class _MainState extends State<Main> {
         '/signup': (context) => SignUpPage(),
         '/welcome': (context) => FirstLoginPage(),
         '/devices': (context) => DevicePage(),
+        // '/devices': (context) => FlutterBlueApp(),
         '/history': (context) => HistoryPage(),
         '/profile': (context) => ProfilePage(),
       },
