@@ -114,12 +114,20 @@ class DatabaseHelper {
   /// Insere os dados do usuário no banco
   Future<bool> insertUser(User user) async {
     Database db = await DatabaseHelper.instance.database;
+    //
+    List<Map> id = await db.rawQuery(
+        'select max(iduser) as id from users'); // jeito burro mas enfim
+    //
     return await db.insert(
           'users',
           // como eu separei o campo perfil na classe user,
           // não dá pra usar o user.toMap() '-'
           {
-            'iduser': user.id,
+            // 'iduser': user.id,
+            //
+            // 'iduser': (int.tryParse(id[0]['id'] ?? '') ?? 0) + 1,
+            'iduser': (id[0]['id'] ?? -1) + 1,
+            //
             'email': user.email,
             'name': user.name,
             'birthdate': user.profile!.birthdate.toString(),
@@ -139,8 +147,12 @@ class DatabaseHelper {
     Database db = await DatabaseHelper.instance.database;
     List<Map<String, Object?>> userProfile = await db.query(
       'users',
-      where: 'iduser = ?',
-      whereArgs: [user.id],
+      // where: 'iduser = ?',
+      // whereArgs: [user.id],
+      //
+      where: 'email = ?',
+      whereArgs: [user.email],
+      //
     );
     return userProfile.isEmpty ? null : userProfile.first;
   }
@@ -157,8 +169,12 @@ class DatabaseHelper {
             'sex': user.profile!.sex,
             'diabetes': user.profile!.diabetes,
           },
-          where: 'iduser = ?',
-          whereArgs: [user.id],
+          // where: 'iduser = ?',
+          // whereArgs: [user.id],
+          //
+          where: 'email = ?',
+          whereArgs: [user.email],
+          //
         ) !=
         0;
   }

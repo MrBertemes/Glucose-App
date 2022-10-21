@@ -41,7 +41,6 @@ class _SideBarState extends State<SideBar> {
             //   style: Theme.of(context).textTheme.headline6,
             // ),
           ),
-          /*// perfil ainda não funciona pois não tem os endpoints
           ListTile(
             leading: Icon(Icons.person),
             title: Text(
@@ -49,10 +48,19 @@ class _SideBarState extends State<SideBar> {
               style: Theme.of(context).textTheme.headline6,
             ),
             onTap: () async {
-              Navigator.popAndPushNamed(context, '/profile');
+              await Navigator.popAndPushNamed(context, '/profile');
             },
           ),
-          */
+          ListTile(
+            leading: Icon(Icons.person),
+            title: Text(
+              'Primeira tela de perfil',
+              style: Theme.of(context).textTheme.headline6,
+            ),
+            onTap: () async {
+              await Navigator.popAndPushNamed(context, '/welcome');
+            },
+          ),
           ListTile(
             leading: Icon(Icons.watch_outlined),
             title: Text(
@@ -60,7 +68,7 @@ class _SideBarState extends State<SideBar> {
               style: Theme.of(context).textTheme.headline6,
             ),
             onTap: () async {
-              Navigator.popAndPushNamed(context, '/devices');
+              await Navigator.popAndPushNamed(context, '/devices');
             },
           ),
           ListTile(

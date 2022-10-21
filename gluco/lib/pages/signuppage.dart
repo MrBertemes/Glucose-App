@@ -302,8 +302,6 @@ class _SignUpPageState extends State<SignUpPage> {
                                                       .trim()
                                                       .toLowerCase(),
                                                   _password.text.trim())) {
-                                                // await Navigator.popAndPushNamed(
-                                                //     context, '/welcome'); // por enquanto não tem endpoits para a pagina de perfil
                                                 ///////
                                                 if (await API.instance.login(
                                                     _email.text
@@ -312,7 +310,7 @@ class _SignUpPageState extends State<SignUpPage> {
                                                     _password.text.trim())) {
                                                   await Navigator
                                                       .popAndPushNamed(
-                                                          context, '/home');
+                                                          context, '/welcome');
                                                 }
                                                 ///////
                                               } else {
