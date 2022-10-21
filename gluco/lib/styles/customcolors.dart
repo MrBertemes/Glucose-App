@@ -24,4 +24,9 @@ abstract class CustomColors {
 
   /// Cor fundo ExpansionPanelList do Histórico
   static Color histWhite = const Color.fromRGBO(250, 250, 250, 1.0);
+
+  //fundo das telas :perfil, historico, conexao.
+  static Color bluelight = const Color.fromRGBO(195, 228, 228, 1.0);
+  static Color blueGreenlight = const Color.fromRGBO(196, 228, 218, 1.0);
+  static Color greenlight = const Color.fromRGBO(206, 231, 197, 1.0);
 }

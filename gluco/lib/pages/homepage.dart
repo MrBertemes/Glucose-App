@@ -34,6 +34,7 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: CustomColors.scaffLightBlue,
       appBar: imageAppBar(
         imagename: 'assets/images/logoblue.png',
         width: MediaQuery.of(context).size.width * 0.25,
