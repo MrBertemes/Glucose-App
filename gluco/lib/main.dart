@@ -60,7 +60,7 @@ class _MainState extends State<Main> {
   Widget build(BuildContext context) {
     return MaterialApp(
       theme: ThemeData(
-        scaffoldBackgroundColor: CustomColors.scaffLightBlue,
+        scaffoldBackgroundColor: Colors.transparent,
         backgroundColor: Colors.white,
         primarySwatch: Colors.green,
         accentColor: Colors.grey[600],
