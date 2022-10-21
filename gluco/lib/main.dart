@@ -14,6 +14,7 @@ import 'package:gluco/pages/splashscreen.dart';
 import 'package:gluco/services/api.dart';
 // import 'package:gluco/services/defblue.dart';
 import 'package:gluco/styles/customcolors.dart';
+import 'package:gluco/views/historyvo.dart';
 
 String _defaultHome = '/login';
 
@@ -22,7 +23,13 @@ void main() async {
   await initializeDateFormatting('pt_BR', null);
 
   if (await API.instance.tryCredentials()) {
-    _defaultHome = '/home';
+    if (await API.instance.fetchUserProfile()) {
+      _defaultHome = '/home';
+      await HistoryVO.fetchHistory();
+    } else {
+      _defaultHome = '/welcome';
+    }
+
     // switch (API.instance.responseMessage) { // não tem perfil ainda
     //   case 'Success':
     //     _defaultHome = '/home';

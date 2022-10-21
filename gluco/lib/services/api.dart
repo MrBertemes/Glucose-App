@@ -210,7 +210,20 @@ class API {
     }
     */
 
-    return false;
+    //
+    try {
+      _user!.email = _client_id!;
+      Map<String, Object?>? data =
+          await DatabaseHelper.instance.queryUser(_user!);
+      _user!.name = data!['name'].toString();
+      _user!.profile = Profile.fromMap(data);
+      return true;
+    } catch (e) {
+      return false;
+    }
+    //
+
+    // return false;
   }
 
   // Requisição para alterar perfil do usuário
@@ -246,7 +259,26 @@ class API {
     }
     */
 
-    return false;
+    //
+    try {
+      _user!.email = _client_id!;
+      _user!.profile = Profile(
+          birthdate: DateTime.parse(birthdate),
+          weight: double.parse(weight),
+          height: double.parse(height),
+          sex: sex,
+          diabetes: diabetes);
+      if (await DatabaseHelper.instance.queryUser(_user!) == null) {
+        return await DatabaseHelper.instance.insertUser(_user!);
+      } else {
+        return await DatabaseHelper.instance.updateUser(_user!);
+      }
+    } catch (e) {
+      return false;
+    }
+    //
+
+    // return false;
   }
 
   /// Encerra a sessão do usuário no aplicativo excluindo as credenciais
