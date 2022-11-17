@@ -99,7 +99,7 @@ class _ProfilePageState extends State<ProfilePage> {
                           backgroundColor: Colors.grey[200],
                           child: Icon(
                             Icons.photo_camera_rounded,
-                            size: 35.0,
+                            size: 30.0,
                             color: Colors.grey,
                           ),
                           onPressed: () {
@@ -119,15 +119,15 @@ class _ProfilePageState extends State<ProfilePage> {
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
                             fontSize: 28.0,
-                            color: CustomColors.blueGreen.withOpacity(1.0),
+                            color: CustomColors.lightBlue.withOpacity(1.0),
                           ),
                         ),
                       ),
                     ),
                     Container(
-                      padding: EdgeInsets.all(20.0),
+                      padding: EdgeInsets.all(15.0),
                       decoration: BoxDecoration(
-                        color: CustomColors.scaffWhite,
+                        color: CustomColors.scaffWhite.withOpacity(0.5),
                         borderRadius: BorderRadius.only(
                           topLeft: Radius.circular(25),
                           topRight: Radius.circular(25),
@@ -143,23 +143,28 @@ class _ProfilePageState extends State<ProfilePage> {
                         child: Column(
                           children: [
                             Card(
-                              elevation: 3.0,
+                              margin: EdgeInsets.only(
+                                  top: 10.0,
+                                  bottom: 10.0,
+                                  left: 10.0,
+                                  right: 10),
+                              elevation: 2.0,
+                              color: CustomColors.notwhite,
                               shape: RoundedRectangleBorder(
                                 borderRadius:
-                                    BorderRadius.all(Radius.circular(16.0)),
+                                    BorderRadius.all(Radius.circular(11.0)),
                               ),
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Padding(
                                     padding:
-                                        EdgeInsets.only(top: 8.0, left: 10.0),
+                                        EdgeInsets.only(top: 10.0, left: 15.0),
                                     child: Text(
                                       'Data de Nascimento',
                                       style: TextStyle(
-                                        fontSize: 22.0,
-                                        color: CustomColors.blueGreen
-                                            .withOpacity(1.0),
+                                        fontSize: 18.0,
+                                        color: CustomColors.lightGreen,
                                       ),
                                     ),
                                   ),
@@ -170,7 +175,8 @@ class _ProfilePageState extends State<ProfilePage> {
                                           borderSide: BorderSide.none),
                                       hintText: 'dd/mm/aaaa',
                                       isDense: true,
-                                      contentPadding: EdgeInsets.all(12.0),
+                                      contentPadding: EdgeInsets.only(
+                                          top: 15.0, left: 15.0),
                                     ),
                                     validator: (text) {
                                       if (text == null ||
@@ -197,10 +203,16 @@ class _ProfilePageState extends State<ProfilePage> {
                               children: [
                                 Expanded(
                                   child: Card(
-                                    elevation: 3.0,
+                                    margin: EdgeInsets.only(
+                                        top: 10.0,
+                                        bottom: 10.0,
+                                        left: 10.0,
+                                        right: 5),
+                                    elevation: 2.0,
+                                    color: CustomColors.notwhite,
                                     shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.all(
-                                          Radius.circular(16.0)),
+                                          Radius.circular(11.0)),
                                     ),
                                     child: Column(
                                       crossAxisAlignment:
@@ -208,12 +220,12 @@ class _ProfilePageState extends State<ProfilePage> {
                                       children: [
                                         Padding(
                                           padding: EdgeInsets.only(
-                                              top: 8.0, left: 10.0),
+                                              top: 10.0, left: 15.0),
                                           child: Text(
                                             'Peso',
                                             style: TextStyle(
-                                              fontSize: 22.0,
-                                              color: CustomColors.blueGreen
+                                              fontSize: 18.0,
+                                              color: CustomColors.lightGreen
                                                   .withOpacity(1.0),
                                             ),
                                           ),
@@ -227,8 +239,10 @@ class _ProfilePageState extends State<ProfilePage> {
                                             // hintText: '70,5',
                                             suffixText: 'kg',
                                             isDense: true,
-                                            contentPadding:
-                                                EdgeInsets.all(12.0),
+                                            contentPadding: EdgeInsets.only(
+                                                top: 15.0,
+                                                left: 15.0,
+                                                right: 10.0),
                                           ),
                                           validator: (text) {
                                             if (text == null ||
@@ -250,10 +264,16 @@ class _ProfilePageState extends State<ProfilePage> {
                                 ),
                                 Expanded(
                                   child: Card(
-                                    elevation: 3.0,
+                                    margin: EdgeInsets.only(
+                                        top: 10.0,
+                                        bottom: 10.0,
+                                        left: 5.0,
+                                        right: 10),
+                                    elevation: 2.0,
+                                    color: CustomColors.notwhite,
                                     shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.all(
-                                          Radius.circular(16.0)),
+                                          Radius.circular(11.0)),
                                     ),
                                     child: Column(
                                       crossAxisAlignment:
@@ -261,12 +281,12 @@ class _ProfilePageState extends State<ProfilePage> {
                                       children: [
                                         Padding(
                                           padding: EdgeInsets.only(
-                                              top: 8.0, left: 10.0),
+                                              top: 10.0, left: 15.0),
                                           child: Text(
                                             'Altura',
                                             style: TextStyle(
-                                              fontSize: 22.0,
-                                              color: CustomColors.blueGreen
+                                              fontSize: 18.0,
+                                              color: CustomColors.lightGreen
                                                   .withOpacity(1.0),
                                             ),
                                           ),
@@ -280,8 +300,10 @@ class _ProfilePageState extends State<ProfilePage> {
                                             // hintText: '1,67',
                                             suffixText: 'm',
                                             isDense: true,
-                                            contentPadding:
-                                                EdgeInsets.all(12.0),
+                                            contentPadding: EdgeInsets.only(
+                                                top: 15.0,
+                                                left: 15.0,
+                                                right: 10.0),
                                           ),
                                           validator: (text) {
                                             if (text == null ||
@@ -304,22 +326,28 @@ class _ProfilePageState extends State<ProfilePage> {
                               ],
                             ),
                             Card(
-                              elevation: 3.0,
+                              margin: EdgeInsets.only(
+                                  top: 10.0,
+                                  bottom: 10.0,
+                                  left: 10.0,
+                                  right: 10),
+                              elevation: 2.0,
+                              color: CustomColors.notwhite,
                               shape: RoundedRectangleBorder(
                                 borderRadius:
-                                    BorderRadius.all(Radius.circular(16.0)),
+                                    BorderRadius.all(Radius.circular(11.0)),
                               ),
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Padding(
                                     padding:
-                                        EdgeInsets.only(top: 10.0, left: 8.0),
+                                        EdgeInsets.only(top: 10.0, left: 15.0),
                                     child: Text(
                                       'Sexo',
                                       style: TextStyle(
-                                        fontSize: 22.0,
-                                        color: CustomColors.blueGreen
+                                        fontSize: 18.0,
+                                        color: CustomColors.lightGreen
                                             .withOpacity(1.0),
                                       ),
                                     ),
@@ -331,7 +359,8 @@ class _ProfilePageState extends State<ProfilePage> {
                                         borderSide: BorderSide.none,
                                       ),
                                       isDense: true,
-                                      contentPadding: EdgeInsets.all(12.0),
+                                      contentPadding: EdgeInsets.only(
+                                          top: 15.0, left: 15.0, right: 10.0),
                                     ),
                                     icon: Icon(Icons.keyboard_arrow_down),
                                     onChanged: (String? value) {
@@ -351,22 +380,28 @@ class _ProfilePageState extends State<ProfilePage> {
                               ),
                             ),
                             Card(
-                              elevation: 3.0,
+                              margin: EdgeInsets.only(
+                                  top: 10.0,
+                                  bottom: 10.0,
+                                  left: 10.0,
+                                  right: 10),
+                              elevation: 2.0,
+                              color: CustomColors.notwhite,
                               shape: RoundedRectangleBorder(
                                 borderRadius:
-                                    BorderRadius.all(Radius.circular(16.0)),
+                                    BorderRadius.all(Radius.circular(11.0)),
                               ),
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Padding(
                                     padding:
-                                        EdgeInsets.only(top: 10.0, left: 8.0),
+                                        EdgeInsets.only(top: 10.0, left: 15.0),
                                     child: Text(
                                       'Tipo de Diabetes',
                                       style: TextStyle(
-                                        fontSize: 22.0,
-                                        color: CustomColors.blueGreen
+                                        fontSize: 18.0,
+                                        color: CustomColors.lightGreen
                                             .withOpacity(1.0),
                                       ),
                                     ),
@@ -378,7 +413,8 @@ class _ProfilePageState extends State<ProfilePage> {
                                         borderSide: BorderSide.none,
                                       ),
                                       isDense: true,
-                                      contentPadding: EdgeInsets.all(12.0),
+                                      contentPadding: EdgeInsets.only(
+                                          top: 15.0, left: 15.0, right: 10.0),
                                     ),
                                     icon: Icon(Icons.keyboard_arrow_down),
                                     onChanged: (String? value) {
@@ -400,30 +436,33 @@ class _ProfilePageState extends State<ProfilePage> {
                                 ],
                               ),
                             ),
-                            Padding(padding: EdgeInsets.all(10.0)),
+                            Padding(
+                                padding:
+                                    EdgeInsets.only(top: 15.0, left: 15.0)),
                             ValueListenableBuilder<bool>(
                               valueListenable: _validFormVN,
                               builder: (_, isValid, child) {
                                 return Column(
                                   children: [
                                     TextButton(
-                                      child: const Text('Salvar'),
+                                      child: const Text(
+                                          'Salvar'), // nao consegui deixar esse botão do mesmo tamanho dos outros retangulos acima dele
                                       style: TextButton.styleFrom(
                                         primary: Colors.white,
                                         textStyle: TextStyle(
                                           color: Colors.white,
                                           // a cor tá errada, aparecendo cinza por algum motivo
-                                          fontSize: 16.0,
+                                          fontSize: 18.0,
                                           fontWeight: FontWeight.bold,
                                         ),
                                         backgroundColor: isValid
                                             ? CustomColors.lightGreen
                                             : Colors.grey,
-                                        padding: EdgeInsets.all(10.0),
-                                        minimumSize: Size.fromHeight(60),
+                                        padding: EdgeInsets.all(15.0),
+                                        minimumSize: Size.fromHeight(65),
                                         shape: RoundedRectangleBorder(
                                           borderRadius:
-                                              BorderRadius.circular(8),
+                                              BorderRadius.circular(11.0),
                                         ),
                                       ),
                                       onPressed: !isValid

@@ -53,7 +53,7 @@ class _FirstLoginPageState extends State<FirstLoginPage> {
     double landscapeCorrection =
         MediaQuery.of(context).orientation == Orientation.landscape ? 0.6 : 1.0;
     return Scaffold(
-      backgroundColor: CustomColors.white,
+      backgroundColor: CustomColors.notwhite,
       body: SingleChildScrollView(
         child: Container(
           margin: EdgeInsets.all(MediaQuery.of(context).size.width * 0.05),
@@ -114,7 +114,7 @@ class _FirstLoginPageState extends State<FirstLoginPage> {
                 ),
                 Padding(
                   padding: const EdgeInsets.symmetric(
-                    horizontal: 12.0,
+                    horizontal: 4.0,
                     vertical: 25.0,
                   ),
                   child: RichText(
@@ -160,7 +160,7 @@ class _FirstLoginPageState extends State<FirstLoginPage> {
                         ),
                         hintText: 'dd/mm/aaaa',
                         filled: true,
-                        fillColor: CustomColors.greenBlue,
+                        fillColor: CustomColors.greenBlue.withOpacity(0.25),
                         isDense: true,
                         contentPadding: EdgeInsets.all(12.0),
                       ),
@@ -208,10 +208,12 @@ class _FirstLoginPageState extends State<FirstLoginPage> {
                                 borderRadius:
                                     BorderRadius.all(Radius.circular(8.0)),
                               ),
-                              hintText: '70,5',
+                              hintText: '70.5',
                               // suffixText: 'kg',
                               filled: true,
-                              fillColor: CustomColors.greenBlue, isDense: true,
+                              fillColor:
+                                  CustomColors.greenBlue.withOpacity(0.25),
+                              isDense: true,
                               contentPadding: EdgeInsets.all(12.0),
                             ),
                             onChanged: (text) {
@@ -254,10 +256,12 @@ class _FirstLoginPageState extends State<FirstLoginPage> {
                                 borderRadius:
                                     BorderRadius.all(Radius.circular(8.0)),
                               ),
-                              hintText: '1,67',
+                              hintText: '1.67',
                               // suffixText: 'm',
                               filled: true,
-                              fillColor: CustomColors.greenBlue, isDense: true,
+                              fillColor:
+                                  CustomColors.greenBlue.withOpacity(0.25),
+                              isDense: true,
                               contentPadding: EdgeInsets.all(12.0),
                             ),
                             onChanged: (text) {
@@ -300,7 +304,7 @@ class _FirstLoginPageState extends State<FirstLoginPage> {
                           borderRadius: BorderRadius.all(Radius.circular(8.0)),
                         ),
                         filled: true,
-                        fillColor: CustomColors.greenBlue,
+                        fillColor: CustomColors.greenBlue.withOpacity(0.25),
                         isDense: true,
                         contentPadding: EdgeInsets.all(12.0),
                       ),
@@ -338,7 +342,7 @@ class _FirstLoginPageState extends State<FirstLoginPage> {
                           borderRadius: BorderRadius.all(Radius.circular(8.0)),
                         ),
                         filled: true,
-                        fillColor: CustomColors.greenBlue,
+                        fillColor: CustomColors.greenBlue.withOpacity(0.25),
                         isDense: true,
                         contentPadding: EdgeInsets.all(12.0),
                       ),

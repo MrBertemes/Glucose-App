@@ -31,7 +31,7 @@ class _SideBarState extends State<SideBar> {
           DrawerHeader(
             // decoration: BoxDecoration(color: Theme.of(context).primaryColor),
             decoration: BoxDecoration(
-              color: CustomColors.blueGreen.withOpacity(0.40),
+              color: CustomColors.blueGreen.withOpacity(0.25),
             ),
             child: Image(
               image: AssetImage('assets/images/logoblue.png'),
