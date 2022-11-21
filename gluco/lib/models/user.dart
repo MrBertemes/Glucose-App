@@ -2,63 +2,65 @@ class User {
   int id;
   String name;
   String email;
-  Profile? profile;
+  late Profile profile;
 
   User({
-    required this.id,
-    required this.name,
-    required this.email,
-    this.profile,
+    this.id = -1,
+    this.name = '', // talvez venha a ser um problema
+    this.email = '',
   });
 
-  factory User.fromMap(Map<String, dynamic> json) => User(
-        id: json['id'],
-        name: json['name'],
-        email: json['email'],
-        profile:
-            json['profile'] == null ? null : Profile.fromMap(json['profile']),
-      );
+  factory User.fromMap(Map<String, dynamic> json) {
+    User user = User(
+      id: json['iduser'],
+      name: json['name'],
+      email: json['email'],
+    );
+    user.profile = Profile.fromMap(json);
+    return user;
+  }
 
   Map<String, dynamic> toMap() {
-    return {
-      'id': id,
+    Map<String, dynamic> _data = {
+      // 'iduser': id,
       'name': name,
       'email': email,
-      'profile': profile?.toMap(),
     };
+    _data.addAll(profile.toMap());
+    return _data;
   }
 }
 
 class Profile {
-  DateTime birthdate;
+  DateTime birthday;
   double weight;
   double height;
   String sex;
-  String diabetes;
+  String diabetes_type;
 
   Profile({
-    required this.birthdate,
+    required this.birthday,
     required this.weight,
     required this.height,
     required this.sex,
-    required this.diabetes,
+    required this.diabetes_type,
   });
 
   factory Profile.fromMap(Map<String, dynamic> json) => Profile(
-        birthdate: DateTime.parse(json['birthdate']),
+        birthday: DateTime.parse(json['birthday']),
         weight: json['weight'],
         height: json['height'],
         sex: json['sex'],
-        diabetes: json['diabetes'],
+        diabetes_type: json['diabetes_type'],
       );
 
   Map<String, dynamic> toMap() {
     return {
-      'birthdate': birthdate.toString(),
+      'birthday': birthday.toString().substring(0, 10),
       'weight': weight,
       'height': height,
       'sex': sex,
-      'diabetes': diabetes,
+      'diabetes_type': diabetes_type,
     };
   }
 }

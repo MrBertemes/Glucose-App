@@ -1,3 +1,5 @@
+// ignore_for_file: non_constant_identifier_names
+
 import 'dart:async';
 import 'dart:convert';
 import 'package:gluco/models/measurement.dart';
@@ -17,14 +19,16 @@ class API {
 
   String? _token;
   String? _refresh_token;
-
   String? _client_id;
+
+  // preparando pra implementação de uso offline,
+  // provavelmente vai ser uma stream, por enquanto só um bool
+  bool connection = true;
 
   /// Recupera mensagens de erro/confirmação recebida pelas requisições
   String? _responseMessage;
   String get responseMessage {
     String message = _responseMessage ?? '';
-    // só pode ser lida uma vez
     _responseMessage = null;
     return message;
   }
@@ -48,30 +52,66 @@ class API {
 
     if (response.statusCode == 200) {
       TokenResponseModel responseModel =
-          TokenResponseModel.fromMap(jsonDecode(response.body));
+          TokenResponseModel.fromMap(responseBody);
       //
       print('--- Refresh --- \n' + response.body + '\n--- Refresh --- \n');
       //
       _token = responseModel.token;
       _refresh_token = responseModel.refresh_token;
+      _responseMessage = APIResponseMessages.success;
       return true;
     } else {
       //
-      print(response.reasonPhrase);
-      print(response.body);
+      print('--- Refresh --- \n' +
+          response.body +
+          '\n' +
+          (response.reasonPhrase ?? '') +
+          '\n--- Refresh --- \n');
       //
-      _responseMessage = jsonDecode(response.body)[
-          'detail']; // talvez colocar detail na classe de response?
+      _responseMessage = jsonDecode(response.body)['detail'];
     }
 
     return false;
   }
 
-  /// Busca por credenciais no banco local, se houver retorna o resultado da
-  /// requisição de atualização do token (autenticação automática),
-  /// caso contrário retorna false
-  /// não busca perfil automaticamente
-  Future<bool> tryCredentials() async {
+  // Método que encapsula as funcionalidades de autenticação e recuperação de
+  // perfil dos bds, tratando status de conectividade
+  Future<bool> login([String? email, String? password]) async {
+    assert(!((email == null) ^ (password == null)));
+    bool auto = email == null || password == null;
+
+    _user = User();
+
+    if (connection) {
+      // ### precisa dar timeout
+      bool logged =
+          auto ? await _fetchDBCredentials() : await _login(email, password);
+      if (logged) {
+        if (await _fetchUserProfile()) {
+          _updateDBUserProfile();
+        }
+        await DatabaseHelper.instance
+            .insertCredentials(_client_id!, _refresh_token!);
+        // ### verificação se banco possui medições não enviadas
+        return true;
+      }
+    } else {
+      if (auto &&
+          await _fetchDBCredentials(false) &&
+          await _fetchDBUserProfile()) {
+        // ### apiresponsemessage de modo offline
+        _responseMessage = APIResponseMessages.success;
+        return true;
+      }
+      // ### apiresponsemessage sem conexao
+    }
+
+    return false;
+  }
+
+  /// Busca por credenciais no banco local (autenticação automática),
+  /// se houver realiza a atualização do token
+  Future<bool> _fetchDBCredentials([bool refresh = true]) async {
     Map<String, String>? credentials =
         await DatabaseHelper.instance.queryCredentials();
     if (credentials == null) {
@@ -79,16 +119,14 @@ class API {
     }
     _client_id = credentials['clientid'];
     _refresh_token = credentials['refreshtoken'];
-    if (!await _refreshToken()) {
-      return false;
+    if (refresh) {
+      if (!await _refreshToken()) {
+        _client_id = null;
+        _refresh_token = null;
+        return false;
+      }
+      _autoRefresh();
     }
-    _user = User(
-        email: '',
-        name: '',
-        id: -1); // ainda não tem endpoints para recuperar dados do usuario
-    await DatabaseHelper.instance
-        .insertCredentials(_client_id!, _refresh_token!);
-    _autoRefresh();
     return true;
   }
 
@@ -108,7 +146,7 @@ class API {
   }
 
   /// Requisição para autenticação do usuário
-  Future<bool> login(String email, String password) async {
+  Future<bool> _login(String email, String password) async {
     Uri url = Uri.https(_authority, '/login');
 
     LoginRequestModel model =
@@ -133,15 +171,11 @@ class API {
       _client_id = responseModel.client_id;
       _token = responseModel.token;
       _refresh_token = responseModel.refresh_token;
-      _responseMessage = 'Success';
-      _user = User(email: email, name: '', id: -1);
-      await DatabaseHelper.instance
-          .insertCredentials(_client_id!, _refresh_token!);
+      _responseMessage = APIResponseMessages.success;
       return true;
     } else {
       //
       print("-reasonphrase: " + (response.reasonPhrase ?? ''));
-      // print("-body: " + responseBody['detail'][0]['msg']);
       //
       try {
         _responseMessage = responseBody['detail'];
@@ -151,6 +185,17 @@ class API {
     }
 
     return false;
+  }
+
+  /// Encerra a sessão do usuário no aplicativo excluindo as credenciais
+  /// do banco e setando variaveis como null
+  Future<bool> logout() async {
+    String client_id = _client_id!;
+    _user = null;
+    _client_id = null;
+    _token = null;
+    _refresh_token = null;
+    return await DatabaseHelper.instance.deleteCredentials(client_id);
   }
 
   /// Requisição de cadastro de usuário
@@ -186,12 +231,116 @@ class API {
     return false;
   }
 
-  /// Requisição para recuperar perfil do usuário
-  @Deprecated('Não tem endpoint pra isso ainda')
-  Future<bool> fetchUserProfile() async {
-    Uri url = Uri.https(_authority, '/user/profile');
+  Future<bool> createUserProfile(DateTime birthday, double weight,
+      double height, String sex, String diabetes_type) async {
+    assert(sex == 'M' || sex == 'F');
+    assert(diabetes_type == 'T1' ||
+        diabetes_type == 'T2' ||
+        diabetes_type == 'NP');
 
-    /*
+    Uri url = Uri.https(_authority, '/profile/' + _client_id! + '/user');
+
+    if (!await _refreshToken()) {
+      return false;
+    }
+
+    Profile profile = Profile(
+      birthday: birthday,
+      weight: weight,
+      height: height,
+      sex: sex,
+      diabetes_type: diabetes_type,
+    );
+
+    Response response = await _client.post(
+      url,
+      headers: {
+        'Authorization': 'Bearer $_token',
+        'Content-Type': 'application/json',
+      },
+      body: jsonEncode(profile.toMap()),
+    );
+
+    Map<String, dynamic> responseBody = jsonDecode(response.body);
+
+    if (response.statusCode == 200) {
+      //
+      print('--- create profile --- \n' +
+          response.body +
+          '\n--- create profile --- \n');
+      //
+      _responseMessage = responseBody['status'];
+      _user!.profile = profile; // deveria salvar bd local?
+      return true;
+    } else {
+      //
+      print('--- create profile --- \n' +
+          (response.reasonPhrase ?? '') +
+          '\n' +
+          responseBody['detail'] +
+          '\n--- create profile --- \n');
+      //
+    }
+
+    return false;
+  }
+
+  // Requisição para alterar perfil do usuário
+  @Deprecated('Não tem endpoint pra isso ainda')
+  Future<bool> updateUserProfile(DateTime birthday, double weight,
+      double height, String sex, String diabetes_type) async {
+    assert(sex == 'M' || sex == 'F');
+    assert(diabetes_type == 'T1' ||
+        diabetes_type == 'T2' ||
+        diabetes_type == 'NP');
+
+    Uri url = Uri.https(_authority, '/user/profile'); // tá errado
+
+    if (!await _refreshToken()) {
+      return false;
+    }
+
+    Profile profile = Profile(
+      birthday: birthday,
+      weight: weight,
+      height: height,
+      sex: sex,
+      diabetes_type: diabetes_type,
+    );
+
+    Response response = await _client.post(
+      url,
+      headers: {
+        'Authorization': 'Bearer $_token',
+        'Content-Type': 'application/json',
+      },
+      body: jsonEncode(profile.toMap()),
+    );
+
+    Map<String, dynamic> responseBody = jsonDecode(response.body);
+
+    if (response.statusCode == 200) {
+      //
+      print('--- update profile --- \n' +
+          response.body +
+          '\n--- update profile --- \n');
+      //
+      _responseMessage = responseBody['status'];
+      return true;
+    } else {
+      //
+      print(response.reasonPhrase);
+      //
+      print(responseBody['detail']);
+    }
+
+    return false;
+  }
+
+  /// Requisição para recuperar perfil do usuário
+  Future<bool> _fetchUserProfile() async {
+    Uri url = Uri.https(_authority, '/profile/' + _client_id!);
+
     Response response = await _client.get(
       url,
       headers: {
@@ -199,108 +348,66 @@ class API {
       },
     );
 
-    Map<String, dynamic> responseBody = jsonDecode(response.body);
-    ProfileResponseModel responseModel =
-        ProfileResponseModel.fromMap(responseBody);
+    // Map<String, dynamic> responseBody = jsonDecode(response.body);
+
     if (response.statusCode == 200) {
-      _user!.profile = responseModel.profile;
+      Map<String, dynamic> responseBody = jsonDecode(response.body);
+      //
+      print('--- fetch profile --- \n' +
+          response.body +
+          '\n--- fetch profile --- \n');
+      //
+      _user!.profile = Profile.fromMap(responseBody);
+      _responseMessage = APIResponseMessages.success;
       return true;
     } else {
-      _responseMessage = responseBody['detail'];
+      //
+      print('--- fetch profile --- \n' +
+          (response.reasonPhrase ?? '') +
+          '\n--- fetch profile --- \n');
+      //
+      // temporario
+      _responseMessage = APIResponseMessages.emptyProfile;
+      //
     }
-    */
 
-    //
-    try {
-      _user!.email = _client_id!;
-      Map<String, Object?>? data =
-          await DatabaseHelper.instance.queryUser(_user!);
-      _user!.name = data!['name'].toString();
-      _user!.profile = Profile.fromMap(data);
-      return true;
-    } catch (e) {
-      return false;
-    }
-    //
-
-    // return false;
+    return false;
   }
 
-  // Requisição para alterar perfil do usuário
-  @Deprecated('Não tem endpoint pra isso ainda')
-  Future<bool> updateUserProfile(String birthdate, String weight, String height,
-      String sex, String diabetes) async {
-    Uri url = Uri.https(_authority, '/user/profile');
-
-    /*
-    Profile profile = Profile(
-      birthdate: DateTime.parse(birthdate),
-      weight: double.parse(weight),
-      height: double.parse(height),
-      sex: sex,
-      diabetes: diabetes,
-    );
-
-    ProfileRequestModel model = ProfileRequestModel(
-      profile: jsonEncode(profile.toMap()),
-    );
-
-    Response response = await _client.post(
-      url,
-      body: jsonEncode(model.toMap()),
-    );
-
-    Map<String, dynamic> responseBody = jsonDecode(response.body);
-    if (response.statusCode == 200) {
-      _responseMessage = responseBody['status'];
-      return true;
+  Future<bool> _updateDBUserProfile() async {
+    // try {
+    User? userData =
+        await DatabaseHelper.instance.queryUserByClientID(_client_id!);
+    if (userData == null) {
+      return await DatabaseHelper.instance.insertUser(_user!, _client_id!);
     } else {
-      _responseMessage = responseBody['detail'];
+      _user!.id = userData.id;
+      return await DatabaseHelper.instance.updateUser(_user!);
     }
-    */
-
-    //
-    try {
-      _user!.email = _client_id!;
-      _user!.profile = Profile(
-          birthdate: DateTime.parse(birthdate),
-          weight: double.parse(weight),
-          height: double.parse(height),
-          sex: sex,
-          diabetes: diabetes);
-      if (await DatabaseHelper.instance.queryUser(_user!) == null) {
-        return await DatabaseHelper.instance.insertUser(_user!);
-      } else {
-        return await DatabaseHelper.instance.updateUser(_user!);
-      }
-    } catch (e) {
-      return false;
-    }
-    //
-
-    // return false;
+    // } catch (e) {
+    //   return false;
+    // }
   }
 
-  /// Encerra a sessão do usuário no aplicativo excluindo as credenciais
-  /// do banco e setando variaveis como null
-  Future<bool> logout() async {
-    String client_id = _client_id!;
-    _user = null;
-    _client_id = null;
-    _token = null;
-    _refresh_token = null;
-    return await DatabaseHelper.instance.deleteCredentials(client_id);
+  Future<bool> _fetchDBUserProfile() async {
+    // try {
+    User? userData =
+        await DatabaseHelper.instance.queryUserByClientID(_client_id!);
+    _user!.id = userData!.id;
+    _user!.name = userData.name;
+    _user!.email = userData.email;
+    _user!.profile = userData.profile;
+    return true;
+    // } catch (e) {
+    //   return false;
+    // }
   }
 
   /// Envia a medição coletada pelo bluetooth para ser processada na nuvem
   Future<bool> postMeasurements(MeasurementCollected measurement) async {
     Uri url = Uri.https(_authority, '/measure/' + _client_id! + '/glucose');
 
-    // como fazer para tratar resposta de token expirado ao tentar acessar
-    // recursos protegidos? recursividade?
-    // por enquanto o token é atualizado antes de enviar
     if (!await _refreshToken()) {
-      // deveria dar uma mensagem que a sessão expirou ou algo nesse sentido
       return false;
     }
 
@@ -371,6 +478,7 @@ abstract class APIResponseMessages {
   static const String success = 'Success';
   static const String alreadyRegistered = 'Email already exists...';
   static const String notRegistered = 'Invalid username';
+  static const String emptyProfile = 'Profile does not exists';
   static const String wrongPassword = 'Invalid password';
   static const String tokenExpired = 'Token expired';
   static const String invalidFields = 'value is not a valid email address';

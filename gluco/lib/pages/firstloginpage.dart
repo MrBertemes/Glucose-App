@@ -1,6 +1,8 @@
 // ignore_for_file: must_be_immutable, use_key_in_widget_constructors, prefer_const_constructors
 
+import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
+import 'package:async_button_builder/async_button_builder.dart';
 import 'package:gluco/services/api.dart';
 import 'package:gluco/styles/customcolors.dart';
 
@@ -171,11 +173,14 @@ class _FirstLoginPageState extends State<FirstLoginPage> {
                         if (text == null || text.isEmpty) {
                           return '*Campo obrigatório';
                         }
+                        bool valid = false;
+                        try {
+                          DateFormat.yMd('pt_BR').parseStrict(text);
+                          valid = true;
+                        } catch (e) {}
                         if (text.length != 10 ||
                             !text.contains('/') ||
-                            DateTime.tryParse(
-                                    text.split('/').reversed.join('-')) ==
-                                null) {
+                            !valid) {
                           return '*Insira uma data válida';
                         }
                         // precisa testar também se o valor inserido faz sentido => ex. datetime.now-120<text<datetime.now
@@ -369,53 +374,64 @@ class _FirstLoginPageState extends State<FirstLoginPage> {
                   builder: (_, isValid, child) {
                     return Column(
                       children: [
-                        TextButton(
-                          child: const Text('Concluir'),
-                          style: TextButton.styleFrom(
-                            primary: Colors.white,
-                            textStyle: TextStyle(
-                              color: Colors.white,
-                              // a cor tá errada, aparecendo cinza por algum motivo
-                              fontSize: 16.0,
-                              fontWeight: FontWeight.bold,
+                        AsyncButtonBuilder(
+                            child: const Text(
+                              'Concluir',
+                              style: TextStyle(
+                                fontSize: 16.0,
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
-                            backgroundColor:
-                                isValid ? CustomColors.lightGreen : Colors.grey,
-                            padding: EdgeInsets.all(10.0),
-                            minimumSize: Size.fromHeight(60),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(8),
+                            loadingWidget: CircularProgressIndicator(
+                              color: CustomColors.notwhite,
+                              strokeWidth: 3.0,
                             ),
-                          ),
-                          onPressed: !isValid
-                              ? null
-                              : () async {
-                                  _validationMode = AutovalidateMode.always;
-                                  _validFormVN.value =
-                                      _formKey.currentState?.validate() ??
-                                          false;
-                                  if (_validFormVN.value) {
-                                    if (await API.instance.updateUserProfile(
-                                        _birthdate.text
-                                            .split('/')
-                                            .reversed
-                                            .join('-'),
-                                        _weight.text.replaceAll(',', '.'),
-                                        _height.text.replaceAll(',', '.'),
-                                        _dropdownValueSex!,
-                                        _dropdownValueDiabetes!)) {
-                                      await Navigator.popAndPushNamed(
-                                          context, '/home');
+                            onPressed: !isValid
+                                ? null
+                                : () async {
+                                    _validationMode = AutovalidateMode.always;
+                                    _validFormVN.value =
+                                        _formKey.currentState?.validate() ??
+                                            false;
+                                    if (_validFormVN.value) {
+                                      if (await API.instance.createUserProfile(
+                                          DateFormat.yMd('pt_BR')
+                                              .parseStrict(_birthdate.text),
+                                          double.parse(_weight.text
+                                              .replaceAll(',', '.')),
+                                          double.parse(_height.text
+                                              .replaceAll(',', '.')),
+                                          _dropdownValueSex! == 'Masculino'
+                                              ? 'M'
+                                              : 'F',
+                                          _dropdownValueDiabetes! == 'Tipo 1'
+                                              ? 'T1'
+                                              : _dropdownValueDiabetes! ==
+                                                      'Tipo 2'
+                                                  ? 'T2'
+                                                  : 'NP')) {
+                                        await Navigator.popAndPushNamed(
+                                            context, '/home');
+                                      }
                                     }
-                                    //  else {
-                                    //   switch (AuthAPI.getResponseMessage()) {
-                                    //     case '':
-                                    //       break;
-                                    //   }
-                                    // }
-                                  }
-                                },
-                        ),
+                                  },
+                            builder: (context, child, callback, _) {
+                              return TextButton(
+                                style: TextButton.styleFrom(
+                                  primary: Colors.white,
+                                  backgroundColor: isValid
+                                      ? CustomColors.lightGreen
+                                      : Colors.grey,
+                                  padding: EdgeInsets.all(10.0),
+                                  minimumSize: Size.fromHeight(60),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                ),
+                                onPressed: callback,
+                                child: child,
+                              );
+                            }),
                         Visibility(
                           visible: !isValid,
                           child: Container(

@@ -11,14 +11,14 @@ abstract class Measurement {
   late DateTime date;
 
   Measurement({
-    required this.id,
+    this.id = -1,
     required this.spo2,
     required this.pr_rpm,
     required this.date,
   });
 
   Measurement.fromMap(Map<String, dynamic> json) {
-    id = json['idmeasurements'] ?? -1; // id ainda não é passado nas requisições
+    id = json['idmeasurements']; // id ainda não é passado nas requisições
     spo2 = json['spo2'];
     pr_rpm = json['pr_rpm'];
     date = DateTime.tryParse(json['date']) ??
@@ -27,7 +27,7 @@ abstract class Measurement {
 
   Map<String, dynamic> toMap() {
     Map<String, dynamic> _data = <String, dynamic>{};
-    _data['idmeasurements'] = id;
+    //_data['idmeasurements'] = id;
     _data['spo2'] = spo2;
     _data['pr_rpm'] = pr_rpm;
     _data['date'] = date.toString();
