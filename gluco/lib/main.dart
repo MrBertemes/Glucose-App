@@ -22,23 +22,16 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await initializeDateFormatting('pt_BR', null);
 
-  if (await API.instance.tryCredentials()) {
-    if (await API.instance.fetchUserProfile()) {
-      _defaultHome = '/home';
-      await HistoryVO.fetchHistory();
-    } else {
-      _defaultHome = '/welcome';
+  if (await API.instance.login()) {
+    switch (API.instance.responseMessage) {
+      case APIResponseMessages.success:
+        _defaultHome = '/home';
+        await HistoryVO.fetchHistory();
+        break;
+      case APIResponseMessages.emptyProfile:
+        _defaultHome = '/welcome';
+        break;
     }
-
-    // switch (API.instance.responseMessage) { // não tem perfil ainda
-    //   case 'Success':
-    //     _defaultHome = '/home';
-    //     await HistoryVO.fetchHistory();
-    //     break;
-    //   case 'Empty profile':
-    //     _defaultHome = '/welcome';
-    //     break;
-    // }
   }
 
   BluetoothHelper.instance.autoConnect();
