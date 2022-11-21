@@ -20,15 +20,21 @@ class _ProfilePageState extends State<ProfilePage> {
   late final TextEditingController _weight;
   late final TextEditingController _height;
 
-  String _dropdownValueSex = API.instance.currentUser!.profile!.sex;
-  String _dropdownValueDiabetes = API.instance.currentUser!.profile!.diabetes;
+  String _dropdownValueSex =
+      API.instance.currentUser!.profile.sex == 'M' ? 'Masculino' : 'Feminino';
+  String _dropdownValueDiabetes =
+      API.instance.currentUser!.profile.diabetes_type == 'T1'
+          ? 'Tipo 1'
+          : API.instance.currentUser!.profile.diabetes_type == 'T2'
+              ? 'Tipo 2'
+              : 'Não tenho diabetes';
 
   @override
   void initState() {
     _birthdate = TextEditingController(
-        text: DateFormat.yMd('pt_BR').format(user.profile!.birthdate));
-    _weight = TextEditingController(text: user.profile!.weight.toString());
-    _height = TextEditingController(text: user.profile!.height.toString());
+        text: DateFormat.yMd('pt_BR').format(user.profile.birthday));
+    _weight = TextEditingController(text: user.profile.weight.toString());
+    _height = TextEditingController(text: user.profile.height.toString());
     super.initState();
   }
 
@@ -179,14 +185,16 @@ class _ProfilePageState extends State<ProfilePage> {
                                           top: 15.0, left: 15.0),
                                     ),
                                     validator: (text) {
+                                      bool valid = false;
+                                      try {
+                                        DateFormat.yMd('pt_BR')
+                                            .parseStrict(text ?? '');
+                                        valid = true;
+                                      } catch (e) {}
                                       if (text == null ||
                                           text.length != 10 ||
                                           !text.contains('/') ||
-                                          DateTime.tryParse(text
-                                                  .split('/')
-                                                  .reversed
-                                                  .join('-')) ==
-                                              null) {
+                                          !valid) {
                                         return '*Insira uma data válida';
                                       }
                                       // precisa testar também se o valor inserido faz sentido => ex. datetime.now-120<text<datetime.now
@@ -475,24 +483,31 @@ class _ProfilePageState extends State<ProfilePage> {
                                               if (_validFormVN.value) {
                                                 if (await API.instance
                                                     .updateUserProfile(
-                                                        _birthdate.text
-                                                            .split('/')
-                                                            .reversed
-                                                            .join('-'),
-                                                        _weight.text.replaceAll(
-                                                            ',', '.'),
-                                                        _height.text.replaceAll(
-                                                            ',', '.'),
-                                                        _dropdownValueSex,
-                                                        _dropdownValueDiabetes)) {
+                                                        DateFormat.yMd('pt_BR')
+                                                            .parseStrict(
+                                                                _birthdate
+                                                                    .text),
+                                                        double.parse(_weight
+                                                            .text
+                                                            .replaceAll(
+                                                                ',', '.')),
+                                                        double.parse(_height
+                                                            .text
+                                                            .replaceAll(
+                                                                ',', '.')),
+                                                        _dropdownValueSex ==
+                                                                'Masculino'
+                                                            ? 'M'
+                                                            : 'F',
+                                                        _dropdownValueDiabetes ==
+                                                                'Tipo 1'
+                                                            ? 'T1'
+                                                            : _dropdownValueDiabetes ==
+                                                                    'Tipo 2'
+                                                                ? 'T2'
+                                                                : 'NP')) {
                                                   _validFormVN.value = false;
                                                 }
-                                                //  else {
-                                                //   switch (AuthAPI.getResponseMessage()) {
-                                                //     case '':
-                                                //       break;
-                                                //   }
-                                                // }
                                               }
                                             },
                                     ),
