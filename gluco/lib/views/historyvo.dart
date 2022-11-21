@@ -88,7 +88,7 @@ abstract class HistoryVO {
   /// utilizada no login
   static Future<bool> fetchHistory() async {
     List measurementsList = await DatabaseHelper.instance
-        .queryMeasurements(API.instance.currentUser!);
+        .queryMeasurementCompleted(API.instance.currentUser!);
 
     if (measurementsList.isNotEmpty) {
       // não sei o quanto faz sentido: a querymeasurements retorna uma lista

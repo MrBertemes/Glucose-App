@@ -28,59 +28,118 @@ class DatabaseHelper {
 
   Future _onCreate(Database db, int version) async {
     await db.execute('''
-      CREATE TABLE measurements (
-        idmeasurements INTEGER PRIMARY KEY,
-        glucose REAL,
-        spo2 INTEGER,
-        pr_rpm INTEGER,
-        date TEXT,
-        iduser INTEGER,
-        FOREIGN KEY (iduser) REFERENCES users(iduser)
-      );
+      CREATE TABLE credentials (
+        clientid TEXT NOT NULL PRIMARY KEY,
+        refreshtoken TEXT NOT NULL,
+        lastlogin DATE NOT NULL DEFAULT CURRENT_TIMESTAMP
+      )
     ''');
     await db.execute('''
       CREATE TABLE users (
-        iduser INTEGER PRIMARY KEY,
-        email TEXT,
-        name TEXT,
-        birthdate TEXT,
-        weight REAL,
-        height REAL,
-        sex TEXT,
-        diabetes TEXT
+        iduser INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+        clientid TEXT NOT NULL UNIQUE REFERENCES credentials(clientid) ON UPDATE CASCADE ON DELETE CASCADE,
+        email TEXT NOT NULL,
+        name TEXT NOT NULL,
+        birthday DATE NOT NULL,
+        weight REAL NOT NULL,
+        height REAL NOT NULL,
+        sex TEXT NOT NULL,
+        diabetes_type TEXT NOT NULL
       );
     ''');
     await db.execute('''
-      CREATE TABLE credentials (
-        clientid TEXT PRIMARY KEY,
-        refreshtoken TEXT,
-        lastlogin TEXT
-      )
+      CREATE TABLE measurementscomp (
+        idmeasurements INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+        glucose REAL NOT NULL,
+        spo2 INTEGER NOT NULL,
+        pr_rpm INTEGER NOT NULL,
+        date DATE NOT NULL,
+        iduser INTEGER NOT NULL REFERENCES users(iduser) ON UPDATE CASCADE ON DELETE CASCADE
+      );
+    ''');
+    await db.execute('''
+      CREATE TABLE measurementscoll (
+        idmeasurements INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+        glucose REAL NOT NULL,
+        spo2 INTEGER NOT NULL,
+        pr_rpm INTEGER NOT NULL,
+        temperature REAL NOT NULL,
+        m1_4p REAL NOT NULL,
+        m2_4p REAL NOT NULL,
+        m3_4p REAL NOT NULL,
+        m4_4p REAL NOT NULL,
+        m5_4p REAL NOT NULL,
+        m6_4p REAL NOT NULL,
+        m7_4p REAL NOT NULL,
+        m8_4p REAL NOT NULL,
+        m9_4p REAL NOT NULL,
+        m10_4p REAL NOT NULL,
+        m11_4p REAL NOT NULL,
+        m12_4p REAL NOT NULL,
+        m13_4p REAL NOT NULL,
+        m14_4p REAL NOT NULL,
+        m15_4p REAL NOT NULL,
+        m16_4p REAL NOT NULL,
+        m17_4p REAL NOT NULL,
+        m18_4p REAL NOT NULL,
+        m19_4p REAL NOT NULL,
+        m20_4p REAL NOT NULL,
+        m21_4p REAL NOT NULL,
+        m22_4p REAL NOT NULL,
+        m23_4p REAL NOT NULL,
+        m24_4p REAL NOT NULL,
+        f1_4p REAL NOT NULL,
+        f2_4p REAL NOT NULL,
+        f3_4p REAL NOT NULL,
+        f4_4p REAL NOT NULL,
+        f5_4p REAL NOT NULL,
+        f6_4p REAL NOT NULL,
+        f7_4p REAL NOT NULL,
+        f8_4p REAL NOT NULL,
+        f9_4p REAL NOT NULL,
+        f10_4p REAL NOT NULL,
+        f11_4p REAL NOT NULL,
+        f12_4p REAL NOT NULL,
+        f13_4p REAL NOT NULL,
+        f14_4p REAL NOT NULL,
+        f15_4p REAL NOT NULL,
+        f16_4p REAL NOT NULL,
+        f17_4p REAL NOT NULL,
+        f18_4p REAL NOT NULL,
+        f19_4p REAL NOT NULL,
+        f20_4p REAL NOT NULL,
+        f21_4p REAL NOT NULL,
+        f22_4p REAL NOT NULL,
+        f23_4p REAL NOT NULL,
+        f24_4p REAL NOT NULL,
+        date DATE NOT NULL,
+        iduser INTEGER NOT NULL REFERENCES users(iduser) ON UPDATE CASCADE ON DELETE CASCADE
+      );
     ''');
   }
 
   /// Insere a medição no banco referenciando o usuário em questão
-  Future<bool> insertMeasurement(
+  Future<bool> insertMeasurementCompleted(
       User user, MeasurementCompleted measurement) async {
     Database db = await DatabaseHelper.instance.database;
     Map<String, Object?> data = measurement.toMap();
     data['iduser'] = user.id;
     return await db.insert(
-          'measurements',
+          'idmeasurementscomp',
           data,
         ) !=
         0;
   }
 
   /// Busca pelas medições do usuário em questão
-  Future<List<MeasurementCompleted>> queryMeasurements(User user,
+  Future<List<MeasurementCompleted>> queryMeasurementCompleted(User user,
       [int? quantity]) async {
     Database db = await DatabaseHelper.instance.database;
     List<Map<String, Object?>> measurements = await db.query(
-      'measurements',
+      'measurementscomp',
       where: 'iduser = ?',
       whereArgs: [user.id],
-      orderBy: 'idmeasurements DESC',
+      orderBy: 'date DESC',
       limit: quantity,
     );
     List<MeasurementCompleted> measurementsList =
@@ -88,99 +147,118 @@ class DatabaseHelper {
     return measurementsList;
   }
 
-  @Deprecated(
-      'Ainda não possui utilidade, possivelmente insere errado visto que o id do banco local é auto incremental e deve ser substituido pelo id do banco remoto')
-  Future<int> updateMeasurement(MeasurementCompleted measurement) async {
+  @Deprecated('Ainda não possui utilidade')
+  Future<int> updateMeasurementCompleted(
+      MeasurementCompleted measurement) async {
     Database db = await DatabaseHelper.instance.database;
     return await db.update(
-      'measurements',
+      'measurementscomp',
       measurement.toMap(),
       where: 'idmeasurements = ?',
       whereArgs: [measurement.id],
     );
   }
 
-  @Deprecated(
-      'Ainda não possui utilidade, possivelmente insere errado visto que o id do banco local é auto incremental e deve ser substituido pelo id do banco remoto')
-  Future<int> deleteMeasurement(int id) async {
+  @Deprecated('Ainda não possui utilidade')
+  Future<int> deleteMeasurementCompleted(
+      MeasurementCompleted measurement) async {
     Database db = await DatabaseHelper.instance.database;
     return await db.delete(
-      'measurements',
+      'measurementscomp',
       where: 'idmeasurements = ?',
-      whereArgs: [id],
+      whereArgs: [measurement.id],
     );
   }
 
-  /// Insere os dados do usuário no banco
-  Future<bool> insertUser(User user) async {
+  /// Insere a medição no banco referenciando o usuário em questão
+  /// (usada quando não há conexão à internet)
+  Future<bool> insertMeasurementCollected(
+      User user, MeasurementCollected measurement) async {
     Database db = await DatabaseHelper.instance.database;
-    //
-    List<Map> id = await db.rawQuery(
-        'select max(iduser) as id from users'); // jeito burro mas enfim
-    //
+    Map<String, Object?> data = measurement.toMap();
+    data['iduser'] = user.id;
     return await db.insert(
-          'users',
-          // como eu separei o campo perfil na classe user,
-          // não dá pra usar o user.toMap() '-'
-          {
-            // 'iduser': user.id,
-            //
-            // 'iduser': (int.tryParse(id[0]['id'] ?? '') ?? 0) + 1,
-            'iduser': (id[0]['id'] ?? -1) + 1,
-            //
-            'email': user.email,
-            'name': user.name,
-            'birthdate': user.profile!.birthdate.toString(),
-            'weight': user.profile!.weight,
-            'height': user.profile!.height,
-            'sex': user.profile!.sex,
-            'diabetes': user.profile!.diabetes,
-          },
+          'measurementscoll',
+          data,
         ) !=
         0;
   }
 
-  /// Busca os dados de perfil do usuário com email correspondente,
-  /// retorna um mapa contendo os dados se encontrar e
-  /// retorna null caso contrário
-  Future<Map<String, Object?>?> queryUser(User user) async {
+  /// Busca pelas medições do usuário em questão
+  /// (usada quando não há conexão à internet)
+  Future<List<MeasurementCollected>> queryMeasurementCollected(
+      User user) async {
     Database db = await DatabaseHelper.instance.database;
-    List<Map<String, Object?>> userProfile = await db.query(
-      'users',
-      // where: 'iduser = ?',
-      // whereArgs: [user.id],
-      //
-      where: 'email = ?',
-      whereArgs: [user.email],
-      //
+    List<Map<String, Object?>> measurements = await db.query(
+      'measurementscoll',
+      where: 'iduser = ?',
+      whereArgs: [user.id],
+      orderBy: 'date DESC',
     );
-    return userProfile.isEmpty ? null : userProfile.first;
+    List<MeasurementCollected> measurementsList =
+        measurements.map((c) => MeasurementCollected.fromMap(c)).toList();
+    return measurementsList;
+  }
+
+  /// Deleta medições do usuário em questão
+  /// (usada quando não há conexão à internet)
+  Future<int> deleteMeasurementCollected(
+      MeasurementCollected measurement) async {
+    Database db = await DatabaseHelper.instance.database;
+    return await db.delete(
+      'measurementscoll',
+      where: 'idmeasurements = ?',
+      whereArgs: [measurement.id],
+    );
+  }
+
+  /// Insere os dados do usuário no banco
+  Future<bool> insertUser(User user, String client_id) async {
+    Database db = await DatabaseHelper.instance.database;
+    Map<String, dynamic> data = user.toMap();
+    data['clientid'] = client_id;
+    return await db.insert('users', data) != 0;
+  }
+
+  /// Busca os dados do usuário com id correspondente,
+  /// retorna um objeto usuário com os dados,
+  /// retorna null caso contrário
+  Future<User?> queryUser(User user) async {
+    Database db = await DatabaseHelper.instance.database;
+    List<Map<String, Object?>> userData = await db.query(
+      'users',
+      where: 'iduser = ?',
+      whereArgs: [user.id],
+    );
+    return userData.isEmpty ? null : User.fromMap(userData.first);
+  }
+
+  // Busca os dados do usuário com client_id correspondente,
+  // usado na primeira consulta após fazer login
+  Future<User?> queryUserByClientID(String client_id) async {
+    Database db = await DatabaseHelper.instance.database;
+    List<Map<String, Object?>> userData = await db.query(
+      'users',
+      where: 'clientid = ?',
+      whereArgs: [client_id],
+    );
+    return userData.isEmpty ? null : User.fromMap(userData.first);
   }
 
   /// Atualiza os dados do perfil do usuário
   Future<bool> updateUser(User user) async {
     Database db = await DatabaseHelper.instance.database;
+    Map<String, Object?> data = user.toMap();
     return await db.update(
           'users',
-          {
-            'birthdate': user.profile!.birthdate.toString(),
-            'weight': user.profile!.weight,
-            'height': user.profile!.height,
-            'sex': user.profile!.sex,
-            'diabetes': user.profile!.diabetes,
-          },
-          // where: 'iduser = ?',
-          // whereArgs: [user.id],
-          //
-          where: 'email = ?',
-          whereArgs: [user.email],
-          //
+          data,
+          where: 'iduser = ?',
+          whereArgs: [user.id],
         ) !=
         0;
   }
 
-  @Deprecated(
-      'Ainda não possui utilidade, em que momento os dados de um usuário serão apagados?')
+  @Deprecated('Ainda não possui utilidade')
   Future<int> deleteUser(User user) async {
     Database db = await DatabaseHelper.instance.database;
     return await db.delete(
@@ -198,10 +276,6 @@ class DatabaseHelper {
           {
             'clientid': client_id,
             'refreshtoken': refresh_token,
-            // inclui um marcador de último acesso pra poder selecionar
-            // o usuário mais recentemente logado no caso de possibilitar
-            // login com múltiplas contas no futuro
-            'lastlogin': DateTime.now().toString(),
           },
           conflictAlgorithm: ConflictAlgorithm.replace,
         ) !=
@@ -209,7 +283,7 @@ class DatabaseHelper {
   }
 
   /// Busca pelas credenciais mais recentes no banco,
-  /// se encontrar retorna um mapa contendo client_id e refresh_token,
+  /// se encontrar retorna um mapa contendo client_id, refresh_token,
   /// caso contrário retorna null
   Future<Map<String, String>?> queryCredentials() async {
     Database db = await DatabaseHelper.instance.database;
