@@ -187,7 +187,7 @@ class _LoginPageState extends State<LoginPage> {
                             'Entrar',
                             style: TextStyle(
                               fontSize: 16.0,
-                              fontWeight: FontWeight.bold,
+                              fontWeight: FontWeight.normal,
                             ),
                           ),
                           loadingWidget: CircularProgressIndicator(

@@ -58,7 +58,7 @@ class _MainState extends State<Main> {
         primarySwatch: Colors.green,
         accentColor: Colors.grey[600],
         errorColor: Colors.red[900],
-        fontFamily: 'Quicksand',
+        fontFamily: 'OpenSans',
         textTheme: ThemeData.light().textTheme.copyWith(
               headline6: TextStyle(
                 color: Colors.black,
