@@ -16,7 +16,9 @@ import 'package:intl/intl.dart';
 import 'package:gluco/app_icons.dart';
 
 class HomePage extends StatefulWidget {
-  const HomePage();
+  bool offline;
+  bool popup = true;
+  HomePage({this.offline = false});
 
   @override
   State<HomePage> createState() => _HomePageState();
@@ -28,6 +30,30 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     btConn = BluetoothHelper.instance.connected;
+    WidgetsBinding.instance.addPostFrameCallback(
+      (_) async {
+        if (widget.offline && widget.popup) {
+          showDialog(
+            context: context,
+            builder: (context) {
+              return AlertDialog(
+                title: Text('Sem conexão'),
+                content: Text('Sem Internet os recursos serão limitados'),
+                actions: [
+                  TextButton(
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                    child: Text('OK'),
+                  )
+                ],
+              );
+            },
+          );
+          widget.popup = false;
+        }
+      },
+    );
     super.initState();
   }
 

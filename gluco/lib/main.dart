@@ -1,6 +1,7 @@
 // ignore_for_file: use_key_in_widget_constructors, prefer_const_constructors, prefer_const_literals_to_create_immutables
 
 import 'package:flutter/material.dart';
+import 'package:gluco/db/dbtest.dart';
 import 'package:gluco/services/bluetoothhelper.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:gluco/pages/devicepage.dart';
@@ -17,6 +18,7 @@ import 'package:gluco/styles/customcolors.dart';
 import 'package:gluco/views/historyvo.dart';
 
 String _defaultHome = '/login';
+bool offline = false;
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -26,6 +28,11 @@ void main() async {
     switch (API.instance.responseMessage) {
       case APIResponseMessages.success:
         _defaultHome = '/home';
+        await HistoryVO.fetchHistory();
+        break;
+      case APIResponseMessages.offlineMode:
+        _defaultHome = '/home';
+        offline = true;
         await HistoryVO.fetchHistory();
         break;
       case APIResponseMessages.emptyProfile:
@@ -81,14 +88,15 @@ class _MainState extends State<Main> {
       ),
       routes: {
         '/': (context) => SplashScreen(route: _defaultHome),
-        '/home': (context) => HomePage(),
+        '/home': (context) => HomePage(offline: offline),
         '/login': (context) => LoginPage(),
         '/signup': (context) => SignUpPage(),
         '/welcome': (context) => FirstLoginPage(),
         '/devices': (context) => DevicePage(),
-        // '/devices': (context) => FlutterBlueApp(),
         '/history': (context) => HistoryPage(),
         '/profile': (context) => ProfilePage(),
+        // '/teste': (context) => FlutterBlueApp(),
+        '/teste': (context) => DBTest(),
       },
     );
   }
