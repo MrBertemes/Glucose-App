@@ -270,7 +270,7 @@ class _SignUpPageState extends State<SignUpPage> {
                                         color: CustomColors.notwhite,
                                         // a cor tá errada, aparecendo cinza por algum motivo (por estar desabilitado será?)
                                         fontSize: 16.0,
-                                        fontWeight: FontWeight.bold,
+                                        fontWeight: FontWeight.normal,
                                       ),
                                     ),
                                     loadingWidget: CircularProgressIndicator(

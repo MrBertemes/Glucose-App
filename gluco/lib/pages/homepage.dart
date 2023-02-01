@@ -204,7 +204,7 @@ class _HomePageState extends State<HomePage> {
                     style: TextStyle(
                       color: Colors.white,
                       fontSize: 22.0,
-                      fontWeight: FontWeight.bold,
+                      fontWeight: FontWeight.normal,
                     ),
                   ),
                   loadingWidget: CircularProgressIndicator(
