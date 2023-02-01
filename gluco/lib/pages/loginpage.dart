@@ -240,6 +240,26 @@ class _LoginPageState extends State<LoginPage> {
                                     },
                                   );
                                   break;
+                                case APIResponseMessages.noConnection:
+                                  showDialog(
+                                    context: context,
+                                    builder: (context) {
+                                      return AlertDialog(
+                                        title: Text('Sem conexão'),
+                                        content: Text(
+                                            'Verifique sua conexão à Internet'),
+                                        actions: [
+                                          TextButton(
+                                            onPressed: () {
+                                              Navigator.pop(context);
+                                            },
+                                            child: Text('OK'),
+                                          )
+                                        ],
+                                      );
+                                    },
+                                  );
+                                  break;
                               }
                               // só pro botão dar a mensagem certa, não sabia outra forma de fazer
                               throw 'Erro no login';

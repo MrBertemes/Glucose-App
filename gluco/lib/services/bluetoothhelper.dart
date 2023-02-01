@@ -161,6 +161,7 @@ class BluetoothHelper {
             _connectedDevice =
                 _DeviceInternal(device: device, receiver: rx, transmitter: tx);
             await _saveDevice(device.id.id);
+            // ### falta: função para verificar se possui medições nao recebidas
             _yieldConnection();
             _flag = _BluetoothFlags.idle;
             _transmit();
@@ -195,6 +196,8 @@ class BluetoothHelper {
 
   /// Busca por um dispositivo previamente conectado no SharedPreferences
   /// para tentar reconectar ao iniciar o aplicativo
+  // ### Como fazer para reconectar
+  // ### mesmo após já estar com app aberto e ter perdido conexão ????
   Future<bool> autoConnect() async {
     String? deviceId = await _fetchDevice();
     if (deviceId == null) {
@@ -261,6 +264,7 @@ class BluetoothHelper {
     List<int> hex = await _connectedDevice!.receiver.read();
     measure['Mensagem'] = utf8.decode(hex);
     //
+    // ### se der ocorrer um erro precisa enviar que deu erro?
     _flag = _BluetoothFlags.received;
 
     // split por espaço ???

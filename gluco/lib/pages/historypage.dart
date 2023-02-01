@@ -6,6 +6,7 @@ import 'package:gluco/styles/mainbottomappbar.dart';
 import 'package:gluco/styles/defaultappbar.dart';
 import 'package:gluco/views/historyvo.dart';
 import 'package:gluco/app_icons.dart';
+import 'package:intl/intl.dart';
 
 class HistoryPage extends StatefulWidget {
   HistoryPage();
@@ -144,21 +145,24 @@ class _HistoryPageState extends State<HistoryPage> {
                                         canTapOnHeader: true,
                                         headerBuilder: ((context, isExpanded) {
                                           return ListTile(
-                                            title: Text(
-                                              'Glicose',
-                                              style: TextStyle(
-                                                  fontStyle: FontStyle.italic),
-                                            ),
-                                            subtitle: Text(
-                                                '${measurementVO.glucose} mg/dL'),
-                                            leading: CircleAvatar(
-                                              backgroundColor:
-                                                  CustomColors.lightBlue,
-                                              child: Icon(AppIcons.molecula,
-                                                  color: Colors.white,
-                                                  size: 32),
-                                            ),
-                                          );
+                                              title: Text(
+                                                'Glicose',
+                                                style: TextStyle(
+                                                    fontStyle:
+                                                        FontStyle.italic),
+                                              ),
+                                              subtitle: Text(
+                                                  '${measurementVO.glucose} mg/dL'),
+                                              leading: CircleAvatar(
+                                                backgroundColor:
+                                                    CustomColors.lightBlue,
+                                                child: Icon(AppIcons.molecula,
+                                                    color: Colors.white,
+                                                    size: 32),
+                                              ),
+                                              // Botei horário por enquanto apenas para conseguir ver
+                                              trailing: Text(DateFormat.Hm()
+                                                  .format(measurementVO.date)));
                                         }),
                                         body: Column(
                                           children: [

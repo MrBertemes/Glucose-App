@@ -2,11 +2,12 @@
 
 import 'dart:async';
 import 'dart:convert';
-import 'package:gluco/models/measurement.dart';
 import 'package:http/http.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:gluco/db/databasehelper.dart';
-import 'package:gluco/models/user.dart';
+import 'package:gluco/models/measurement.dart';
 import 'package:gluco/models/requests.dart';
+import 'package:gluco/models/user.dart';
 
 /// API para comunicação com o servidor
 class API {
@@ -21,9 +22,27 @@ class API {
   String? _refresh_token;
   String? _client_id;
 
-  // preparando pra implementação de uso offline,
-  // provavelmente vai ser uma stream, por enquanto só um bool
-  bool connection = true;
+  // Detecção de conexão à internet
+  Connectivity _connectivity = Connectivity();
+  Stream<ConnectivityResult> get connection =>
+      _connection().asBroadcastStream();
+  Stream<ConnectivityResult> _connection() async* {
+    var result = await _connectivity.checkConnectivity();
+    yield result;
+    await for (final value in _connectivity.onConnectivityChanged) {
+      yield value;
+    }
+  }
+
+  Future<bool> hasConnection() async {
+    ConnectivityResult result = await connection.first;
+    return [
+      ConnectivityResult.wifi,
+      ConnectivityResult.mobile,
+      ConnectivityResult.ethernet,
+      ConnectivityResult.vpn
+    ].contains(result);
+  }
 
   /// Recupera mensagens de erro/confirmação recebida pelas requisições
   String? _responseMessage;
@@ -82,7 +101,7 @@ class API {
 
     _user = User();
 
-    if (connection) {
+    if (await hasConnection()) {
       // ### precisa dar timeout
       bool logged =
           auto ? await _fetchDBCredentials() : await _login(email, password);
@@ -100,10 +119,13 @@ class API {
           await _fetchDBCredentials(false) &&
           await _fetchDBUserProfile()) {
         // ### apiresponsemessage de modo offline
-        _responseMessage = APIResponseMessages.success;
+        print('--- login :: not connected, offline mode');
+        _responseMessage = APIResponseMessages.offlineMode;
         return true;
       }
       // ### apiresponsemessage sem conexao
+      _responseMessage = APIResponseMessages.noConnection;
+      print('--- login :: not connected, no profile');
     }
 
     return false;
@@ -482,4 +504,6 @@ abstract class APIResponseMessages {
   static const String wrongPassword = 'Invalid password';
   static const String tokenExpired = 'Token expired';
   static const String invalidFields = 'value is not a valid email address';
+  static const String noConnection = 'no internet connection established';
+  static const String offlineMode = 'no internet connection, limited features';
 }

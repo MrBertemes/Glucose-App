@@ -52,16 +52,6 @@ class _SideBarState extends State<SideBar> {
             },
           ),
           ListTile(
-            leading: Icon(Icons.person),
-            title: Text(
-              'Primeira tela de perfil',
-              style: Theme.of(context).textTheme.headline6,
-            ),
-            onTap: () async {
-              await Navigator.popAndPushNamed(context, '/welcome');
-            },
-          ),
-          ListTile(
             leading: Icon(Icons.watch_outlined),
             title: Text(
               'Dispositivos',
@@ -69,6 +59,16 @@ class _SideBarState extends State<SideBar> {
             ),
             onTap: () async {
               await Navigator.popAndPushNamed(context, '/devices');
+            },
+          ),
+          ListTile(
+            leading: Icon(Icons.developer_mode),
+            title: Text(
+              'Dev',
+              style: Theme.of(context).textTheme.headline6,
+            ),
+            onTap: () async {
+              await Navigator.popAndPushNamed(context, '/teste');
             },
           ),
           ListTile(
