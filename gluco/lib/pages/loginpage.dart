@@ -44,6 +44,7 @@ class _LoginPageState extends State<LoginPage> {
       body: LayoutBuilder(
         builder: (BuildContext context, BoxConstraints viewportConstraints) {
           return SingleChildScrollView(
+            keyboardDismissBehavior : ScrollViewKeyboardDismissBehavior.onDrag,
             child: ConstrainedBox(
               constraints: BoxConstraints(
                 minHeight: viewportConstraints.maxHeight,

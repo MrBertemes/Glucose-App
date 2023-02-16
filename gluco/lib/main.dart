@@ -13,7 +13,7 @@ import 'package:gluco/pages/profilepage.dart';
 import 'package:gluco/pages/signuppage.dart';
 import 'package:gluco/pages/splashscreen.dart';
 import 'package:gluco/services/api.dart';
-// import 'package:gluco/services/defblue.dart';
+import 'package:gluco/services/btletest.dart';
 import 'package:gluco/styles/customcolors.dart';
 import 'package:gluco/views/historyvo.dart';
 
@@ -95,8 +95,8 @@ class _MainState extends State<Main> {
         '/devices': (context) => DevicePage(),
         '/history': (context) => HistoryPage(),
         '/profile': (context) => ProfilePage(),
-        // '/teste': (context) => FlutterBlueApp(),
-        '/teste': (context) => DBTest(),
+        '/teste': (context) => FlutterBlueApp(),
+        //'/teste': (context) => DBTest(),
       },
     );
   }
