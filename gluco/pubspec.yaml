@@ -44,7 +44,7 @@ dependencies:
   crypto: ^3.0.2
   flutter_dotenv: ^5.0.2
   shared_preferences: ^2.0.15
-  flutter_blue: ^0.8.0
+  flutter_blue_plus: ^1.4.0
   connectivity_plus: ^3.0.2
 
 dev_dependencies:

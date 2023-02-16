@@ -1,7 +1,8 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:math';
-import 'package:flutter_blue/flutter_blue.dart';
+// import 'package:flutter_blue/flutter_blue.dart';
+import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:gluco/models/device.dart';
 import 'package:gluco/models/measurement.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -11,7 +12,7 @@ class BluetoothHelper {
 
   static final BluetoothHelper instance = BluetoothHelper._privateConstructor();
 
-  final FlutterBlue _bluetooth = FlutterBlue.instance;
+  final FlutterBluePlus _bluetooth = FlutterBluePlus.instance;
 
   // Dispositivo atualmente conectado, é o que é efetivamente utilizado na coleta
   _DeviceInternal? _connectedDevice;
@@ -141,6 +142,22 @@ class BluetoothHelper {
           BluetoothCharacteristic? rx;
           BluetoothCharacteristic? tx;
           List<BluetoothService> services = await device.discoverServices();
+          try {
+            List<BluetoothCharacteristic> characteristics = services
+                .firstWhere((element) =>
+                    element.uuid.toString().toUpperCase().substring(4, 8) ==
+                    '8251')
+                .characteristics;
+            rx = characteristics.firstWhere((element) =>
+                element.uuid.toString().toUpperCase().substring(4, 8) ==
+                '2D3F');
+            tx = characteristics.firstWhere((element) =>
+                element.uuid.toString().toUpperCase().substring(4, 8) ==
+                'F2A8');
+          } catch (e) {
+            print('Characteristics not found');
+          }
+          /*
           for (BluetoothService s in services) {
             for (BluetoothCharacteristic c in s.characteristics) {
               for (BluetoothDescriptor d in c.descriptors) {
@@ -155,6 +172,7 @@ class BluetoothHelper {
               }
             }
           }
+          */
           // estabelece novo dispositivo conectado, inicia a stream de conexão,
           // e inicia transmissão do sinal que solicita medição
           if (rx != null && tx != null) {

@@ -4,7 +4,8 @@ import 'dart:math';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_blue/flutter_blue.dart';
+// import 'package:flutter_blue/flutter_blue.dart';
+import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 
 // implementacao padrao fornecida pelo pacote do flutter_blue, uso pra debug
 class FlutterBlueApp extends StatefulWidget {
@@ -18,7 +19,7 @@ class _FlutterBlueAppState extends State<FlutterBlueApp> {
   @override
   Widget build(BuildContext context) {
     return StreamBuilder<BluetoothState>(
-        stream: FlutterBlue.instance.state,
+        stream: FlutterBluePlus.instance.state,
         initialData: BluetoothState.unknown,
         builder: (c, snapshot) {
           final state = snapshot.data;
@@ -95,14 +96,14 @@ class FindDevicesScreen extends StatelessWidget {
         ],
       ),
       body: RefreshIndicator(
-        onRefresh: () =>
-            FlutterBlue.instance.startScan(timeout: const Duration(seconds: 4)),
+        onRefresh: () => FlutterBluePlus.instance
+            .startScan(timeout: const Duration(seconds: 4)),
         child: SingleChildScrollView(
           child: Column(
             children: <Widget>[
               StreamBuilder<List<BluetoothDevice>>(
                 stream: Stream.periodic(const Duration(seconds: 2))
-                    .asyncMap((_) => FlutterBlue.instance.connectedDevices),
+                    .asyncMap((_) => FlutterBluePlus.instance.connectedDevices),
                 initialData: const [],
                 builder: (c, snapshot) => Column(
                   children: snapshot.data!
@@ -131,7 +132,7 @@ class FindDevicesScreen extends StatelessWidget {
                 ),
               ),
               StreamBuilder<List<ScanResult>>(
-                stream: FlutterBlue.instance.scanResults,
+                stream: FlutterBluePlus.instance.scanResults,
                 initialData: const [],
                 builder: (c, snapshot) => Column(
                   children: snapshot.data!
@@ -153,19 +154,19 @@ class FindDevicesScreen extends StatelessWidget {
         ),
       ),
       floatingActionButton: StreamBuilder<bool>(
-        stream: FlutterBlue.instance.isScanning,
+        stream: FlutterBluePlus.instance.isScanning,
         initialData: false,
         builder: (c, snapshot) {
           if (snapshot.data!) {
             return FloatingActionButton(
               child: const Icon(Icons.stop),
-              onPressed: () => FlutterBlue.instance.stopScan(),
+              onPressed: () => FlutterBluePlus.instance.stopScan(),
               backgroundColor: Colors.red,
             );
           } else {
             return FloatingActionButton(
                 child: const Icon(Icons.search),
-                onPressed: () => FlutterBlue.instance
+                onPressed: () => FlutterBluePlus.instance
                     .startScan(timeout: const Duration(seconds: 4)));
           }
         },
@@ -228,7 +229,6 @@ class DeviceScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-
       appBar: AppBar(
         title: Text(device.name),
         actions: <Widget>[
@@ -608,7 +608,8 @@ class DescriptorTile extends StatelessWidget {
       subtitle: StreamBuilder<List<int>>(
         stream: descriptor.value,
         initialData: descriptor.lastValue,
-        builder: (c, snapshot) => Text(utf8.decode(snapshot.data!)),
+        // builder: (c, snapshot) => Text(utf8.decode(snapshot.data!)),
+        builder: (c, snapshot) => Text(snapshot.data!.toString()),
       ),
       trailing: Row(
         mainAxisSize: MainAxisSize.min,
