@@ -7,5 +7,5 @@
 -keep class io.flutter.plugins.**  { *; }
 
 #FlutterBlue
--keep class com.pauldemarco.flutter_blue.** { *; }
--keepclassmembernames class com.pauldemarco.flutter_blue.* { *; }
+-keep class com.boskokg.flutter_blue_plus.** { *; }
+-keepclassmembernames class com.boskokg.flutter_blue_plus.* { *; }
