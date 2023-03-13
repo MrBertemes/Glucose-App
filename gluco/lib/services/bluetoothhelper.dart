@@ -261,9 +261,33 @@ class BluetoothHelper {
     );
   }
 
+  /// Faz a leitura dos dados da medição do dispositivo conectado VERSÃO RANDOM
+  Future<MeasurementCollected> collect() async {
+    Random random = Random();
+    List<double> m_4p = <double>[];
+    List<double> f_4p = <double>[];
+    for (int i = 1; i <= 24; i++) {
+      m_4p.add((random.nextDouble() * 10000).truncateToDouble() / 1000 + 5);
+      f_4p.add((random.nextDouble() * 10000).truncateToDouble() / 1000 + 5);
+    }
+    MeasurementCollected measure = MeasurementCollected(
+      id: -1,
+      apparent_glucose: null,
+      spo2: random.nextInt(101) + 96,
+      pr_rpm: random.nextInt(110) + 60,
+      temperature: (((random.nextInt(38) + 35) + random.nextDouble()) * 100)
+              .truncateToDouble() /
+          100,
+      m_4p: m_4p,
+      f_4p: f_4p,
+      date: DateTime.now(),
+    );
+    return measure;
+  }
+
   /// Faz a leitura dos dados da medição do dispositivo conectado
   // Future<MeasurementCollected> collect() async {
-  Future<Map<String, String>> collect() async {
+  Future<Map<String, String>> collect_real() async {
     assert(_connectedDevice != null);
 
     _flag = _BluetoothFlags.requesting;

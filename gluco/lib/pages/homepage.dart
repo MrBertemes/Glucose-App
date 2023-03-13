@@ -1,4 +1,6 @@
-// ignore_for_file: use_key_in_widget_constructors, must_be_immutable, prefer_const_constructors
+// ignore_for_file: use_key_in_widget_constructors, must_be_immutable, prefer_const_constructors, use_build_context_synchronously, empty_catches
+
+import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:async_button_builder/async_button_builder.dart';
@@ -56,6 +58,8 @@ class _HomePageState extends State<HomePage> {
     );
     super.initState();
   }
+
+  final _formKey = GlobalKey<FormState>();
 
   @override
   Widget build(BuildContext context) {
@@ -195,18 +199,11 @@ class _HomePageState extends State<HomePage> {
               ],
             ),
             StreamBuilder<bool>(
-              stream: btConn,
+              // stream: btConn,
+              stream: Stream.value(true), // teste para o botao habilitar
               initialData: false,
               builder: (context, snapshot) {
                 return AsyncButtonBuilder(
-                  child: Text(
-                    'Medir',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 22.0,
-                      fontWeight: FontWeight.normal,
-                    ),
-                  ),
                   loadingWidget: CircularProgressIndicator(
                     color: Colors.white,
                     strokeWidth: 3.0,
@@ -216,13 +213,11 @@ class _HomePageState extends State<HomePage> {
                     color: Colors.white,
                   ),
                   onPressed: () async {
-                    // mapa com o que é lido do stm
-                    late Map measurement;
-                    // late MeasurementCollected measurement;
+                    late MeasurementCollected measurement;
                     try {
                       measurement = await BluetoothHelper.instance.collect();
                     } catch (e) {
-                      showDialog(
+                      await showDialog(
                           useRootNavigator: false,
                           barrierDismissible: false,
                           context: context,
@@ -232,88 +227,123 @@ class _HomePageState extends State<HomePage> {
                                     'Ocorreu um erro na coleta dos dados do dispositivo Bluetooth...'),
                                 actions: [
                                   TextButton(
-                                    child: Text('Retornar'),
                                     onPressed: (() {
                                       Navigator.pop(context);
                                     }),
+                                    child: Text('Retornar'),
                                   )
                                 ]);
                           });
-                      throw 'Erro na coleta da medição';
+                      throw 'Erro na coleta da medição'; // pro async_button mostrar ícone certo
                     }
-                    try {
-                      // if (await API.instance.postMeasurements(measurement)) {
-                      // ignore: dead_code
-                      if (false) {
-                        //não é pra enviar nada por enquanto
-                        showDialog(
-                            useRootNavigator: false,
-                            barrierDismissible: false,
-                            context: context,
-                            builder: (context) {
-                              return AlertDialog(
-                                  title: Text('Medição enviada com sucesso'),
-                                  content: SingleChildScrollView(
-                                    child: Column(
-                                      children: [
-                                            Text(
-                                              'Dados enviados:\n',
-                                            ),
-                                          ] +
-                                          measurement
-                                              // .toMap()
-                                              .entries
-                                              .map((e) =>
-                                                  Text('${e.key}: ${e.value}'))
-                                              .toList(),
-                                    ),
-                                  ),
-                                  actions: [
-                                    TextButton(
-                                      child: Text('Ok!'),
-                                      onPressed: (() {
-                                        Navigator.pop(context);
-                                      }),
-                                    )
-                                  ]);
-                            });
-                      } else {
-                        throw 'Erro no envio da medição';
-                      }
-                    } catch (e) {
-                      showDialog(
-                          useRootNavigator: false,
-                          barrierDismissible: false,
-                          context: context,
-                          builder: (context) {
-                            return AlertDialog(
-                                title: Text(
-                                    'Ocorreu um erro no envio dos dados coletados...'),
-                                content: SingleChildScrollView(
+                    Map<String, dynamic> measurementMap = measurement.toMap();
+                    bool response = false;
+                    await showDialog(
+                        useRootNavigator: false,
+                        barrierDismissible: false,
+                        context: context,
+                        builder: (contextSD1) {
+                          return AlertDialog(
+                              title: Text('Confira os dados da medição:'),
+                              content: SingleChildScrollView(
+                                child: Form(
+                                  key: _formKey,
+                                  autovalidateMode: AutovalidateMode.always,
                                   child: Column(
-                                    children: [
-                                          Text(
-                                            'Dados coletados:\n',
-                                          ),
-                                        ] +
-                                        measurement
-                                            // .toMap()
-                                            .entries
-                                            .map((e) =>
-                                                Text('${e.key}: ${e.value}'))
-                                            .toList(),
+                                    children:
+                                        measurementMap.entries.map((field) {
+                                      TextEditingController controller =
+                                          TextEditingController(
+                                              text: '${field.value ?? ''} ');
+                                      return Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Text('${field.key}:'),
+                                          Expanded(
+                                            child: TextFormField(
+                                                validator: (value) {
+                                                  String? message;
+                                                  try {
+                                                    double.parse(value!);
+                                                    measurementMap[field.key] =
+                                                        controller.text;
+                                                  } catch (e) {
+                                                    message =
+                                                        'Insira um valor de ponto flutuante.';
+                                                  }
+                                                  return message;
+                                                },
+                                                textAlign: TextAlign.center,
+                                                controller: controller),
+                                          )
+                                        ],
+                                      );
+                                    }).toList(),
                                   ),
                                 ),
-                                actions: [
-                                  TextButton(
-                                    child: Text('Retornar'),
-                                    onPressed: (() {
-                                      Navigator.pop(context);
-                                    }),
-                                  )
-                                ]);
-                          });
-                      throw 'Erro ao realizar medição';
+                              ),
+                              actions: [
+                                TextButton(
+                                  onPressed: () {
+                                    Navigator.pop(contextSD1);
+                                  },
+                                  child: Text(
+                                    'Cancelar',
+                                    style: TextStyle(color: Colors.grey),
+                                  ),
+                                ),
+                                AsyncButtonBuilder(
+                                    onPressed: () async {
+                                      if (!(_formKey.currentState?.validate() ??
+                                          false)) {
+                                        throw 'Form inválido';
+                                      }
+                                      response = await API.instance
+                                          .postMeasurements(
+                                              MeasurementCollected.fromMap(
+                                                  measurementMap)); // gambiarra
+                                      showDialog(
+                                          useRootNavigator: false,
+                                          barrierDismissible: false,
+                                          context: context,
+                                          builder: (contextSD2) {
+                                            return AlertDialog(
+                                                title: Text(response
+                                                    ? 'Medição enviada com sucesso'
+                                                    : 'Ocorreu um erro no envio dos dados coletados...'),
+                                                actions: [
+                                                  TextButton(
+                                                    onPressed: (() {
+                                                      Navigator.pop(contextSD2);
+                                                      Navigator.pop(contextSD1);
+                                                    }),
+                                                    child: Text(response
+                                                        ? 'Ok!'
+                                                        : 'Retornar'),
+                                                  )
+                                                ]);
+                                          });
+                                    },
+                                    builder: (context, child, callback, _) {
+                                      return TextButton(
+                                        style: TextButton.styleFrom(
+                                            backgroundColor:
+                                                CustomColors.lightGreen),
+                                        onPressed: callback,
+                                        child: child,
+                                      );
+                                    },
+                                    child: Text(
+                                      'Enviar',
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                      ),
+                                    )),
+                              ]);
+                        });
+                    if (!response) {
+                      throw 'Envio da medição cancelada'; // pro async_button mostrar ícone certo
                     }
                     /////////////////// futuro
                     // MeasurementCompleted measurement = await API.instance.getMeasurement();
@@ -326,7 +356,7 @@ class _HomePageState extends State<HomePage> {
                     if (!snapshot.data!) {
                       color = Colors.grey;
                       callback = () async {
-                        showDialog(
+                        await showDialog(
                           useRootNavigator: false,
                           context: context,
                           builder: (context) {
@@ -363,6 +393,14 @@ class _HomePageState extends State<HomePage> {
                       child: child,
                     );
                   },
+                  child: Text(
+                    'Medir',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 22.0,
+                      fontWeight: FontWeight.normal,
+                    ),
+                  ),
                 );
               },
             ),

@@ -109,6 +109,7 @@ class API {
         if (await _fetchUserProfile()) {
           _updateDBUserProfile();
         }
+        _autoRefresh();
         await DatabaseHelper.instance
             .insertCredentials(_client_id!, _refresh_token!);
         // ### verificação se banco possui medições não enviadas
@@ -147,7 +148,6 @@ class API {
         _refresh_token = null;
         return false;
       }
-      _autoRefresh();
     }
     return true;
   }
