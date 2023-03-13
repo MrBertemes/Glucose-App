@@ -18,10 +18,10 @@ abstract class Measurement {
   });
 
   Measurement.fromMap(Map<String, dynamic> json) {
-    id = json['idmeasurements']; // id ainda não é passado nas requisições
-    spo2 = json['spo2'];
-    pr_rpm = json['pr_rpm'];
-    date = DateTime.tryParse(json['date']) ??
+    id = json['idmeasurements'] ?? -1; // id ainda não é passado nas requisições
+    spo2 = int.parse('${json['spo2']}');
+    pr_rpm = int.parse('${json['pr_rpm']}');
+    date = DateTime.tryParse(json['date'] ?? '') ??
         DateTime.now(); // data ainda não é passada nas requisições
   }
 
@@ -30,13 +30,13 @@ abstract class Measurement {
     //_data['idmeasurements'] = id;
     _data['spo2'] = spo2;
     _data['pr_rpm'] = pr_rpm;
-    _data['date'] = date.toString();
+    // _data['date'] = date.toString();
     return _data;
   }
 }
 
 class MeasurementCollected extends Measurement {
-  late double apparent_glucose;
+  double? apparent_glucose;
   late double temperature;
   late List<double> m_4p;
   late List<double> f_4p;
@@ -61,13 +61,13 @@ class MeasurementCollected extends Measurement {
 
   MeasurementCollected.fromMap(Map<String, dynamic> json)
       : super.fromMap(json) {
-    apparent_glucose = json['glucose'];
-    temperature = json['temperature'];
+    apparent_glucose = double.parse('${json['glucose']}');
+    temperature = double.parse('${json['temperature']}');
     m_4p = <double>[];
     f_4p = <double>[];
     for (int i = 1; i <= 24; i++) {
-      m_4p.add(json['m${i}_4p']);
-      f_4p.add(json['f${i}_4p']);
+      m_4p.add(double.parse('${json['m${i}_4p']}'));
+      f_4p.add(double.parse('${json['f${i}_4p']}'));
     }
   }
 
@@ -103,7 +103,7 @@ class MeasurementCompleted extends Measurement {
 
   MeasurementCompleted.fromMap(Map<String, dynamic> json)
       : super.fromMap(json) {
-    glucose = json['glucose'];
+    glucose = double.parse('${json['glucose']}');
   }
 
   @override
