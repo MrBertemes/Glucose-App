@@ -23,7 +23,7 @@ class API {
   String? _client_id;
 
   // Detecção de conexão à internet
-  Connectivity _connectivity = Connectivity();
+  final Connectivity _connectivity = Connectivity();
   Stream<ConnectivityResult> get connection =>
       _connection().asBroadcastStream();
   Stream<ConnectivityResult> _connection() async* {
@@ -67,7 +67,8 @@ class API {
       },
     );
 
-    Map<String, dynamic> responseBody = jsonDecode(response.body);
+    Map<String, dynamic> responseBody =
+        jsonDecode(utf8.decode(response.bodyBytes));
 
     if (response.statusCode == 200) {
       TokenResponseModel responseModel =
@@ -87,7 +88,7 @@ class API {
           (response.reasonPhrase ?? '') +
           '\n--- Refresh --- \n');
       //
-      _responseMessage = jsonDecode(response.body)['detail'];
+      _responseMessage = responseBody['detail'];
     }
 
     return false;
@@ -106,6 +107,7 @@ class API {
       bool logged =
           auto ? await _fetchDBCredentials() : await _login(email, password);
       if (logged) {
+        await _fetchUserInfo();
         if (await _fetchUserProfile()) {
           _updateDBUserProfile();
         }
@@ -154,7 +156,7 @@ class API {
 
   @Deprecated('ter que ficar logando a cada 10 min tava me irritando')
   void _autoRefresh() async {
-    Timer.periodic(Duration(minutes: 8), (timer) {
+    Timer.periodic(const Duration(minutes: 8), (timer) {
       _autoSave();
     });
   }
@@ -182,7 +184,8 @@ class API {
       body: jsonEncode(model.toMap()),
     );
 
-    Map<String, dynamic> responseBody = jsonDecode(response.body);
+    Map<String, dynamic> responseBody =
+        jsonDecode(utf8.decode(response.bodyBytes));
 
     if (response.statusCode == 200) {
       LoginResponseModel responseModel =
@@ -235,7 +238,8 @@ class API {
       body: jsonEncode(model.toMap()),
     );
 
-    Map<String, dynamic> responseBody = jsonDecode(response.body);
+    Map<String, dynamic> responseBody =
+        jsonDecode(utf8.decode(response.bodyBytes));
 
     if (response.statusCode == 200) {
       //
@@ -260,11 +264,7 @@ class API {
         diabetes_type == 'T2' ||
         diabetes_type == 'NP');
 
-    Uri url = Uri.https(_authority, '/profile/' + _client_id! + '/user');
-
-    if (!await _refreshToken()) {
-      return false;
-    }
+    Uri url = Uri.https(_authority, '/profile/${_client_id!}/user');
 
     Profile profile = Profile(
       birthday: birthday,
@@ -283,7 +283,8 @@ class API {
       body: jsonEncode(profile.toMap()),
     );
 
-    Map<String, dynamic> responseBody = jsonDecode(response.body);
+    Map<String, dynamic> responseBody =
+        jsonDecode(utf8.decode(response.bodyBytes));
 
     if (response.statusCode == 200) {
       //
@@ -292,7 +293,7 @@ class API {
           '\n--- create profile --- \n');
       //
       _responseMessage = responseBody['status'];
-      _user!.profile = profile; // deveria salvar bd local?
+      _user!.profile = profile;
       return true;
     } else {
       //
@@ -307,8 +308,7 @@ class API {
     return false;
   }
 
-  // Requisição para alterar perfil do usuário
-  @Deprecated('Não tem endpoint pra isso ainda')
+  // Requisição para alterar perfil do usuário (apenas peso e altura por enquanto)
   Future<bool> updateUserProfile(DateTime birthday, double weight,
       double height, String sex, String diabetes_type) async {
     assert(sex == 'M' || sex == 'F');
@@ -316,11 +316,7 @@ class API {
         diabetes_type == 'T2' ||
         diabetes_type == 'NP');
 
-    Uri url = Uri.https(_authority, '/user/profile'); // tá errado
-
-    if (!await _refreshToken()) {
-      return false;
-    }
+    Uri url = Uri.https(_authority, '/update_profile/${_client_id!}');
 
     Profile profile = Profile(
       birthday: birthday,
@@ -330,7 +326,7 @@ class API {
       diabetes_type: diabetes_type,
     );
 
-    Response response = await _client.post(
+    Response response = await _client.patch(
       url,
       headers: {
         'Authorization': 'Bearer $_token',
@@ -339,7 +335,8 @@ class API {
       body: jsonEncode(profile.toMap()),
     );
 
-    Map<String, dynamic> responseBody = jsonDecode(response.body);
+    Map<String, dynamic> responseBody =
+        jsonDecode(utf8.decode(response.bodyBytes));
 
     if (response.statusCode == 200) {
       //
@@ -348,20 +345,24 @@ class API {
           '\n--- update profile --- \n');
       //
       _responseMessage = responseBody['status'];
+      _user!.profile = profile;
       return true;
     } else {
       //
-      print(response.reasonPhrase);
+      print('--- update profile --- \n' +
+          (response.reasonPhrase ?? '') +
+          '\n' +
+          responseBody['detail'] +
+          '\n--- update profile --- \n');
       //
-      print(responseBody['detail']);
     }
 
     return false;
   }
 
-  /// Requisição para recuperar perfil do usuário
-  Future<bool> _fetchUserProfile() async {
-    Uri url = Uri.https(_authority, '/profile/' + _client_id!);
+  // Requisição para recuperar nome e email do usuário
+  Future<bool> _fetchUserInfo() async {
+    Uri url = Uri.https(_authority, '/user_info/${_client_id!}');
 
     Response response = await _client.get(
       url,
@@ -370,10 +371,47 @@ class API {
       },
     );
 
-    // Map<String, dynamic> responseBody = jsonDecode(response.body);
+    Map<String, dynamic> responseBody =
+        jsonDecode(utf8.decode(response.bodyBytes));
 
     if (response.statusCode == 200) {
-      Map<String, dynamic> responseBody = jsonDecode(response.body);
+      //
+      print('--- fetch user info --- \n' +
+          response.body +
+          '\n--- fetch user info --- \n');
+      //
+      _user!.name = responseBody['name'];
+      _user!.email = responseBody['email'];
+      _responseMessage = APIResponseMessages.success;
+      return true;
+    } else {
+      //
+      print('--- fetch user info --- \n' +
+          (response.reasonPhrase ?? '') +
+          '\n--- fetch user info --- \n');
+      //
+      _responseMessage = responseBody['detail'];
+      //
+    }
+
+    return false;
+  }
+
+  /// Requisição para recuperar perfil do usuário
+  Future<bool> _fetchUserProfile() async {
+    Uri url = Uri.https(_authority, '/profile/${_client_id!}');
+
+    Response response = await _client.get(
+      url,
+      headers: {
+        'Authorization': 'Bearer $_token',
+      },
+    );
+
+    Map<String, dynamic> responseBody =
+        jsonDecode(utf8.decode(response.bodyBytes));
+
+    if (response.statusCode == 200) {
       //
       print('--- fetch profile --- \n' +
           response.body +
@@ -386,10 +424,11 @@ class API {
       //
       print('--- fetch profile --- \n' +
           (response.reasonPhrase ?? '') +
+          '\n' +
+          responseBody['detail'] +
           '\n--- fetch profile --- \n');
       //
-      // temporario
-      _responseMessage = APIResponseMessages.emptyProfile;
+      _responseMessage = responseBody['detail'];
       //
     }
 
@@ -397,22 +436,23 @@ class API {
   }
 
   Future<bool> _updateDBUserProfile() async {
-    // try {
     User? userData =
         await DatabaseHelper.instance.queryUserByClientID(_client_id!);
     if (userData == null) {
-      return await DatabaseHelper.instance.insertUser(_user!, _client_id!);
+      await DatabaseHelper.instance.insertUser(_user!, _client_id!);
+      // não é a maneira mais inteligente mas é o que tem,
+      // dava pra fazer pelo banco mas eu não quis por questões de encapsulamento
+      User? userID =
+          await DatabaseHelper.instance.queryUserByClientID(_client_id!);
+      _user!.id = userID!.id;
+      return true;
     } else {
       _user!.id = userData.id;
       return await DatabaseHelper.instance.updateUser(_user!);
     }
-    // } catch (e) {
-    //   return false;
-    // }
   }
 
   Future<bool> _fetchDBUserProfile() async {
-    // try {
     User? userData =
         await DatabaseHelper.instance.queryUserByClientID(_client_id!);
     _user!.id = userData!.id;
@@ -420,18 +460,11 @@ class API {
     _user!.email = userData.email;
     _user!.profile = userData.profile;
     return true;
-    // } catch (e) {
-    //   return false;
-    // }
   }
 
   /// Envia a medição coletada pelo bluetooth para ser processada na nuvem
   Future<bool> postMeasurements(MeasurementCollected measurement) async {
-    Uri url = Uri.https(_authority, '/measure/' + _client_id! + '/glucose');
-
-    if (!await _refreshToken()) {
-      return false;
-    }
+    Uri url = Uri.https(_authority, '/measure/${_client_id!}/glucose');
 
     Response response = await _client.post(
       url,
@@ -442,7 +475,8 @@ class API {
       body: jsonEncode(measurement.toMap()),
     );
 
-    Map<String, dynamic> responseBody = jsonDecode(response.body);
+    Map<String, dynamic> responseBody =
+        jsonDecode(utf8.decode(response.bodyBytes));
 
     if (response.statusCode == 200) {
       //
@@ -475,7 +509,8 @@ class API {
       },
     );
 
-    Map<String, dynamic> responseBody = jsonDecode(response.body);
+    Map<String, dynamic> responseBody =
+        jsonDecode(utf8.decode(response.bodyBytes));
 
     if (response.statusCode == 200) {
       List<Map<String, dynamic>> list = responseBody['measurements'];
@@ -500,7 +535,8 @@ abstract class APIResponseMessages {
   static const String success = 'Success';
   static const String alreadyRegistered = 'Email already exists...';
   static const String notRegistered = 'Invalid username';
-  static const String emptyProfile = 'Profile does not exists';
+  static const String emptyProfile = 'Non-existent User Profile!';
+  static const String clientIdError = 'Non-existent User!';
   static const String wrongPassword = 'Invalid password';
   static const String tokenExpired = 'Token expired';
   static const String invalidFields = 'value is not a valid email address';
