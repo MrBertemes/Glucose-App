@@ -175,6 +175,8 @@ class _ProfilePageState extends State<ProfilePage> {
                                     ),
                                   ),
                                   TextFormField(
+                                    enabled:
+                                        false, // Não pode ser alterado por enquanto
                                     controller: _birthdate,
                                     decoration: InputDecoration(
                                       border: OutlineInputBorder(
@@ -371,11 +373,13 @@ class _ProfilePageState extends State<ProfilePage> {
                                           top: 15.0, left: 15.0, right: 10.0),
                                     ),
                                     icon: Icon(Icons.keyboard_arrow_down),
-                                    onChanged: (String? value) {
-                                      setState(() {
-                                        _dropdownValueSex = value!;
-                                      });
-                                    },
+                                    onChanged: null,
+                                    // Não pode ser alterado por enquanto
+                                    // (String? value) {
+                                    //   setState(() {
+                                    //     _dropdownValueSex = value!;
+                                    //   });
+                                    // },
                                     items: ['Masculino', 'Feminino']
                                         .map((String value) {
                                       return DropdownMenuItem(
@@ -425,11 +429,13 @@ class _ProfilePageState extends State<ProfilePage> {
                                           top: 15.0, left: 15.0, right: 10.0),
                                     ),
                                     icon: Icon(Icons.keyboard_arrow_down),
-                                    onChanged: (String? value) {
-                                      setState(() {
-                                        _dropdownValueDiabetes = value!;
-                                      });
-                                    },
+                                    onChanged: null,
+                                    // Não pode ser alterado por enquanto
+                                    // (String? value) {
+                                    //   setState(() {
+                                    //     _dropdownValueDiabetes = value!;
+                                    //   });
+                                    // },
                                     items: [
                                       'Tipo 1',
                                       'Tipo 2',
