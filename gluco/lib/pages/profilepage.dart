@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:gluco/models/user.dart';
 import 'package:gluco/services/api.dart';
 import 'package:gluco/styles/customcolors.dart';
+import 'package:gluco/styles/dateformatter.dart';
 import 'package:gluco/styles/defaultappbar.dart';
 import 'package:intl/intl.dart';
 
@@ -178,6 +179,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                     enabled:
                                         false, // Não pode ser alterado por enquanto
                                     controller: _birthdate,
+                                    inputFormatters: [DateFormatter()],
                                     decoration: InputDecoration(
                                       border: OutlineInputBorder(
                                           borderSide: BorderSide.none),
