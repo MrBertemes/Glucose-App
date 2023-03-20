@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:async_button_builder/async_button_builder.dart';
 import 'package:gluco/services/api.dart';
 import 'package:gluco/styles/customcolors.dart';
+import 'package:gluco/styles/dateformatter.dart';
 
 class FirstLoginPage extends StatefulWidget {
   const FirstLoginPage();
@@ -155,6 +156,7 @@ class _FirstLoginPageState extends State<FirstLoginPage> {
                     ),
                     TextFormField(
                       controller: _birthdate,
+                      inputFormatters: [DateFormatter()],
                       decoration: InputDecoration(
                         border: OutlineInputBorder(
                           borderSide: BorderSide.none,
