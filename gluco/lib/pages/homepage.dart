@@ -4,7 +4,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:async_button_builder/async_button_builder.dart';
-// import 'package:gluco/db/databasehelper.dart';
+import 'package:gluco/db/databasehelper.dart';
 import 'package:gluco/models/measurement.dart';
 import 'package:gluco/services/api.dart';
 import 'package:gluco/services/bluetoothhelper.dart';
@@ -218,7 +218,6 @@ class _HomePageState extends State<HomePage> {
                       measurement = await BluetoothHelper.instance.collect();
                     } catch (e) {
                       await showDialog(
-                          useRootNavigator: false,
                           barrierDismissible: false,
                           context: context,
                           builder: (context) {
@@ -236,110 +235,174 @@ class _HomePageState extends State<HomePage> {
                           });
                       throw 'Erro na coleta da medição'; // pro async_button mostrar ícone certo
                     }
-                    Map<String, dynamic> measurementMap = measurement.toMap();
                     bool response = false;
                     await showDialog(
-                        useRootNavigator: false,
                         barrierDismissible: false,
                         context: context,
                         builder: (contextSD1) {
+                          TextEditingController controller =
+                              TextEditingController();
                           return AlertDialog(
-                              title: Text('Confira os dados da medição:'),
-                              content: SingleChildScrollView(
-                                child: Form(
-                                  key: _formKey,
-                                  autovalidateMode: AutovalidateMode.always,
-                                  child: Column(
-                                    children:
-                                        measurementMap.entries.map((field) {
-                                      TextEditingController controller =
-                                          TextEditingController(
-                                              text: '${field.value ?? ''} ');
-                                      return Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceBetween,
-                                        children: [
-                                          Text('${field.key}:'),
-                                          Expanded(
-                                            child: TextFormField(
-                                                validator: (value) {
-                                                  String? message;
-                                                  try {
-                                                    double.parse(value!);
-                                                    measurementMap[field.key] =
-                                                        controller.text;
-                                                  } catch (e) {
-                                                    message =
-                                                        'Insira um valor de ponto flutuante.';
-                                                  }
-                                                  return message;
-                                                },
-                                                textAlign: TextAlign.center,
-                                                controller: controller),
-                                          )
-                                        ],
-                                      );
-                                    }).toList(),
-                                  ),
+                              title: Text('Insira o valor da glicose:'),
+                              content: Form(
+                                key: _formKey,
+                                autovalidateMode: AutovalidateMode.always,
+                                child: TextFormField(
+                                  controller: controller,
+                                  validator: (value) {
+                                    String? message;
+                                    try {
+                                      double.parse(value!);
+                                    } catch (e) {
+                                      message =
+                                          'Insira um valor de ponto flutuante.';
+                                    }
+                                    return message;
+                                  },
+                                  textAlign: TextAlign.center,
                                 ),
                               ),
                               actions: [
                                 TextButton(
                                   onPressed: () {
-                                    Navigator.pop(contextSD1);
+                                    showDialog(
+                                        barrierDismissible: false,
+                                        context: contextSD1,
+                                        builder: (contextSD2r) {
+                                          return AlertDialog(
+                                            title: Text(
+                                                'Certeza que deseja cancelar?'),
+                                            actions: [
+                                              TextButton(
+                                                child: Text(
+                                                  'Sim, cancelar',
+                                                  style: TextStyle(
+                                                      color: Colors.grey),
+                                                ),
+                                                onPressed: () {
+                                                  Navigator.pop(contextSD2r);
+                                                  Navigator.pop(contextSD1);
+                                                },
+                                              ),
+                                              TextButton(
+                                                style: TextButton.styleFrom(
+                                                    backgroundColor:
+                                                        CustomColors
+                                                            .lightGreen),
+                                                onPressed: () {
+                                                  Navigator.pop(contextSD2r);
+                                                },
+                                                child: Text(
+                                                  'Não, continuar medição',
+                                                  style: TextStyle(
+                                                    color: Colors.white,
+                                                  ),
+                                                ),
+                                              )
+                                            ],
+                                          );
+                                        });
                                   },
                                   child: Text(
                                     'Cancelar',
                                     style: TextStyle(color: Colors.grey),
                                   ),
                                 ),
-                                AsyncButtonBuilder(
-                                    onPressed: () async {
-                                      if (!(_formKey.currentState?.validate() ??
-                                          false)) {
-                                        throw 'Form inválido';
-                                      }
-                                      response = await API.instance
-                                          .postMeasurements(
-                                              MeasurementCollected.fromMap(
-                                                  measurementMap)); // gambiarra
-                                      showDialog(
-                                          useRootNavigator: false,
-                                          barrierDismissible: false,
-                                          context: context,
-                                          builder: (contextSD2) {
-                                            return AlertDialog(
-                                                title: Text(response
-                                                    ? 'Medição enviada com sucesso'
-                                                    : 'Ocorreu um erro no envio dos dados coletados...'),
-                                                actions: [
-                                                  TextButton(
-                                                    onPressed: (() {
-                                                      Navigator.pop(contextSD2);
-                                                      Navigator.pop(contextSD1);
-                                                    }),
-                                                    child: Text(response
-                                                        ? 'Ok!'
-                                                        : 'Retornar'),
-                                                  )
-                                                ]);
-                                          });
-                                    },
-                                    builder: (context, child, callback, _) {
-                                      return TextButton(
-                                        style: TextButton.styleFrom(
-                                            backgroundColor:
-                                                CustomColors.lightGreen),
-                                        onPressed: callback,
-                                        child: child,
-                                      );
-                                    },
-                                    child: Text(
-                                      'Enviar',
-                                      style: TextStyle(
-                                        color: Colors.white,
-                                      ),
-                                    )),
+                                TextButton(
+                                  style: TextButton.styleFrom(
+                                      backgroundColor: CustomColors.lightGreen),
+                                  child: Text(
+                                    'Enviar',
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                  onPressed: () {
+                                    if (!(_formKey.currentState?.validate() ??
+                                        false)) {
+                                      throw 'Form inválido';
+                                    }
+                                    measurement.apparent_glucose =
+                                        double.parse(controller.text);
+                                    showDialog(
+                                      barrierDismissible: false,
+                                      context: contextSD1,
+                                      builder: (contextSD2) {
+                                        return AlertDialog(
+                                            title: Text('Confira os dados!'),
+                                            content: Text(
+                                                'Glicose: ${measurement.apparent_glucose}'),
+                                            actions: [
+                                              TextButton(
+                                                onPressed: () {
+                                                  Navigator.pop(contextSD2);
+                                                },
+                                                child: Text(
+                                                  'Corrigir',
+                                                  style: TextStyle(
+                                                      color: Colors.grey),
+                                                ),
+                                              ),
+                                              AsyncButtonBuilder(
+                                                onPressed: () async {
+                                                  response = await API.instance
+                                                      .postMeasurements(
+                                                          measurement);
+                                                  if (!response) {
+                                                    DatabaseHelper.instance
+                                                        .insertMeasurementCollected(
+                                                            API.instance
+                                                                .currentUser!,
+                                                            measurement);
+                                                  }
+                                                  showDialog(
+                                                      barrierDismissible: false,
+                                                      context: contextSD2,
+                                                      builder: (contextSD3) {
+                                                        return AlertDialog(
+                                                            title: Text(response
+                                                                ? 'Medição enviada com sucesso'
+                                                                : 'Ocorreu um erro no envio dos dados coletados, eles serão armazenados até que seja possível enviar...'),
+                                                            actions: [
+                                                              TextButton(
+                                                                onPressed: (() {
+                                                                  Navigator.pop(
+                                                                      contextSD3);
+                                                                  Navigator.pop(
+                                                                      contextSD2);
+                                                                  Navigator.pop(
+                                                                      contextSD1);
+                                                                }),
+                                                                child: Text(response
+                                                                    ? 'Ok!'
+                                                                    : 'Retornar'),
+                                                              )
+                                                            ]);
+                                                      });
+                                                },
+                                                builder:
+                                                    (cont, child, callback, _) {
+                                                  return TextButton(
+                                                    style: TextButton.styleFrom(
+                                                        backgroundColor:
+                                                            CustomColors
+                                                                .lightGreen),
+                                                    onPressed: callback,
+                                                    child: child,
+                                                  );
+                                                },
+                                                child: Text(
+                                                  'Confirmar',
+                                                  style: TextStyle(
+                                                    color: Colors.white,
+                                                  ),
+                                                ),
+                                              )
+                                            ]);
+                                      },
+                                    );
+                                  },
+                                )
                               ]);
                         });
                     if (!response) {
