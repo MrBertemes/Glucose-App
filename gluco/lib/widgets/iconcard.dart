@@ -50,16 +50,8 @@ class IconCard extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
                       SizedBox(height: size.height * 0.1),
-                      if (MediaQuery.of(context).orientation ==
-                          Orientation.portrait) ...[
-                        label,
-                        data,
-                      ] else ...[
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          children: [label, data],
-                        ),
-                      ]
+                      label,
+                      data
                     ],
                   ),
                 ),
@@ -69,11 +61,11 @@ class IconCard extends StatelessWidget {
           Container(
             height: size.height * 0.35,
             width: size.height * 0.35,
-            child: icon,
             decoration: BoxDecoration(
               color: color,
               shape: BoxShape.circle,
             ),
+            child: icon,
           ),
         ],
       ),

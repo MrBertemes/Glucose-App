@@ -41,6 +41,9 @@ class _HomePageState extends State<HomePage> {
               return AlertDialog(
                 title: Text('Sem conexão'),
                 content: Text('Sem Internet os recursos serão limitados'),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10.0),
+                ),
                 actions: [
                   TextButton(
                     onPressed: () {
@@ -63,6 +66,80 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
+    Size heightSize = Size.fromHeight(MediaQuery.of(context).size.height *
+        (MediaQuery.of(context).orientation == Orientation.portrait
+            ? 0.2
+            : 0.4));
+    IconCard glucoseCard = IconCard(
+      icon: Icon(AppIcons.molecula, color: Colors.white, size: 32),
+      label: Text(
+        'Glicose',
+        textAlign: TextAlign.center,
+        style: TextStyle(
+          fontSize: 20.0,
+          fontWeight: FontWeight.bold,
+          fontStyle: FontStyle.italic,
+        ),
+      ),
+      data: HistoryVO.currentMeasurement.id != -1
+          ? Text(
+              '${HistoryVO.currentMeasurement.glucose} mg/dL',
+              style: TextStyle(
+                fontSize: 18.0,
+                color: Colors.grey[700],
+                fontWeight: FontWeight.bold,
+              ),
+            )
+          : Text('Sem dados'),
+      color: CustomColors.lightBlue.withOpacity(1.0),
+      size: heightSize,
+    );
+    IconCard spo2Card = IconCard(
+      icon: Icon(Icons.air, color: Colors.white),
+      label: Text(
+        'Saturação de Oxigênio',
+        textAlign: TextAlign.center,
+        style: TextStyle(
+          fontSize: 16.0,
+          fontWeight: FontWeight.bold,
+          fontStyle: FontStyle.italic,
+        ),
+      ),
+      data: HistoryVO.currentMeasurement.id != -1
+          ? Text(
+              '${HistoryVO.currentMeasurement.spo2}%',
+              style: TextStyle(
+                color: Colors.grey[700],
+                fontWeight: FontWeight.bold,
+              ),
+            )
+          : Text('Sem dados'),
+      color: CustomColors.lightGreen.withOpacity(1.0),
+      size: heightSize,
+    );
+    IconCard rpmCard = IconCard(
+      icon: Icon(Icons.favorite, color: Colors.white),
+      label: Text(
+        'Frequência Cardíaca',
+        textAlign: TextAlign.center,
+        style: TextStyle(
+          fontSize: 16.0,
+          fontWeight: FontWeight.bold,
+          fontStyle: FontStyle.italic,
+        ),
+      ),
+      data: HistoryVO.currentMeasurement.id != -1
+          ? Text(
+              '${HistoryVO.currentMeasurement.pr_rpm} bpm',
+              style: TextStyle(
+                color: Colors.grey[700],
+                fontWeight: FontWeight.bold,
+              ),
+            )
+          : Text('Sem dados'),
+      color: CustomColors.greenBlue.withOpacity(1.0),
+      size: heightSize,
+    );
     return Scaffold(
       backgroundColor: CustomColors.scaffLightBlue,
       appBar: imageAppBar(
@@ -111,93 +188,37 @@ class _HomePageState extends State<HomePage> {
                 ],
               ),
             ),
-            Column(
-              children: [
-                IconCard(
-                  icon: Icon(AppIcons.molecula, color: Colors.white, size: 32),
-                  label: Text(
-                    'Glicose',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontSize: 20.0,
-                      fontWeight: FontWeight.bold,
-                      fontStyle: FontStyle.italic,
-                    ),
+            MediaQuery.of(context).orientation == Orientation.portrait
+                ? Column(
+                    children: [
+                      glucoseCard,
+                      SizedBox(
+                          height: MediaQuery.of(context).size.height * 0.025),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: spo2Card,
+                          ),
+                          SizedBox(
+                              width: MediaQuery.of(context).size.width * 0.025),
+                          Expanded(
+                            child: rpmCard,
+                          ),
+                        ],
+                      ),
+                    ],
+                  )
+                : Row(
+                    children: [
+                      Expanded(child: glucoseCard),
+                      SizedBox(
+                          width: MediaQuery.of(context).size.width * 0.015),
+                      Expanded(child: spo2Card),
+                      SizedBox(
+                          width: MediaQuery.of(context).size.width * 0.015),
+                      Expanded(child: rpmCard)
+                    ],
                   ),
-                  data: HistoryVO.currentMeasurement.id != -1
-                      ? Text(
-                          '${HistoryVO.currentMeasurement.glucose} mg/dL',
-                          style: TextStyle(
-                            fontSize: 18.0,
-                            color: Colors.grey[700],
-                            fontWeight: FontWeight.bold,
-                          ),
-                        )
-                      : Text('Sem dados'),
-                  color: CustomColors.lightBlue.withOpacity(1.0),
-                  size:
-                      Size.fromHeight(MediaQuery.of(context).size.height * 0.2),
-                ),
-                SizedBox(height: MediaQuery.of(context).size.height * 0.025),
-                Row(
-                  children: [
-                    Expanded(
-                      child: IconCard(
-                        icon: Icon(Icons.air, color: Colors.white),
-                        label: Text(
-                          'Saturação de Oxigênio',
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            fontSize: 16.0,
-                            fontWeight: FontWeight.bold,
-                            fontStyle: FontStyle.italic,
-                          ),
-                        ),
-                        data: HistoryVO.currentMeasurement.id != -1
-                            ? Text(
-                                '${HistoryVO.currentMeasurement.spo2}%',
-                                style: TextStyle(
-                                  color: Colors.grey[700],
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              )
-                            : Text('Sem dados'),
-                        color: CustomColors.lightGreen.withOpacity(1.0),
-                        size: Size.fromHeight(
-                            MediaQuery.of(context).size.height * 0.2),
-                      ),
-                    ),
-                    SizedBox(width: MediaQuery.of(context).size.width * 0.025),
-                    Expanded(
-                      child: IconCard(
-                        icon: Icon(Icons.favorite, color: Colors.white),
-                        label: Text(
-                          'Frequência Cardíaca',
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            fontSize: 16.0,
-                            fontWeight: FontWeight.bold,
-                            fontStyle: FontStyle.italic,
-                          ),
-                        ),
-                        data: HistoryVO.currentMeasurement.id != -1
-                            ? Text(
-                                '${HistoryVO.currentMeasurement.pr_rpm} bpm',
-                                style: TextStyle(
-                                  color: Colors.grey[700],
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              )
-                            : Text('Sem dados'),
-                        color: CustomColors.greenBlue.withOpacity(1.0),
-                        size: Size.fromHeight(
-                            MediaQuery.of(context).size.height * 0.2),
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
             StreamBuilder<bool>(
               // stream: btConn,
               stream: Stream.value(true), // teste para o botao habilitar
@@ -224,6 +245,9 @@ class _HomePageState extends State<HomePage> {
                             return AlertDialog(
                                 title: Text(
                                     'Ocorreu um erro na coleta dos dados do dispositivo Bluetooth...'),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(10.0),
+                                ),
                                 actions: [
                                   TextButton(
                                     onPressed: (() {
@@ -244,6 +268,9 @@ class _HomePageState extends State<HomePage> {
                               TextEditingController();
                           return AlertDialog(
                               title: Text('Insira o valor da glicose:'),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(10.0),
+                              ),
                               content: Form(
                                 key: _formKey,
                                 autovalidateMode: AutovalidateMode.always,
@@ -254,8 +281,7 @@ class _HomePageState extends State<HomePage> {
                                     try {
                                       double.parse(value!);
                                     } catch (e) {
-                                      message =
-                                          'Insira um valor de ponto flutuante.';
+                                      message = 'Insira um valor decimal.';
                                     }
                                     return message;
                                   },
@@ -267,22 +293,30 @@ class _HomePageState extends State<HomePage> {
                                   onPressed: () {
                                     showDialog(
                                         barrierDismissible: false,
+                                        barrierColor: Colors.transparent,
                                         context: contextSD1,
                                         builder: (contextSD2r) {
                                           return AlertDialog(
                                             title: Text(
                                                 'Certeza que deseja cancelar?'),
+                                            shape: RoundedRectangleBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(10.0),
+                                            ),
                                             actions: [
                                               TextButton(
-                                                child: Text(
-                                                  'Sim, cancelar',
-                                                  style: TextStyle(
-                                                      color: Colors.grey),
-                                                ),
+                                                style: TextButton.styleFrom(
+                                                    backgroundColor:
+                                                        Colors.red[900]),
                                                 onPressed: () {
                                                   Navigator.pop(contextSD2r);
                                                   Navigator.pop(contextSD1);
                                                 },
+                                                child: Text(
+                                                  'Cancelar',
+                                                  style: TextStyle(
+                                                      color: Colors.white),
+                                                ),
                                               ),
                                               TextButton(
                                                 style: TextButton.styleFrom(
@@ -293,7 +327,7 @@ class _HomePageState extends State<HomePage> {
                                                   Navigator.pop(contextSD2r);
                                                 },
                                                 child: Text(
-                                                  'Não, continuar medição',
+                                                  'Continuar medição',
                                                   style: TextStyle(
                                                     color: Colors.white,
                                                   ),
@@ -326,12 +360,17 @@ class _HomePageState extends State<HomePage> {
                                         double.parse(controller.text);
                                     showDialog(
                                       barrierDismissible: false,
+                                      barrierColor: Colors.transparent,
                                       context: contextSD1,
                                       builder: (contextSD2) {
                                         return AlertDialog(
                                             title: Text('Confira os dados!'),
                                             content: Text(
                                                 'Glicose: ${measurement.apparent_glucose}'),
+                                            shape: RoundedRectangleBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(10.0),
+                                            ),
                                             actions: [
                                               TextButton(
                                                 onPressed: () {
@@ -357,12 +396,21 @@ class _HomePageState extends State<HomePage> {
                                                   }
                                                   showDialog(
                                                       barrierDismissible: false,
+                                                      barrierColor:
+                                                          Colors.transparent,
                                                       context: contextSD2,
                                                       builder: (contextSD3) {
                                                         return AlertDialog(
                                                             title: Text(response
                                                                 ? 'Medição enviada com sucesso'
                                                                 : 'Ocorreu um erro no envio dos dados coletados, eles serão armazenados até que seja possível enviar...'),
+                                                            shape:
+                                                                RoundedRectangleBorder(
+                                                              borderRadius:
+                                                                  BorderRadius
+                                                                      .circular(
+                                                                          10.0),
+                                                            ),
                                                             actions: [
                                                               TextButton(
                                                                 onPressed: (() {
@@ -427,6 +475,9 @@ class _HomePageState extends State<HomePage> {
                               title: Text('Dispositivo não conectado'),
                               content: Text(
                                   'Escolha um dispositivo para conectar na página de dispositivos...'),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(10.0),
+                              ),
                               actions: [
                                 TextButton(
                                   child: Text('Ir à página de dispositivos'),
