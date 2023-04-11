@@ -1,12 +1,18 @@
 // ignore_for_file: use_key_in_widget_constructors, prefer_const_constructors_in_immutables, prefer_const_constructors
 
+import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:image_cropper/image_cropper.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:path/path.dart';
+import 'package:gluco/db/databasehelper.dart';
 import 'package:gluco/models/user.dart';
 import 'package:gluco/services/api.dart';
 import 'package:gluco/styles/customcolors.dart';
 import 'package:gluco/styles/dateformatter.dart';
 import 'package:gluco/styles/defaultappbar.dart';
-import 'package:intl/intl.dart';
 
 class ProfilePage extends StatefulWidget {
   ProfilePage();
@@ -20,10 +26,12 @@ class _ProfilePageState extends State<ProfilePage> {
   late final TextEditingController _birthdate;
   late final TextEditingController _weight;
   late final TextEditingController _height;
+  Image? _profile_pic;
+  String? _profile_pic_path;
 
-  String _dropdownValueSex =
+  final String _dropdownValueSex =
       API.instance.currentUser!.profile.sex == 'M' ? 'Masculino' : 'Feminino';
-  String _dropdownValueDiabetes =
+  final String _dropdownValueDiabetes =
       API.instance.currentUser!.profile.diabetes_type == 'T1'
           ? 'Tipo 1'
           : API.instance.currentUser!.profile.diabetes_type == 'T2'
@@ -36,6 +44,7 @@ class _ProfilePageState extends State<ProfilePage> {
         text: DateFormat.yMd('pt_BR').format(user.profile.birthday));
     _weight = TextEditingController(text: user.profile.weight.toString());
     _height = TextEditingController(text: user.profile.height.toString());
+    _profile_pic_path = user.profile.profile_pic;
     super.initState();
   }
 
@@ -48,6 +57,14 @@ class _ProfilePageState extends State<ProfilePage> {
     super.dispose();
   }
 
+  void _loadProfilePic() {
+    File file = File(_profile_pic_path!);
+    if (file.existsSync()) {
+      _profile_pic = Image.file(file);
+    }
+    setState(() {});
+  }
+
   final ValueNotifier<bool> _validFormVN = ValueNotifier<bool>(false);
   final _formKey = GlobalKey<FormState>();
 
@@ -55,6 +72,7 @@ class _ProfilePageState extends State<ProfilePage> {
   Widget build(BuildContext context) {
     double landscapeCorrection =
         MediaQuery.of(context).orientation == Orientation.landscape ? 0.6 : 1.0;
+    _loadProfilePic();
     return Container(
       decoration: BoxDecoration(
         gradient: LinearGradient(
@@ -93,13 +111,20 @@ class _ProfilePageState extends State<ProfilePage> {
                               color: CustomColors.blueGreen.withOpacity(1.0),
                               shape: BoxShape.circle,
                             ),
-                            child: Icon(
-                              Icons.person,
-                              size: MediaQuery.of(context).size.width *
-                                  0.3 *
-                                  landscapeCorrection,
-                              color: Colors.white,
-                            ),
+                            child: _profile_pic == null
+                                ? Icon(
+                                    Icons.person,
+                                    size: MediaQuery.of(context).size.width *
+                                        0.3 *
+                                        landscapeCorrection,
+                                    color: Colors.white,
+                                  )
+                                : CircleAvatar(
+                                    backgroundImage: _profile_pic!.image,
+                                    radius: MediaQuery.of(context).size.width *
+                                        0.15 *
+                                        landscapeCorrection,
+                                  ),
                           ),
                         ),
                         FloatingActionButton(
@@ -109,8 +134,35 @@ class _ProfilePageState extends State<ProfilePage> {
                             size: 30.0,
                             color: Colors.grey,
                           ),
-                          onPressed: () {
-                            // precisa incluir aqui o imagepicker
+                          onPressed: () async {
+                            XFile? pickedImage = await ImagePicker()
+                                .pickImage(source: ImageSource.gallery);
+                            if (pickedImage == null) {
+                              return;
+                            }
+                            CroppedFile? croppedImage =
+                                await ImageCropper().cropImage(
+                              sourcePath: pickedImage.path,
+                              maxWidth: 360,
+                              maxHeight: 360,
+                              aspectRatio:
+                                  CropAspectRatio(ratioX: 1.0, ratioY: 1.0),
+                              cropStyle: CropStyle.circle,
+                            );
+                            if (croppedImage == null) {
+                              return;
+                            }
+                            Directory dir =
+                                await getApplicationDocumentsDirectory();
+                            File image = await File(
+                                    join(dir.path, 'EG_${pickedImage.name}'))
+                                .writeAsBytes(await croppedImage.readAsBytes());
+                            _profile_pic_path = image.path;
+                            // temporário ?
+                            user.profile.profile_pic = _profile_pic_path!;
+                            await API.instance.updateDBUserProfile();
+                            //
+                            _loadProfilePic();
                           },
                         ),
                       ],
@@ -180,6 +232,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                         false, // Não pode ser alterado por enquanto
                                     controller: _birthdate,
                                     inputFormatters: [DateFormatter()],
+                                    style: TextStyle(color: Colors.black38),
                                     decoration: InputDecoration(
                                       border: OutlineInputBorder(
                                           borderSide: BorderSide.none),
@@ -497,12 +550,12 @@ class _ProfilePageState extends State<ProfilePage> {
                                                                     .text),
                                                         double.parse(_weight
                                                             .text
-                                                            .replaceAll(
-                                                                ',', '.')),
-                                                        double.parse(_height
-                                                            .text
-                                                            .replaceAll(
-                                                                ',', '.')),
+                                                            .replaceAll(',',
+                                                                '.')),
+                                                        double
+                                                            .parse(_height.text
+                                                                .replaceAll(
+                                                                    ',', '.')),
                                                         _dropdownValueSex ==
                                                                 'Masculino'
                                                             ? 'M'
@@ -513,7 +566,9 @@ class _ProfilePageState extends State<ProfilePage> {
                                                             : _dropdownValueDiabetes ==
                                                                     'Tipo 2'
                                                                 ? 'T2'
-                                                                : 'NP')) {
+                                                                : 'NP',
+                                                        _profile_pic_path ??
+                                                            '')) {
                                                   _validFormVN.value = false;
                                                 }
                                               }

@@ -44,7 +44,8 @@ class DatabaseHelper {
         weight REAL NOT NULL,
         height REAL NOT NULL,
         sex TEXT NOT NULL,
-        diabetes_type TEXT NOT NULL
+        diabetes_type TEXT NOT NULL,
+        profile_pic TEXT
       );
     ''');
     await db.execute('''

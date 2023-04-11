@@ -37,6 +37,7 @@ class Profile {
   double height;
   String sex;
   String diabetes_type;
+  String profile_pic;
 
   Profile({
     required this.birthday,
@@ -44,6 +45,7 @@ class Profile {
     required this.height,
     required this.sex,
     required this.diabetes_type,
+    this.profile_pic = '',
   });
 
   factory Profile.fromMap(Map<String, dynamic> json) => Profile(
@@ -52,6 +54,7 @@ class Profile {
         height: json['height'],
         sex: json['sex'],
         diabetes_type: json['diabetes_type'],
+        profile_pic: json['profile_pic'] ?? '',
       );
 
   Map<String, dynamic> toMap() {
@@ -61,6 +64,7 @@ class Profile {
       'height': height,
       'sex': sex,
       'diabetes_type': diabetes_type,
+      'profile_pic': profile_pic,
     };
   }
 }

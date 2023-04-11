@@ -1,8 +1,14 @@
 // ignore_for_file: must_be_immutable, use_key_in_widget_constructors, prefer_const_constructors
 
+import 'dart:io';
 import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
 import 'package:async_button_builder/async_button_builder.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:image_cropper/image_cropper.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:path/path.dart';
+import 'package:gluco/db/databasehelper.dart';
 import 'package:gluco/services/api.dart';
 import 'package:gluco/styles/customcolors.dart';
 import 'package:gluco/styles/dateformatter.dart';
@@ -18,6 +24,8 @@ class _FirstLoginPageState extends State<FirstLoginPage> {
   late final TextEditingController _birthdate;
   late final TextEditingController _weight;
   late final TextEditingController _height;
+  Image? _profile_pic;
+  String? _profile_pic_path;
 
   String? _dropdownValueSex;
   String? _dropdownValueDiabetes;
@@ -93,13 +101,20 @@ class _FirstLoginPageState extends State<FirstLoginPage> {
                           color: CustomColors.blueGreen.withOpacity(1.0),
                           shape: BoxShape.circle,
                         ),
-                        child: Icon(
-                          Icons.person,
-                          size: MediaQuery.of(context).size.width *
-                              0.3 *
-                              landscapeCorrection,
-                          color: Colors.white,
-                        ),
+                        child: _profile_pic == null
+                            ? Icon(
+                                Icons.person,
+                                size: MediaQuery.of(context).size.width *
+                                    0.3 *
+                                    landscapeCorrection,
+                                color: Colors.white,
+                              )
+                            : CircleAvatar(
+                                backgroundImage: _profile_pic!.image,
+                                radius: MediaQuery.of(context).size.width *
+                                    0.15 *
+                                    landscapeCorrection,
+                              ),
                       ),
                     ),
                     FloatingActionButton(
@@ -109,8 +124,33 @@ class _FirstLoginPageState extends State<FirstLoginPage> {
                         size: 35.0,
                         color: Colors.grey,
                       ),
-                      onPressed: () {
-                        // precisa incluir aqui o imagepicker
+                      onPressed: () async {
+                        XFile? pickedImage = await ImagePicker()
+                            .pickImage(source: ImageSource.gallery);
+                        if (pickedImage == null) {
+                          return;
+                        }
+                        CroppedFile? croppedImage =
+                            await ImageCropper().cropImage(
+                          sourcePath: pickedImage.path,
+                          maxWidth: 360,
+                          maxHeight: 360,
+                          aspectRatio:
+                              CropAspectRatio(ratioX: 1.0, ratioY: 1.0),
+                          cropStyle: CropStyle.circle,
+                        );
+                        if (croppedImage == null) {
+                          return;
+                        }
+                        Directory dir =
+                            await getApplicationDocumentsDirectory();
+                        File image =
+                            await File(join(dir.path, 'EG_${pickedImage.name}'))
+                                .writeAsBytes(await croppedImage.readAsBytes());
+                        _profile_pic_path = image.path;
+                        setState(() {
+                          _profile_pic = Image.file(image);
+                        });
                       },
                     ),
                   ],
@@ -144,7 +184,6 @@ class _FirstLoginPageState extends State<FirstLoginPage> {
                     ),
                   ),
                 ),
-                // falta colocar formatter ou datepicker??
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -163,6 +202,7 @@ class _FirstLoginPageState extends State<FirstLoginPage> {
                           borderRadius: BorderRadius.all(Radius.circular(8.0)),
                         ),
                         hintText: 'dd/mm/aaaa',
+                        hintStyle: TextStyle(color: Colors.black26),
                         filled: true,
                         fillColor: CustomColors.greenBlue.withOpacity(0.25),
                         isDense: true,
@@ -216,6 +256,7 @@ class _FirstLoginPageState extends State<FirstLoginPage> {
                                     BorderRadius.all(Radius.circular(8.0)),
                               ),
                               hintText: '70.5',
+                              hintStyle: TextStyle(color: Colors.black26),
                               // suffixText: 'kg',
                               filled: true,
                               fillColor:
@@ -264,6 +305,7 @@ class _FirstLoginPageState extends State<FirstLoginPage> {
                                     BorderRadius.all(Radius.circular(8.0)),
                               ),
                               hintText: '1.67',
+                              hintStyle: TextStyle(color: Colors.black26),
                               // suffixText: 'm',
                               filled: true,
                               fillColor:
@@ -411,7 +453,12 @@ class _FirstLoginPageState extends State<FirstLoginPage> {
                                               : _dropdownValueDiabetes! ==
                                                       'Tipo 2'
                                                   ? 'T2'
-                                                  : 'NP')) {
+                                                  : 'NP',
+                                          _profile_pic_path ?? '')) {
+                                        //temporário
+                                        await API.instance
+                                            .updateDBUserProfile();
+                                        //
                                         await Navigator.popAndPushNamed(
                                             context, '/home');
                                       }
