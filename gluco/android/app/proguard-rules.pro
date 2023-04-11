@@ -9,3 +9,8 @@
 #FlutterBlue
 -keep class com.boskokg.flutter_blue_plus.** { *; }
 -keepclassmembernames class com.boskokg.flutter_blue_plus.* { *; }
+
+#ImageCropper
+-dontwarn com.yalantis.ucrop**
+-keep class com.yalantis.ucrop** { *; }
+-keep interface com.yalantis.ucrop** { *; }

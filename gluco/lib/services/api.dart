@@ -109,7 +109,10 @@ class API {
       if (logged) {
         await _fetchUserInfo();
         if (await _fetchUserProfile()) {
-          _updateDBUserProfile();
+          // temporario
+          await _updateProfilePic();
+          //
+          await updateDBUserProfile();
         }
         _autoRefresh();
         await DatabaseHelper.instance
@@ -257,8 +260,14 @@ class API {
     return false;
   }
 
-  Future<bool> createUserProfile(DateTime birthday, double weight,
-      double height, String sex, String diabetes_type) async {
+  Future<bool> createUserProfile(
+    DateTime birthday,
+    double weight,
+    double height,
+    String sex,
+    String diabetes_type,
+    String profile_pic,
+  ) async {
     assert(sex == 'M' || sex == 'F');
     assert(diabetes_type == 'T1' ||
         diabetes_type == 'T2' ||
@@ -272,6 +281,7 @@ class API {
       height: height,
       sex: sex,
       diabetes_type: diabetes_type,
+      profile_pic: profile_pic,
     );
 
     Response response = await _client.post(
@@ -309,8 +319,14 @@ class API {
   }
 
   // Requisição para alterar perfil do usuário (apenas peso e altura por enquanto)
-  Future<bool> updateUserProfile(DateTime birthday, double weight,
-      double height, String sex, String diabetes_type) async {
+  Future<bool> updateUserProfile(
+    DateTime birthday,
+    double weight,
+    double height,
+    String sex,
+    String diabetes_type,
+    String profile_pic,
+  ) async {
     assert(sex == 'M' || sex == 'F');
     assert(diabetes_type == 'T1' ||
         diabetes_type == 'T2' ||
@@ -324,6 +340,7 @@ class API {
       height: height,
       sex: sex,
       diabetes_type: diabetes_type,
+      profile_pic: profile_pic,
     );
 
     Response response = await _client.patch(
@@ -435,7 +452,17 @@ class API {
     return false;
   }
 
-  Future<bool> _updateDBUserProfile() async {
+  @Deprecated('usado temporariamente enquanto a api não salva imagem de perfil')
+  Future<void> _updateProfilePic() async {
+    User? userData =
+        await DatabaseHelper.instance.queryUserByClientID(_client_id!);
+    if (userData != null) {
+      _user!.profile.profile_pic = userData.profile.profile_pic;
+    }
+  }
+
+  // era pra ser um método privado, mas por causa da foto de perfil tá temporariamente publico
+  Future<bool> updateDBUserProfile() async {
     User? userData =
         await DatabaseHelper.instance.queryUserByClientID(_client_id!);
     if (userData == null) {
