@@ -220,8 +220,7 @@ class _HomePageState extends State<HomePage> {
                     ],
                   ),
             StreamBuilder<bool>(
-              // stream: btConn,
-              stream: Stream.value(true), // teste para o botao habilitar
+              stream: btConn,
               initialData: false,
               builder: (context, snapshot) {
                 return AsyncButtonBuilder(
