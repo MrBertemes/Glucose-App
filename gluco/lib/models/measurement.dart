@@ -27,10 +27,10 @@ abstract class Measurement {
 
   Map<String, dynamic> toMap() {
     Map<String, dynamic> _data = <String, dynamic>{};
-    //_data['idmeasurements'] = id;
+    // _data['idmeasurements'] = id;
     _data['spo2'] = spo2;
     _data['pr_rpm'] = pr_rpm;
-    // _data['date'] = date.toString();
+    _data['date'] = date.toString(); //
     return _data;
   }
 }
