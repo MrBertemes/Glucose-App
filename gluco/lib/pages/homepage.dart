@@ -460,6 +460,23 @@ class _HomePageState extends State<HomePage> {
                     // DatabaseHelper.instance
                     //     .insertMeasurement(API.instance.currentUser!, measurement);
                     ///////////////////
+                    /// SIMULAÇÃO
+                    MeasurementCollected ms = measurement;
+                    MeasurementCompleted mc = HistoryVO.currentMeasurement;
+                    mc.id++;
+                    mc.spo2 = ms.spo2;
+                    mc.pr_rpm = ms.pr_rpm;
+                    mc.glucose = ms.apparent_glucose!;
+                    mc.date = ms.date;
+                    HistoryVO.updateMeasurementsMap();
+                    await DatabaseHelper.instance.insertMeasurementCompleted(
+                        API.instance.currentUser!, mc);
+                    setState(() {
+                      // HistoryVO.disposeHistory();
+                      // HistoryVO.fetchHistory();
+                    });
+
+                    ///
                   },
                   builder: (context, child, callback, _) {
                     Color color = CustomColors.greenBlue.withOpacity(1.0);

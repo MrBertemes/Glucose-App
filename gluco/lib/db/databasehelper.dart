@@ -126,7 +126,7 @@ class DatabaseHelper {
     Map<String, Object?> data = measurement.toMap();
     data['iduser'] = user.id;
     return await db.insert(
-          'idmeasurementscomp',
+          'measurementscomp',
           data,
         ) !=
         0;
