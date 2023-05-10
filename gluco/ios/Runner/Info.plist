@@ -7,7 +7,7 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDisplayName</key>
-	<string>E-Gluco</string>
+	<string>eGluco</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
@@ -30,18 +30,24 @@
 	<string>Permissão do Bluetooth é necessária para conexão com dispositivo para coleta das medições</string>
 	<key>NSBluetoothPeripheralUsageDescription</key>
 	<string>Permissão do Bluetooth é necessária para conexão com dispositivo para coleta das medições</string>
+	<key>NSCameraUsageDescription</key>
+	<string>Permissão de acesso à câmera é necessário para capturar imagem de perfil</string>
 	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
 	<string>Permissão da localização é necessária</string>
 	<key>NSLocationAlwaysUsageDescription</key>
 	<string>Permissão da localização é necessária</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>Permissão da localização é necessária</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Permissão de acesso à galeria é necessário para selecionar imagem de perfil</string>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
 	<key>UIMainStoryboardFile</key>
 	<string>Main</string>
+	<key>UIStatusBarStyle</key>
+	<string></string>
 	<key>UISupportedInterfaceOrientations</key>
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>
@@ -57,9 +63,5 @@
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
-	<key>NSPhotoLibraryUsageDescription</key>
-	<string>Permissão de acesso à galeria é necessário para selecionar imagem de perfil</string>
-	<key>NSCameraUsageDescription</key>
-	<string>Permissão de acesso à câmera é necessário para capturar imagem de perfil</string>
 </dict>
 </plist>
