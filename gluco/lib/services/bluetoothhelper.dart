@@ -52,7 +52,7 @@ class BluetoothHelper {
   /// Inicia a alimentação da stream do estado de conexão do dispositivo
   /// continuamente até que seja desconectado, tenta reconectar automaticamente
   /// se a desconexão não foi solicitada de forma manual
-  void _yieldConnection_() async {
+  void _yieldConnection() async {
     // envia o primeiro valor, pq o da stream state é perdido
     _connected.add(true);
     String error = 'Connected';
@@ -87,7 +87,7 @@ class BluetoothHelper {
 
   /// Mapeamento dos BluetoothDevices para Devices com inclusão do
   /// dispositivo atualmente conectado
-  List<Device> get devices_ {
+  List<Device> get devices {
     List<Device> dvcs =
         _devices.map((d) => Device(id: d.id.id, name: d.name)).toList();
     if (_connectedDevice != null) {
@@ -98,46 +98,8 @@ class BluetoothHelper {
     return dvcs;
   }
 
-  /// SIMULAÇÃO
-  static bool con = false;
-
-  List<Device> get devices {
-    return [Device(id: '16749152', name: 'Glucowatch', connected: con)];
-  }
-
-  Future<void> scan() async {
-    await _bluetooth.startScan(timeout: const Duration(seconds: 3));
-  }
-
-  Future<bool> connect(Device dvc) async {
-    await Future.delayed(const Duration(seconds: 1));
-    con = true;
-    _yieldConnection();
-    return true;
-  }
-
-  void _yieldConnection() async {
-    Timer.periodic(
-      const Duration(milliseconds: 100),
-      (t) {
-        _connected.add(true);
-        if (!con) {
-          t.cancel();
-          _connected.add(false);
-        }
-      },
-    );
-  }
-
-  Future<bool> disconnect() async {
-    con = false;
-    return true;
-  }
-
-  ///
-
   /// Inicia escaneamento e inclui os resultados em devices
-  Future<void> scan_() async {
+  Future<void> scan() async {
     await _bluetooth.startScan(timeout: const Duration(seconds: 3));
     _bluetooth.scanResults.listen(
       (results) {
@@ -162,7 +124,7 @@ class BluetoothHelper {
   /// Tenta estabelecer conexão com um dispositivo, pode falhar por timeout,
   /// se bem sucedido _connectedDevice é atualizado e a transmissão
   /// da stream de conexão é iniciada
-  Future<bool> connect_(Device dvc) async {
+  Future<bool> connect(Device dvc) async {
     bool status = true;
     String error = 'Success';
     try {
@@ -238,7 +200,7 @@ class BluetoothHelper {
 
   /// Encapsula a função de desconectar do FlutterBlue, é a única que seta
   /// _connectedDevice como null
-  Future<bool> disconnect_() async {
+  Future<bool> disconnect() async {
     try {
       BluetoothDevice dvc = _connectedDevice!.device;
       _connectedDevice = null;

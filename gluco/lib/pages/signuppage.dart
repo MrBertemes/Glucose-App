@@ -13,10 +13,15 @@ class SignUpPage extends StatefulWidget {
   State<SignUpPage> createState() => _SignUpPageState();
 }
 
+enum AccountType { normalUser, doctor }
+
 class _SignUpPageState extends State<SignUpPage> {
   late final TextEditingController _name;
   late final TextEditingController _email;
   late final TextEditingController _password;
+
+  AccountType? _userType = AccountType.normalUser;
+  bool _normalUser = true;
 
   bool _hidePassword = true;
   bool _emailAlreadyInUse = false;
@@ -55,8 +60,7 @@ class _SignUpPageState extends State<SignUpPage> {
       body: LayoutBuilder(
         builder: (BuildContext context, BoxConstraints viewportConstraints) {
           return SingleChildScrollView(
-
-            keyboardDismissBehavior : ScrollViewKeyboardDismissBehavior.onDrag,
+            keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
             child: ConstrainedBox(
               constraints: BoxConstraints(
                 minHeight: viewportConstraints.maxHeight,
@@ -114,7 +118,47 @@ class _SignUpPageState extends State<SignUpPage> {
                         }
                       },
                       child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
+// //COLOCAR RADIOLISTTILE AQUI
+//                             title: Text(
+//                           RadioListTile<AccountType>(
+//                               'Usuário Comum',
+//                               style: TextStyle(
+//                                   color: _normalUser
+//                                       ? CustomColors.lightBlue
+//                                       : Colors.blueGrey),
+//                             ),
+//                             autofocus: true,
+//                             activeColor: CustomColors.lightBlue,
+//                             value: AccountType.normalUser,
+//                             groupValue: _userType,
+//                             onChanged: (AccountType? value) {
+//                               setState(() {
+//                                 _userType = value;
+//                                 _normalUser = true;
+//                               });
+//                             },
+//                           ),
+//                           RadioListTile<AccountType>(
+//                             title: Text(
+//                               'Médico',
+//                               style: TextStyle(
+//                                   color: _normalUser
+//                                       ? Colors.blueGrey
+//                                       : CustomColors.lightBlue),
+//                             ),
+//                             activeColor: CustomColors.lightBlue,
+//                             value: AccountType.doctor,
+//                             groupValue: _userType,
+//                             onChanged: (AccountType? value) {
+//                               setState(() {
+//                                 _userType = value;
+//                                 _normalUser = false;
+//                               });
+//                             },
+//                           ),
+
                           TextFormField(
                             controller: _name,
                             decoration: InputDecoration(
