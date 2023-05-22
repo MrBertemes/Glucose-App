@@ -19,6 +19,7 @@ class _SignUpPageState extends State<SignUpPage> {
   late final TextEditingController _name;
   late final TextEditingController _email;
   late final TextEditingController _password;
+  late final TextEditingController _crm;
 
   AccountType? _userType = AccountType.normalUser;
   bool _normalUser = true;
@@ -31,6 +32,7 @@ class _SignUpPageState extends State<SignUpPage> {
     _name = TextEditingController();
     _email = TextEditingController();
     _password = TextEditingController();
+    _crm = TextEditingController();
     super.initState();
   }
 
@@ -39,6 +41,7 @@ class _SignUpPageState extends State<SignUpPage> {
     _name.dispose();
     _email.dispose();
     _password.dispose();
+    _crm.dispose();
     _validFormVN.dispose();
     super.dispose();
   }
@@ -102,7 +105,7 @@ class _SignUpPageState extends State<SignUpPage> {
                     ),
                   ),
                   Container(
-                    padding: EdgeInsets.only(top: 10.0, bottom: 50.0),
+                    padding: EdgeInsets.only(top: 10.0, bottom: 40.0),
                     width: MediaQuery.of(context).size.width * 0.9,
                     child: Form(
                       key: _formKey,
@@ -120,44 +123,44 @@ class _SignUpPageState extends State<SignUpPage> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-// //COLOCAR RADIOLISTTILE AQUI
-//                             title: Text(
-//                           RadioListTile<AccountType>(
-//                               'Usuário Comum',
-//                               style: TextStyle(
-//                                   color: _normalUser
-//                                       ? CustomColors.lightBlue
-//                                       : Colors.blueGrey),
-//                             ),
-//                             autofocus: true,
-//                             activeColor: CustomColors.lightBlue,
-//                             value: AccountType.normalUser,
-//                             groupValue: _userType,
-//                             onChanged: (AccountType? value) {
-//                               setState(() {
-//                                 _userType = value;
-//                                 _normalUser = true;
-//                               });
-//                             },
-//                           ),
-//                           RadioListTile<AccountType>(
-//                             title: Text(
-//                               'Médico',
-//                               style: TextStyle(
-//                                   color: _normalUser
-//                                       ? Colors.blueGrey
-//                                       : CustomColors.lightBlue),
-//                             ),
-//                             activeColor: CustomColors.lightBlue,
-//                             value: AccountType.doctor,
-//                             groupValue: _userType,
-//                             onChanged: (AccountType? value) {
-//                               setState(() {
-//                                 _userType = value;
-//                                 _normalUser = false;
-//                               });
-//                             },
-//                           ),
+                          // OPCOES USUARIO COMUM E MEDICO
+                          RadioListTile<AccountType>(
+                            title: Text(
+                              'Usuário Comum',
+                              style: TextStyle(
+                                  color: _normalUser
+                                      ? CustomColors.lightBlue
+                                      : Colors.blueGrey),
+                            ),
+                            autofocus: true,
+                            activeColor: CustomColors.lightBlue,
+                            value: AccountType.normalUser,
+                            groupValue: _userType,
+                            onChanged: (AccountType? value) {
+                              setState(() {
+                                _userType = value;
+                                _normalUser = true;
+                              });
+                            },
+                          ),
+                          RadioListTile<AccountType>(
+                            title: Text(
+                              'Médico',
+                              style: TextStyle(
+                                  color: _normalUser
+                                      ? Colors.blueGrey
+                                      : CustomColors.lightBlue),
+                            ),
+                            activeColor: CustomColors.lightBlue,
+                            value: AccountType.doctor,
+                            groupValue: _userType,
+                            onChanged: (AccountType? value) {
+                              setState(() {
+                                _userType = value;
+                                _normalUser = false;
+                              });
+                            },
+                          ),
 
                           TextFormField(
                             controller: _name,
@@ -242,6 +245,55 @@ class _SignUpPageState extends State<SignUpPage> {
                             keyboardType: TextInputType.emailAddress,
                           ),
                           Padding(padding: EdgeInsets.all(8.0)),
+
+                          //CAMPO CRM
+                          Container(
+                            child: !_normalUser
+                                ? TextFormField(
+                                    controller: _crm,
+                                    decoration: InputDecoration(
+                                      label: Text(
+                                        'CRM',
+                                        style: TextStyle(
+                                            color: CustomColors.blueGreenlight),
+                                      ),
+                                      enabledBorder: UnderlineInputBorder(
+                                        borderSide: BorderSide(
+                                          width: 2,
+                                          color: CustomColors.blueGreenlight,
+                                        ),
+                                      ),
+                                      focusedBorder: UnderlineInputBorder(
+                                        borderSide: BorderSide(
+                                          width: 3,
+                                          color: CustomColors.blueGreenlight,
+                                        ),
+                                      ),
+                                    ),
+                                    onChanged: (text) {
+                                      _isFieldFilled['crm'] = text.isNotEmpty;
+                                    },
+                                    validator: (text) {
+                                      if (text == null || text.isEmpty) {
+                                        return '*Campo obrigatório';
+                                      }
+                                      //validar CRM aqui
+                                      if (text.length != 6) {
+                                        return '*O CRM deve conter 6 digitos';
+                                      }
+                                      return null;
+                                    },
+                                    // style: TextStyle(color: CustomColors.lightBlue),
+                                    cursorColor: CustomColors.blueGreenlight,
+                                    keyboardType: TextInputType.number,
+                                    autocorrect: false,
+                                  )
+                                : Padding(padding: EdgeInsets.all(0)),
+                          ),
+                          Container(
+                              child: !_normalUser
+                                  ? Padding(padding: EdgeInsets.all(8.0))
+                                  : Padding(padding: EdgeInsets.all(0))),
                           TextFormField(
                             controller: _password,
                             decoration: InputDecoration(
@@ -292,7 +344,7 @@ class _SignUpPageState extends State<SignUpPage> {
                             enableSuggestions: false,
                             autocorrect: false,
                           ),
-                          Padding(padding: EdgeInsets.all(30.0)),
+                          Padding(padding: EdgeInsets.all(8.0)),
                           ValueListenableBuilder<bool>(
                             valueListenable: _validFormVN,
                             builder: (_, isValid, child) {
@@ -372,6 +424,11 @@ class _SignUpPageState extends State<SignUpPage> {
                                                 }
                                                 // só pro botão dar a mensagem certa, não sabia outra forma de fazer
                                                 throw 'Erro no signup';
+                                              }
+                                              if (_normalUser) {
+                                                _crm.clear();
+                                              } else {
+                                                _crm.text.trim();
                                               }
                                             } else {
                                               // só pro botão dar a mensagem certa, não sabia outra forma de fazer

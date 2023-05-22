@@ -282,7 +282,7 @@ class BluetoothHelper {
       f_4p: f_4p,
       date: DateTime.now(),
     );
-    await Future.delayed(Duration(seconds: random.nextInt(2) + 3));
+    // await Future.delayed(Duration(seconds: random.nextInt(2) + 3));
     return measure;
   }
 

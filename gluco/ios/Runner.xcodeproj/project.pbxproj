@@ -366,7 +366,7 @@
 				ENABLE_HARDENED_RUNTIME = NO;
 				FLUTTER_BUILD_NAME = 0.6.0;
 				INFOPLIST_FILE = Runner/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = "E-Gluco";
+				INFOPLIST_KEY_CFBundleDisplayName = eGluco;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.healthcare-fitness";
 				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -512,7 +512,7 @@
 				ENABLE_HARDENED_RUNTIME = NO;
 				FLUTTER_BUILD_NAME = 0.6.0;
 				INFOPLIST_FILE = Runner/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = "E-Gluco";
+				INFOPLIST_KEY_CFBundleDisplayName = eGluco;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.healthcare-fitness";
 				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -550,7 +550,7 @@
 				ENABLE_HARDENED_RUNTIME = NO;
 				FLUTTER_BUILD_NAME = 0.6.0;
 				INFOPLIST_FILE = Runner/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = "E-Gluco";
+				INFOPLIST_KEY_CFBundleDisplayName = eGluco;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.healthcare-fitness";
 				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				LD_RUNPATH_SEARCH_PATHS = (
