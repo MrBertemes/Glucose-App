@@ -333,8 +333,8 @@ class _DeviceInternal {
 }
 
 abstract class _BluetoothFlags {
-  static const String idle = 'TA SUAVE';
-  static const String requesting = 'LEIAAAAAA';
-  static const String waiting = 'TO ESPERANDO RESPOSTA';
-  static const String received = 'RECEBIDOOOO';
+  static const String idle = 'EGIDLE';
+  static const String requesting = 'EGSEND';
+  static const String waiting = 'EGWAIT';
+  static const String received = 'EGRCVD';
 }
