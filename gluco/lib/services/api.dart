@@ -22,6 +22,12 @@ class API {
   String? _refresh_token;
   String? _client_id;
 
+  ///// PRECISA RECEBER EM ALGUMA REQUISIÇÃO (LOGIN OU PERFIL?)
+  bool _isDoctor = false;
+  bool get isDoctor => _isDoctor;
+
+  List<String> get pacientList => ['Eu', 'José', 'Alisson', 'Larissa'];
+
   // Detecção de conexão à internet
   final Connectivity _connectivity = Connectivity();
   Stream<ConnectivityResult> get connection =>
@@ -490,7 +496,16 @@ class API {
   }
 
   /// Envia a medição coletada pelo bluetooth para ser processada na nuvem
-  Future<bool> postMeasurements(MeasurementCollected measurement) async {
+  Future<bool> postMeasurements(
+      MeasurementCollected measurement,
+      // [User? user]) async {
+      String user) async {
+    return user == 'Eu'
+        ? _postMeasurements(measurement)
+        : _postPacientMeasurements(measurement, user);
+  }
+
+  Future<bool> _postMeasurements(MeasurementCollected measurement) async {
     Uri url = Uri.https(_authority, '/measure/${_client_id!}/glucose');
 
     Response response = await _client.post(
@@ -518,6 +533,14 @@ class API {
       print(responseBody['detail']);
     }
 
+    return false;
+  }
+
+  Future<bool> _postPacientMeasurements(
+      // MeasurementCollected measurement, User user) async {
+      MeasurementCollected measurement,
+      String user) async {
+    print('oi, enviei do paciente');
     return false;
   }
 

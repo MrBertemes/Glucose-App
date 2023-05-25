@@ -62,6 +62,8 @@ class _HomePageState extends State<HomePage> {
     super.initState();
   }
 
+  bool _isPacientSelected = false;
+  String? _dropdownValue;
   final _formKey = GlobalKey<FormState>();
 
   @override
@@ -220,7 +222,8 @@ class _HomePageState extends State<HomePage> {
                     ],
                   ),
             StreamBuilder<bool>(
-              stream: btConn,
+              // stream: btConn,
+              stream: Stream.value(true), // TESTE BOTÃAAAAAAAO
               initialData: false,
               builder: (context, snapshot) {
                 return AsyncButtonBuilder(
@@ -273,18 +276,40 @@ class _HomePageState extends State<HomePage> {
                               content: Form(
                                 key: _formKey,
                                 autovalidateMode: AutovalidateMode.always,
-                                child: TextFormField(
-                                  controller: controller,
-                                  validator: (value) {
-                                    String? message;
-                                    try {
-                                      double.parse(value!);
-                                    } catch (e) {
-                                      message = 'Insira um valor decimal.';
-                                    }
-                                    return message;
-                                  },
-                                  textAlign: TextAlign.center,
+                                child: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    DropdownButtonFormField(
+                                        value: _dropdownValue,
+                                        icon: Icon(Icons.keyboard_arrow_down),
+                                        onChanged: (String? value) {
+                                          _isPacientSelected =
+                                              value?.isNotEmpty ?? false;
+                                          setState(() {
+                                            _dropdownValue = value!;
+                                          });
+                                        },
+                                        items: API.instance.pacientList
+                                            .map((String value) {
+                                          return DropdownMenuItem(
+                                            value: value,
+                                            child: Text(value),
+                                          );
+                                        }).toList()),
+                                    TextFormField(
+                                      controller: controller,
+                                      validator: (value) {
+                                        String? message;
+                                        try {
+                                          double.parse(value!);
+                                        } catch (e) {
+                                          message = 'Insira um valor decimal.';
+                                        }
+                                        return message;
+                                      },
+                                      textAlign: TextAlign.center,
+                                    ),
+                                  ],
                                 ),
                               ),
                               actions: [
@@ -365,7 +390,8 @@ class _HomePageState extends State<HomePage> {
                                         return AlertDialog(
                                             title: Text('Confira os dados!'),
                                             content: Text(
-                                                'Glicose: ${measurement.apparent_glucose}'),
+                                                '''Paciente: $_dropdownValue\n
+                                                Glicose: ${measurement.apparent_glucose}'''),
                                             shape: RoundedRectangleBorder(
                                               borderRadius:
                                                   BorderRadius.circular(10.0),
@@ -385,7 +411,8 @@ class _HomePageState extends State<HomePage> {
                                                 onPressed: () async {
                                                   response = await API.instance
                                                       .postMeasurements(
-                                                          measurement);
+                                                          measurement,
+                                                          _dropdownValue!);
                                                   if (!response) {
                                                     DatabaseHelper.instance
                                                         .insertMeasurementCollected(
@@ -452,6 +479,8 @@ class _HomePageState extends State<HomePage> {
                                 )
                               ]);
                         });
+                    _isPacientSelected = false;
+                    _dropdownValue = null;
                     if (!response) {
                       throw 'Envio da medição cancelada'; // pro async_button mostrar ícone certo
                     }
@@ -461,22 +490,20 @@ class _HomePageState extends State<HomePage> {
                     //     .insertMeasurement(API.instance.currentUser!, measurement);
                     ///////////////////
                     /// SIMULAÇÃO
-                    MeasurementCollected ms = measurement;
-                    MeasurementCompleted mc = HistoryVO.currentMeasurement;
-                    mc.id++;
-                    mc.spo2 = ms.spo2;
-                    mc.pr_rpm = ms.pr_rpm;
-                    mc.glucose = ms.apparent_glucose!;
-                    mc.date = ms.date;
-                    HistoryVO.updateMeasurementsMap();
-                    await DatabaseHelper.instance.insertMeasurementCompleted(
-                        API.instance.currentUser!, mc);
-                    setState(() {
-                      // HistoryVO.disposeHistory();
-                      // HistoryVO.fetchHistory();
-                    });
-
-                    ///
+                    // MeasurementCollected ms = measurement;
+                    // MeasurementCompleted mc = HistoryVO.currentMeasurement;
+                    // mc.id++;
+                    // mc.spo2 = ms.spo2;
+                    // mc.pr_rpm = ms.pr_rpm;
+                    // mc.glucose = ms.apparent_glucose!;
+                    // mc.date = ms.date;
+                    // HistoryVO.updateMeasurementsMap();
+                    // await DatabaseHelper.instance.insertMeasurementCompleted(
+                    //     API.instance.currentUser!, mc);
+                    // setState(() {
+                    //   // HistoryVO.disposeHistory();
+                    //   // HistoryVO.fetchHistory();
+                    // });
                   },
                   builder: (context, child, callback, _) {
                     Color color = CustomColors.greenBlue.withOpacity(1.0);
