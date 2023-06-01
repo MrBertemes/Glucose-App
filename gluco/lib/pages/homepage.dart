@@ -222,8 +222,8 @@ class _HomePageState extends State<HomePage> {
                     ],
                   ),
             StreamBuilder<bool>(
-              // stream: btConn,
-              stream: Stream.value(true), // TESTE BOTÃAAAAAAAO
+              stream: btConn,
+              // stream: Stream.value(true), // TESTE BOTÃAAAAAAAO
               initialData: false,
               builder: (context, snapshot) {
                 return AsyncButtonBuilder(
@@ -279,23 +279,24 @@ class _HomePageState extends State<HomePage> {
                                 child: Column(
                                   mainAxisSize: MainAxisSize.min,
                                   children: [
-                                    DropdownButtonFormField(
-                                        value: _dropdownValue,
-                                        icon: Icon(Icons.keyboard_arrow_down),
-                                        onChanged: (String? value) {
-                                          _isPacientSelected =
-                                              value?.isNotEmpty ?? false;
-                                          setState(() {
-                                            _dropdownValue = value!;
-                                          });
-                                        },
-                                        items: API.instance.pacientList
-                                            .map((String value) {
-                                          return DropdownMenuItem(
-                                            value: value,
-                                            child: Text(value),
-                                          );
-                                        }).toList()),
+                                    // ALT
+                                    // DropdownButtonFormField(
+                                    //     value: _dropdownValue,
+                                    //     icon: Icon(Icons.keyboard_arrow_down),
+                                    //     onChanged: (String? value) {
+                                    //       _isPacientSelected =
+                                    //           value?.isNotEmpty ?? false;
+                                    //       setState(() {
+                                    //         _dropdownValue = value!;
+                                    //       });
+                                    //     },
+                                    //     items: API.instance.pacientList
+                                    //         .map((String value) {
+                                    //       return DropdownMenuItem(
+                                    //         value: value,
+                                    //         child: Text(value),
+                                    //       );
+                                    //     }).toList()),
                                     TextFormField(
                                       controller: controller,
                                       validator: (value) {
@@ -390,7 +391,9 @@ class _HomePageState extends State<HomePage> {
                                         return AlertDialog(
                                             title: Text('Confira os dados!'),
                                             content: Text(
-                                                '''Paciente: $_dropdownValue\n
+                                                // ALT
+                                                // '''Paciente: $_dropdownValue\n
+                                                '''
                                                 Glicose: ${measurement.apparent_glucose}'''),
                                             shape: RoundedRectangleBorder(
                                               borderRadius:
@@ -411,8 +414,8 @@ class _HomePageState extends State<HomePage> {
                                                 onPressed: () async {
                                                   response = await API.instance
                                                       .postMeasurements(
-                                                          measurement,
-                                                          _dropdownValue!);
+                                                          measurement, 'Eu');
+                                                  // _dropdownValue!); // ALT
                                                   if (!response) {
                                                     DatabaseHelper.instance
                                                         .insertMeasurementCollected(
@@ -430,6 +433,18 @@ class _HomePageState extends State<HomePage> {
                                                             title: Text(response
                                                                 ? 'Medição enviada com sucesso'
                                                                 : 'Ocorreu um erro no envio dos dados coletados, eles serão armazenados até que seja possível enviar...'),
+                                                            // ALT
+                                                            content: response
+                                                                ? SingleChildScrollView(
+                                                                    child: Column(
+                                                                        children: measurement
+                                                                            .toMap()
+                                                                            .entries
+                                                                            .map((e) => Text(
+                                                                                '${e.key}: ${e.value}'))
+                                                                            .toList()))
+                                                                : null,
+                                                            //////////
                                                             shape:
                                                                 RoundedRectangleBorder(
                                                               borderRadius:

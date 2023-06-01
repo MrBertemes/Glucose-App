@@ -20,6 +20,9 @@ class BluetoothHelper {
   // Variável que contém o conteúdo enviado ao dispositivo
   late String _flag;
 
+  //// VARIAVEL PARA SELECIONAR FONTE
+  bool source = false;
+
   /// Stream com sinais de alteração no estado do Bluetooth ligado/desligado
   Stream<bool> get state => _state().asBroadcastStream();
 
@@ -146,13 +149,16 @@ class BluetoothHelper {
             List<BluetoothCharacteristic> characteristics = services
                 .firstWhere((element) =>
                     element.uuid.toString().toUpperCase().substring(4, 8) ==
+                    // 'E0FF')
                     '8251')
                 .characteristics;
             rx = characteristics.firstWhere((element) =>
                 element.uuid.toString().toUpperCase().substring(4, 8) ==
+                // 'FFE1');
                 '2D3F');
             tx = characteristics.firstWhere((element) =>
                 element.uuid.toString().toUpperCase().substring(4, 8) ==
+                // 'FFE2');
                 'F2A8');
           } catch (e) {
             print('Characteristics not found');
@@ -182,7 +188,7 @@ class BluetoothHelper {
             // ### falta: função para verificar se possui medições nao recebidas
             _yieldConnection();
             _flag = _BluetoothFlags.idle;
-            _transmit();
+            // _transmit();
           } else {
             device.disconnect();
             status = false;
@@ -261,8 +267,15 @@ class BluetoothHelper {
     );
   }
 
-  /// Faz a leitura dos dados da medição do dispositivo conectado VERSÃO RANDOM
+  /// Faz a leitura dos dados da medição do dispositivo conectado
   Future<MeasurementCollected> collect() async {
+    MeasurementCollected val =
+        source ? await collect_leonardo() : await collect_patrick();
+    return val;
+  }
+
+  /// Faz a leitura dos dados da medição do dispositivo conectado VERSÃO RANDOM
+  Future<MeasurementCollected> collect_rand() async {
     Random random = Random();
     List<double> m_4p = <double>[];
     List<double> f_4p = <double>[];
@@ -286,36 +299,209 @@ class BluetoothHelper {
     return measure;
   }
 
-  /// Faz a leitura dos dados da medição do dispositivo conectado
-  // Future<MeasurementCollected> collect() async {
-  Future<Map<String, String>> collect_real() async {
-    assert(_connectedDevice != null);
-
-    _flag = _BluetoothFlags.requesting;
+  /// Faz a leitura dos dados da medição do dispositivo conectado VERSÃO LEONARDO
+  Future<MeasurementCollected> collect_leonardo() async {
+    late MeasurementCollected measure;
+    List<double> m_4p = <double>[];
+    List<double> f_4p = <double>[];
+    // List<double> m_2p = <double>[];
+    // List<double> f_2p = <double>[];
     Completer<void> confirm = Completer();
-    Timer.periodic(const Duration(milliseconds: 100), (timer) {
-      // a flag é trocada dentro do método _transmit
-      if (_flag != _BluetoothFlags.requesting) {
-        confirm.complete();
+    Timer periodicTimer =
+        Timer.periodic(const Duration(milliseconds: 100), (timer) async {
+      m_4p = [];
+      f_4p = [];
+      // m_2p = [];
+      // f_2p = [];
+      try {
+        List<int> hex = await _connectedDevice!.receiver.read();
+        String dec = utf8.decode(hex);
+        List<num> values = dec.split(';').map((e) => num.parse(e)).toList();
+        // MaxLed1; // -- 0
+        // MaxLed2;
+        // MaxLed3;
+        // MaxLed4:
+        // MinLed1; // -- i 4
+        // MinLed2;
+        // MinLed3;
+        // MinLed4;
+        // Mod1; // -- i 8
+        // Fase1;...;
+        // Mod32;
+        // Fase32; // 4 pontos
+        // Mod1; // -- i 72
+        // Fase1;...;
+        // Mod32;
+        // Fase32; // 2 pontos
+        // BPM; // -- i 136
+        // SPO2; // -- i 137
+        // Temperatura; // -- i 138
+        // Umidade // -- i 139
+        for (int i = 0; i < 48; i += 2) {
+          // SÃO 32 E NÃO 24 (na vdd 64 e n 48)
+          m_4p.add(values[8 + i] as double);
+          f_4p.add(values[8 + i + 1] as double);
+          // m_2p.add(values[72 + i] as double);
+          // f_2p.add(values[72 + i + 1] as double);
+        }
+        measure = MeasurementCollected(
+          id: -1,
+          apparent_glucose: null,
+          pr_rpm: values[136] as int,
+          spo2: values[137] as int,
+          temperature: values[138] as double,
+          // humidity: values[139] as double,
+          m_4p: m_4p,
+          f_4p: f_4p,
+          // m_2p: m_2p,
+          // f_2p: f_2p,
+          // maxled: values.sublist(0, 4).cast<double>(), // talvez dê problema
+          // minled: values.sublist(4, 8).cast<double>(),
+          date: DateTime.now(),
+        );
         timer.cancel();
+        confirm.complete();
+      } catch (e) {
+        print('Inconsistent values read...');
       }
     });
-    // aguarda confirmação que a flag foi enviada
-    await confirm.future.timeout(Duration(seconds: 3));
-    //
-    Map<String, String> measure = {};
-    List<int> hex = await _connectedDevice!.receiver.read();
-    measure['Mensagem'] = utf8.decode(hex);
-    //
-    // ### se der ocorrer um erro precisa enviar que deu erro?
-    _flag = _BluetoothFlags.received;
+    await confirm.future.timeout(const Duration(seconds: 20), onTimeout: () {
+      periodicTimer.cancel();
+    });
+    return measure;
+  }
 
-    // split por espaço ???
-    // MeasurementCollected measure = MeasurementCollected(
-    // id: id, apparent_glucose: apparent_glucose, spo2: spo2,
-    // pr_rpm: pr_rpm, temperature: temperature,
-    // m_4p: m_4p, f_4p: f_4p, date: date
-    // )
+  /// Faz a leitura dos dados da medição do dispositivo conectado VERSÃO PATRICK
+  Future<MeasurementCollected> collect_patrick() async {
+    // Future<MeasurementCollected> collect() async {
+    // ON CONNECTION LOST CORTAR COLETA
+    assert(_connectedDevice != null);
+
+    // _flag = _BluetoothFlags.requesting;
+    // Completer<void> flagConfirm = Completer();
+    // Timer flagTimer =
+    //     Timer.periodic(const Duration(milliseconds: 100), (timer) {
+    //   // a flag é trocada dentro do método _transmit
+    //   print('opa');
+    //   if (_flag != _BluetoothFlags.requesting) {
+    //     flagConfirm.complete();
+    //     timer.cancel();
+    //   }
+    // });
+    // // aguarda confirmação que a flag foi enviada
+    // await flagConfirm.future.timeout(const Duration(seconds: 3), onTimeout: () {
+    //   flagTimer.cancel();
+    // });
+
+    /*
+    await for (final hex in _connectedDevice!.receiver.onValueChangedStream
+        .timeout(const Duration(seconds: 20), onTimeout: (stream) {
+      stream.close();
+      print('timeout viu');
+    })) {
+      print('ESSE É O DINOSSAURO HEX: $hex');
+    }
+    return MeasurementCollected.fromMap({});
+    */
+
+    late MeasurementCollected measure;
+    List<double> m_4p = <double>[];
+    List<double> f_4p = <double>[];
+    // List<double> m_2p = <double>[];
+    // List<double> f_2p = <double>[];
+    Completer<void> confirm = Completer();
+    // Timer periodicTimer =
+    //     Timer.periodic(const Duration(milliseconds: 1000), (timer) async {
+    //   // Timer.periodic(const Duration(seconds: 1), (timer) async {
+    m_4p = [];
+    f_4p = [];
+    // m_2p = [];
+    // f_2p = [];
+    try {
+      List<int> hexao = <int>[];
+      Stream<List<int>> read_stream = _connectedDevice!.receiver.value;
+      //     .timeout(const Duration(seconds: 20), onTimeout: (stream) {
+      //   stream.close();
+      //   print('timeout viu');
+      // });
+      print('mas oq');
+      StreamSubscription<List<int>> r_s = read_stream.listen((hex) {
+        print('entrei');
+        print('### HEX $hex');
+        hexao.addAll(hex);
+      });
+      // }, onError: () {
+      //   print('deu erro ta');
+      // }, onDone: () {
+      //   confirm.complete();
+      //   print('terminouse');
+      // });
+      await confirm.future.timeout(const Duration(seconds: 20), onTimeout: () {
+        r_s.cancel();
+      });
+      print(
+          'ALHOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO');
+      print('### HEXAO $hexao ###');
+      String dec = utf8.decode(hexao);
+      print('### DEC $dec');
+      List<num> values = dec.split(';').map((e) => num.parse(e)).toList();
+      print('### VAL $values');
+
+      // bioimpedancia quatro fios primeira decada modulo (8) // -- i 0
+      // bioimpedancia quatro fios primeira decada fase (8) // -- i 8
+      // bioimpedancia dois fios primeira decada modulo (8) // -- i 16
+      // bioimpedancia dois fios primeira decada fase (8) // -- i 24
+      // bioimpedancia quatro fios segunda decada modulo (8) // -- i 32
+      // bioimpedancia quatro fios segunda decada fase (8) // -- i 40
+      // bioimpedancia dois fios segunda decada modulo (8) // -- i 48
+      // bioimpedancia dois fios segunda decada fase (8) // -- i 56
+      // bioimpedancia quatro fios terceira decada modulo (8) // -- i 64
+      // bioimpedancia quatro fios terceira decada fase (8) // -- i 72
+      // bioimpedancia dois fios terceira decada modulo (8) // -- i 80
+      // bioimpedancia dois fios terceira decada fase (8) // -- i 88
+      // bioimpedancia quatro fios quarta decada modulo (8) // -- i 96
+      // bioimpedancia quatro fios quarta decada fase (8) // -- i 104
+      // bioimpedancia dois fios quarta decada modulo (8) // -- i 112
+      // bioimpedancia dois fios quarta decada fase (8) // -- i 120
+      // valores maximos leds (4) // -- i 128
+      // valores minimos leds (4) // -- i 132
+      // bpm // -- i 136
+      // SPO2 // -- i 137
+      // umidade // -- i 138
+      // temperatura // -- i 139
+      for (int i = 0; i < 128; i += 32) {
+        m_4p.addAll(values.sublist(i, i + 8).cast<double>());
+        f_4p.addAll(values.sublist(i + 8, i + 16).cast<double>());
+        // m_2p.addAll(values.sublist(i + 16, i + 24).cast<double>());
+        // f_2p.addAll(values.sublist(i + 24, i + 32).cast<double>());
+      }
+      measure = MeasurementCollected(
+        id: -1,
+        apparent_glucose: null,
+        pr_rpm: values[136] as int,
+        spo2: values[137] as int,
+        // humidity: values[138] as double,
+        temperature: values[139] as double,
+        m_4p: m_4p,
+        f_4p: f_4p,
+        // m_2p: m_2p,
+        // f_2p: f_2p,
+        // maxled: values.sublist(128, 132).cast<double>(),
+        // minled: values.sublist(132, 136).cast<double>(),
+        date: DateTime.now(),
+      );
+      //     timer.cancel();
+      //     confirm.complete();
+    } catch (e) {
+      print('Inconsistent values read...');
+    }
+    // });
+    // await confirm.future.timeout(const Duration(seconds: 20), onTimeout: () {
+    //   periodicTimer.cancel();
+    // });
+
+    // ### se ocorrer um erro precisa enviar que deu erro?
+    // _flag = _BluetoothFlags.received;
 
     return measure;
   }

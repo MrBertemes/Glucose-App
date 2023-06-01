@@ -95,8 +95,8 @@ class _MainState extends State<Main> {
         '/devices': (context) => DevicePage(),
         '/history': (context) => HistoryPage(),
         '/profile': (context) => ProfilePage(),
-        // '/teste': (context) => FlutterBlueApp(),
-        '/teste': (context) => DBTest(),
+        '/teste': (context) => FlutterBlueApp(),
+        // '/teste': (context) => DBTest(),
       },
     );
   }

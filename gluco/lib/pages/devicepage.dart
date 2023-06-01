@@ -27,6 +27,8 @@ class _DevicePageState extends State<DevicePage> {
   late Stream<bool> btScan;
   late Stream<bool> btConn;
 
+  late ValueNotifier<bool> _source;
+
   StreamController<bool> connecting = StreamController<bool>.broadcast();
   void connectDevice(bool cnt, int i) async {
     connecting.add(true);
@@ -45,6 +47,7 @@ class _DevicePageState extends State<DevicePage> {
     btState = BluetoothHelper.instance.state;
     btScan = BluetoothHelper.instance.scanning;
     btConn = BluetoothHelper.instance.connected;
+    _source = ValueNotifier<bool>(BluetoothHelper.instance.source);
     super.initState();
   }
 
@@ -259,6 +262,33 @@ class _DevicePageState extends State<DevicePage> {
                                                           ),
                                                         ],
                                                       ),
+                                                      ///// TEMPORARIO
+                                                      content:
+                                                          ValueListenableBuilder(
+                                                        valueListenable:
+                                                            _source,
+                                                        builder: (context,
+                                                                bool value,
+                                                                child) =>
+                                                            Row(
+                                                          children: [
+                                                            Text(value
+                                                                ? 'Leonardo'
+                                                                : 'Patrick'),
+                                                            Switch(
+                                                              value: value,
+                                                              onChanged: (v) {
+                                                                BluetoothHelper
+                                                                    .instance
+                                                                    .source = v;
+                                                                _source.value =
+                                                                    v;
+                                                              },
+                                                            ),
+                                                          ],
+                                                        ),
+                                                      ),
+                                                      /////
                                                       actionsAlignment:
                                                           MainAxisAlignment
                                                               .start,

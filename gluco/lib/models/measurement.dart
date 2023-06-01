@@ -42,14 +42,14 @@ class MeasurementCollected extends Measurement {
   late List<double> f_4p;
 
   MeasurementCollected({
-    required id,
+    required int id,
     required this.apparent_glucose,
-    required spo2,
-    required pr_rpm,
+    required int spo2,
+    required int pr_rpm,
     required this.temperature,
     required this.m_4p,
     required this.f_4p,
-    required date,
+    required DateTime date,
   })  : assert(m_4p.length == 24),
         assert(f_4p.length == 24),
         super(
@@ -89,11 +89,11 @@ class MeasurementCompleted extends Measurement {
   late double glucose;
 
   MeasurementCompleted({
-    required id,
-    required spo2,
-    required pr_rpm,
+    required int id,
+    required int spo2,
+    required int pr_rpm,
     required this.glucose,
-    required date,
+    required DateTime date,
   }) : super(
           id: id,
           spo2: spo2,

@@ -61,16 +61,16 @@ class _SideBarState extends State<SideBar> {
               await Navigator.popAndPushNamed(context, '/devices');
             },
           ),
-          // ListTile(
-          //   leading: Icon(Icons.developer_mode),
-          //   title: Text(
-          //     'Dev',
-          //     style: Theme.of(context).textTheme.headline6,
-          //   ),
-          //   onTap: () async {
-          //     await Navigator.popAndPushNamed(context, '/teste');
-          //   },
-          // ),
+          ListTile(
+            leading: Icon(Icons.developer_mode),
+            title: Text(
+              'Dev',
+              style: Theme.of(context).textTheme.headline6,
+            ),
+            onTap: () async {
+              await Navigator.popAndPushNamed(context, '/teste');
+            },
+          ),
           ListTile(
             leading: Icon(Icons.info_outline),
             title: Text(

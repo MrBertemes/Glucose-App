@@ -123,6 +123,7 @@ class _SignUpPageState extends State<SignUpPage> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
+                          /*
                           // OPCOES USUARIO COMUM E MEDICO
                           RadioListTile<AccountType>(
                             title: Text(
@@ -161,7 +162,7 @@ class _SignUpPageState extends State<SignUpPage> {
                               });
                             },
                           ),
-
+*/
                           TextFormField(
                             controller: _name,
                             decoration: InputDecoration(
