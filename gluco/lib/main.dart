@@ -73,7 +73,7 @@ class MainState extends State<Main> {
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
               ),
-              button: TextStyle(color: Colors.white),
+              labelLarge: TextStyle(color: Colors.white),
             ), /* deprec
         appBarTheme: AppBarTheme(
           textTheme: ThemeData.light().textTheme.copyWith(
