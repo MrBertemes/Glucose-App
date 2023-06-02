@@ -141,7 +141,7 @@ class _DevicePageState extends State<DevicePage> {
                                         textAlign: TextAlign.center,
                                         style: Theme.of(context)
                                             .textTheme
-                                            .headline6,
+                                            .titleLarge,
                                       ),
                                     ),
                                   )

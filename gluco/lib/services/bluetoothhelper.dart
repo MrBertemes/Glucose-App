@@ -20,7 +20,7 @@ class BluetoothHelper {
   // Variável que contém o conteúdo enviado ao dispositivo
   late String _flag;
 
-  //// VARIAVEL PARA SELECIONAR FONTE
+  //// VARIAVEL PARA SELECIONAR IMPLEMENTAÇÃO
   bool source = false;
 
   /// Stream com sinais de alteração no estado do Bluetooth ligado/desligado
@@ -188,7 +188,7 @@ class BluetoothHelper {
             // ### falta: função para verificar se possui medições nao recebidas
             _yieldConnection();
             _flag = _BluetoothFlags.idle;
-            // _transmit();
+            // _transmit(); ############### esp nao lê o que é escrito
           } else {
             device.disconnect();
             status = false;
@@ -267,13 +267,6 @@ class BluetoothHelper {
     );
   }
 
-  /// Faz a leitura dos dados da medição do dispositivo conectado
-  Future<MeasurementCollected> collect() async {
-    MeasurementCollected val =
-        source ? await collect_leonardo() : await collect_patrick();
-    return val;
-  }
-
   /// Faz a leitura dos dados da medição do dispositivo conectado VERSÃO RANDOM
   Future<MeasurementCollected> collect_rand() async {
     Random random = Random();
@@ -299,44 +292,85 @@ class BluetoothHelper {
     return measure;
   }
 
-  /// Faz a leitura dos dados da medição do dispositivo conectado VERSÃO LEONARDO
-  Future<MeasurementCollected> collect_leonardo() async {
+  /// Faz a leitura dos dados da medição do dispositivo conectado
+  Future<MeasurementCollected> collect() async {
+    // ##### ON CONNECTION LOST CORTAR COLETA
+    assert(_connectedDevice != null);
+
+    /*// não consegue escrever ainda
+    _flag = _BluetoothFlags.requesting;
+    Completer<void> flagConfirm = Completer();
+    Timer flagTimer =
+        Timer.periodic(const Duration(milliseconds: 100), (timer) {
+      // a flag é trocada dentro do método _transmit
+      print('opa');
+      if (_flag != _BluetoothFlags.requesting) {
+        flagConfirm.complete();
+        timer.cancel();
+      }
+    });
+    // aguarda confirmação que a flag foi enviada
+    await flagConfirm.future.timeout(const Duration(seconds: 3), onTimeout: () {
+      flagTimer.cancel();
+    });
+    */
+
     late MeasurementCollected measure;
-    List<double> m_4p = <double>[];
-    List<double> f_4p = <double>[];
-    // List<double> m_2p = <double>[];
-    // List<double> f_2p = <double>[];
+    List<double> m_4p = [];
+    List<double> f_4p = [];
+    List<double> m_2p = [];
+    List<double> f_2p = [];
     Completer<void> confirm = Completer();
-    Timer periodicTimer =
-        Timer.periodic(const Duration(milliseconds: 100), (timer) async {
-      m_4p = [];
-      f_4p = [];
-      // m_2p = [];
-      // f_2p = [];
+
+    // prepara buffer e tx
+    List<String> readBuffer = [];
+    _connectedDevice!.receiver.setNotifyValue(true);
+    Stream<List<int>> readStream = _connectedDevice!.receiver.value;
+    // escuta novos valores do rx
+    StreamSubscription<List<int>> streamSubs = readStream.listen((hex) {
+      readBuffer.add(utf8.decode(hex));
+      // if (fim) confirm.complete(); // ### precisa de identificador de fim para nao ficar esperando timeout
+    });
+    // cancela subscrição se ocorrer timeout
+    await confirm.future.timeout(const Duration(seconds: 20), onTimeout: () {
+      _connectedDevice!.receiver.setNotifyValue(false);
+      streamSubs.cancel();
+    });
+    // split dos valores e conversão para num
+    List<String> valuesStr = [];
+    List<num> values = [];
+    valuesStr.addAll(readBuffer.join().split(';'));
+    for (String str in valuesStr) {
       try {
-        List<int> hex = await _connectedDevice!.receiver.read();
-        String dec = utf8.decode(hex);
-        List<num> values = dec.split(';').map((e) => num.parse(e)).toList();
-        // MaxLed1; // -- 0
-        // MaxLed2;
-        // MaxLed3;
-        // MaxLed4:
-        // MinLed1; // -- i 4
-        // MinLed2;
-        // MinLed3;
-        // MinLed4;
-        // Mod1; // -- i 8
-        // Fase1;...;
-        // Mod32;
-        // Fase32; // 4 pontos
-        // Mod1; // -- i 72
-        // Fase1;...;
-        // Mod32;
-        // Fase32; // 2 pontos
-        // BPM; // -- i 136
-        // SPO2; // -- i 137
-        // Temperatura; // -- i 138
-        // Umidade // -- i 139
+        values.add(num.parse(str));
+      } catch (e) {
+        print('### Parse error');
+      }
+    }
+
+    if (source) {
+      // VERSAO LEONARDO
+      // MaxLed1; // -- 0
+      // MaxLed2;
+      // MaxLed3;
+      // MaxLed4:
+      // MinLed1; // -- i 4
+      // MinLed2;
+      // MinLed3;
+      // MinLed4;
+      // Mod1; // -- i 8
+      // Fase1;...;
+      // Mod32;
+      // Fase32; // 4 pontos
+      // Mod1; // -- i 72
+      // Fase1;...;
+      // Mod32;
+      // Fase32; // 2 pontos
+      // BPM; // -- i 136
+      // SPO2; // -- i 137
+      // Temperatura; // -- i 138
+      // Umidade // -- i 139
+      try {
         for (int i = 0; i < 48; i += 2) {
           // SÃO 32 E NÃO 24 (na vdd 64 e n 48)
           m_4p.add(values[8 + i] as double);
@@ -359,94 +393,11 @@ class BluetoothHelper {
           // minled: values.sublist(4, 8).cast<double>(),
           date: DateTime.now(),
         );
-        timer.cancel();
-        confirm.complete();
-      } catch (e) {
-        print('Inconsistent values read...');
+      } catch (er) {
+        print('### problema de parse $er');
       }
-    });
-    await confirm.future.timeout(const Duration(seconds: 20), onTimeout: () {
-      periodicTimer.cancel();
-    });
-    return measure;
-  }
-
-  /// Faz a leitura dos dados da medição do dispositivo conectado VERSÃO PATRICK
-  Future<MeasurementCollected> collect_patrick() async {
-    // Future<MeasurementCollected> collect() async {
-    // ON CONNECTION LOST CORTAR COLETA
-    assert(_connectedDevice != null);
-
-    // _flag = _BluetoothFlags.requesting;
-    // Completer<void> flagConfirm = Completer();
-    // Timer flagTimer =
-    //     Timer.periodic(const Duration(milliseconds: 100), (timer) {
-    //   // a flag é trocada dentro do método _transmit
-    //   print('opa');
-    //   if (_flag != _BluetoothFlags.requesting) {
-    //     flagConfirm.complete();
-    //     timer.cancel();
-    //   }
-    // });
-    // // aguarda confirmação que a flag foi enviada
-    // await flagConfirm.future.timeout(const Duration(seconds: 3), onTimeout: () {
-    //   flagTimer.cancel();
-    // });
-
-    /*
-    await for (final hex in _connectedDevice!.receiver.onValueChangedStream
-        .timeout(const Duration(seconds: 20), onTimeout: (stream) {
-      stream.close();
-      print('timeout viu');
-    })) {
-      print('ESSE É O DINOSSAURO HEX: $hex');
-    }
-    return MeasurementCollected.fromMap({});
-    */
-
-    late MeasurementCollected measure;
-    List<double> m_4p = <double>[];
-    List<double> f_4p = <double>[];
-    // List<double> m_2p = <double>[];
-    // List<double> f_2p = <double>[];
-    Completer<void> confirm = Completer();
-    // Timer periodicTimer =
-    //     Timer.periodic(const Duration(milliseconds: 1000), (timer) async {
-    //   // Timer.periodic(const Duration(seconds: 1), (timer) async {
-    m_4p = [];
-    f_4p = [];
-    // m_2p = [];
-    // f_2p = [];
-    try {
-      List<int> hexao = <int>[];
-      Stream<List<int>> read_stream = _connectedDevice!.receiver.value;
-      //     .timeout(const Duration(seconds: 20), onTimeout: (stream) {
-      //   stream.close();
-      //   print('timeout viu');
-      // });
-      print('mas oq');
-      StreamSubscription<List<int>> r_s = read_stream.listen((hex) {
-        print('entrei');
-        print('### HEX $hex');
-        hexao.addAll(hex);
-      });
-      // }, onError: () {
-      //   print('deu erro ta');
-      // }, onDone: () {
-      //   confirm.complete();
-      //   print('terminouse');
-      // });
-      await confirm.future.timeout(const Duration(seconds: 20), onTimeout: () {
-        r_s.cancel();
-      });
-      print(
-          'ALHOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO');
-      print('### HEXAO $hexao ###');
-      String dec = utf8.decode(hexao);
-      print('### DEC $dec');
-      List<num> values = dec.split(';').map((e) => num.parse(e)).toList();
-      print('### VAL $values');
-
+    } else {
+      // VERSAO PATRICK
       // bioimpedancia quatro fios primeira decada modulo (8) // -- i 0
       // bioimpedancia quatro fios primeira decada fase (8) // -- i 8
       // bioimpedancia dois fios primeira decada modulo (8) // -- i 16
@@ -472,36 +423,33 @@ class BluetoothHelper {
       for (int i = 0; i < 128; i += 32) {
         m_4p.addAll(values.sublist(i, i + 8).cast<double>());
         f_4p.addAll(values.sublist(i + 8, i + 16).cast<double>());
-        // m_2p.addAll(values.sublist(i + 16, i + 24).cast<double>());
-        // f_2p.addAll(values.sublist(i + 24, i + 32).cast<double>());
+        m_2p.addAll(values.sublist(i + 16, i + 24).cast<double>());
+        f_2p.addAll(
+            values.sublist(i + 24, i + 32).cast<double>()); //////////////
       }
       measure = MeasurementCollected(
         id: -1,
         apparent_glucose: null,
-        pr_rpm: values[136] as int,
-        spo2: values[137] as int,
+        pr_rpm: values[136 - 1] as int, // ### nao ta sendo passado o certo
+        spo2: values[137 - 1] as int, // ### nao ta sendo passado o certo
         // humidity: values[138] as double,
-        temperature: values[139] as double,
-        m_4p: m_4p,
-        f_4p: f_4p,
+        temperature: 0.0, // values[139] as double, // ### nao ta sendo passado
+        // m_4p: m_4p,
+        m_4p: m_4p.sublist(0, 24), // questoes de api
+        // f_4p: f_4p,
+        f_4p: f_4p.sublist(0, 24),
         // m_2p: m_2p,
         // f_2p: f_2p,
         // maxled: values.sublist(128, 132).cast<double>(),
         // minled: values.sublist(132, 136).cast<double>(),
         date: DateTime.now(),
       );
-      //     timer.cancel();
-      //     confirm.complete();
-    } catch (e) {
-      print('Inconsistent values read...');
     }
-    // });
-    // await confirm.future.timeout(const Duration(seconds: 20), onTimeout: () {
-    //   periodicTimer.cancel();
-    // });
 
-    // ### se ocorrer um erro precisa enviar que deu erro?
-    // _flag = _BluetoothFlags.received;
+    /*// não consegue escrever ainda
+    ### se ocorrer um erro precisa enviar que deu erro?
+    _flag = _BluetoothFlags.received;
+    */
 
     return measure;
   }

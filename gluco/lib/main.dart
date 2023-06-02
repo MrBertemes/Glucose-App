@@ -52,39 +52,39 @@ void main() async {
 
 class Main extends StatefulWidget {
   @override
-  _MainState createState() => _MainState();
+  MainState createState() => MainState();
 }
 
-class _MainState extends State<Main> {
+class MainState extends State<Main> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       theme: ThemeData(
         scaffoldBackgroundColor: Colors.transparent,
-        backgroundColor: Colors.white,
         primarySwatch: Colors.green,
-        accentColor: Colors.grey[600],
-        errorColor: Colors.red[900],
+        // backgroundColor: Colors.white,  // color Schema
+        // // accentColor: Colors.grey[600],
+        // errorColor: Colors.red[900],
         fontFamily: 'OpenSans',
         textTheme: ThemeData.light().textTheme.copyWith(
-              headline6: TextStyle(
+              titleLarge: TextStyle(
                 color: Colors.black,
                 fontFamily: 'OpenSans',
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
               ),
-              button: TextStyle(color: Colors.white),
-            ),
+              labelLarge: TextStyle(color: Colors.white),
+            ), /* deprec
         appBarTheme: AppBarTheme(
           textTheme: ThemeData.light().textTheme.copyWith(
-                headline6: TextStyle(
+                titleLarge: TextStyle(
                   color: Colors.white,
                   fontFamily: 'OpenSans',
                   fontSize: 20,
                   fontWeight: FontWeight.bold,
                 ),
               ),
-        ),
+        ),*/
       ),
       routes: {
         '/': (context) => SplashScreen(route: _defaultHome),

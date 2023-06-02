@@ -391,10 +391,12 @@ class _HomePageState extends State<HomePage> {
                                         return AlertDialog(
                                             title: Text('Confira os dados!'),
                                             content: Text(
+
                                                 // ALT
                                                 // '''Paciente: $_dropdownValue\n
-                                                '''
-                                                Glicose: ${measurement.apparent_glucose}'''),
+                                                // '''
+                                                'Glicose: ${measurement.apparent_glucose}'),
+                                            // '''),
                                             shape: RoundedRectangleBorder(
                                               borderRadius:
                                                   BorderRadius.circular(10.0),
