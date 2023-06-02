@@ -204,6 +204,7 @@
 			files = (
 			);
 			inputPaths = (
+				"${TARGET_BUILD_DIR}/${INFOPLIST_PATH}",
 			);
 			name = "Thin Binary";
 			outputPaths = (
@@ -359,7 +360,7 @@
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 4;
+				CURRENT_PROJECT_VERSION = 7;
 				DEVELOPMENT_TEAM = N245PA6QC2;
 				ENABLE_APP_SANDBOX = NO;
 				ENABLE_BITCODE = NO;
@@ -373,7 +374,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 0.6.3;
+				MARKETING_VERSION = 0.6.4;
 				PRODUCT_BUNDLE_IDENTIFIER = bio.egluco.udesc;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -504,7 +505,7 @@
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_IDENTITY = "iPhone Developer: Pedro Bertemes (UHRQPM35MU)";
 				CODE_SIGN_STYLE = Manual;
-				CURRENT_PROJECT_VERSION = 4;
+				CURRENT_PROJECT_VERSION = 7;
 				DEVELOPMENT_TEAM = N245PA6QC2;
 				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = N245PA6QC2;
 				ENABLE_APP_SANDBOX = NO;
@@ -519,7 +520,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 0.6.3;
+				MARKETING_VERSION = 0.6.4;
 				PRODUCT_BUNDLE_IDENTIFIER = bio.egluco.udesc;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "Egluco Dev";
@@ -543,7 +544,7 @@
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 4;
+				CURRENT_PROJECT_VERSION = 7;
 				DEVELOPMENT_TEAM = N245PA6QC2;
 				ENABLE_APP_SANDBOX = NO;
 				ENABLE_BITCODE = NO;
@@ -557,7 +558,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 0.6.3;
+				MARKETING_VERSION = 0.6.4;
 				PRODUCT_BUNDLE_IDENTIFIER = bio.egluco.udesc;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";

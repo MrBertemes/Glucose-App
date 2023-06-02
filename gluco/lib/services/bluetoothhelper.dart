@@ -21,7 +21,7 @@ class BluetoothHelper {
   late String _flag;
 
   //// VARIAVEL PARA SELECIONAR IMPLEMENTAÇÃO
-  bool source = false;
+  bool source = true;
 
   /// Stream com sinais de alteração no estado do Bluetooth ligado/desligado
   Stream<bool> get state => _state().asBroadcastStream();
@@ -420,12 +420,20 @@ class BluetoothHelper {
       // SPO2 // -- i 137
       // umidade // -- i 138
       // temperatura // -- i 139
+      /*
       for (int i = 0; i < 128; i += 32) {
         m_4p.addAll(values.sublist(i, i + 8).cast<double>());
         f_4p.addAll(values.sublist(i + 8, i + 16).cast<double>());
         m_2p.addAll(values.sublist(i + 16, i + 24).cast<double>());
         f_2p.addAll(
             values.sublist(i + 24, i + 32).cast<double>()); //////////////
+      }*/
+      for (int i = 0; i < 64; i += 2) {
+        // V2 OS VALORES ESTAVAM ERRADOS
+        m_4p.add(values[i] as double);
+        f_4p.add(values[i + 1] as double);
+        m_2p.add(values[64 + i] as double);
+        f_2p.add(values[64 + i + 1] as double);
       }
       measure = MeasurementCollected(
         id: -1,
