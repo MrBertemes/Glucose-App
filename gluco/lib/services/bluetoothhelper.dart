@@ -145,20 +145,19 @@ class BluetoothHelper {
           BluetoothCharacteristic? tx;
           List<BluetoothService> services = await device.discoverServices();
           try {
-            List<BluetoothCharacteristic> characteristics = services
-                .firstWhere((element) =>
-                    element.uuid.toString().toUpperCase().substring(4, 8) ==
-                    // 'E0FF')
-                    '8251')
-                .characteristics;
-            rx = characteristics.firstWhere((element) =>
-                element.uuid.toString().toUpperCase().substring(4, 8) ==
-                // 'FFE1');
-                '2D3F');
-            tx = characteristics.firstWhere((element) =>
-                element.uuid.toString().toUpperCase().substring(4, 8) ==
-                // 'FFE2');
-                'F2A8');
+            List<BluetoothCharacteristic> characteristics =
+                services.firstWhere((element) {
+              String id = element.uuid.toString().toUpperCase().substring(4, 8);
+              return id == 'E0FF' || id == '8251';
+            }).characteristics;
+            rx = characteristics.firstWhere((element) {
+              String id = element.uuid.toString().toUpperCase().substring(4, 8);
+              return id == 'FFE2' || id == '2D3F';
+            });
+            tx = characteristics.firstWhere((element) {
+              String id = element.uuid.toString().toUpperCase().substring(4, 8);
+              return id == 'FFE1' || id == 'F2A8';
+            });
           } catch (e) {
             print('Characteristics not found');
           }
@@ -342,7 +341,9 @@ class BluetoothHelper {
     Stream<List<int>> readStream = _connectedDevice!.receiver.value;
     // escuta novos valores do rx
     StreamSubscription<List<int>> streamSubs = readStream.listen((hex) {
-      readBuffer.add(utf8.decode(hex));
+      var c = utf8.decode(hex);
+      // print(c);
+      readBuffer.add(c);
       // if (fim) confirm.complete(); // ### precisa de identificador de fim para nao ficar esperando timeout
     });
     // cancela subscrição se ocorrer timeout
@@ -356,6 +357,7 @@ class BluetoothHelper {
     valuesStr.addAll(readBuffer.join().split(';'));
     for (String str in valuesStr) {
       try {
+        print(str);
         values.add(num.parse(str));
       } catch (e) {
         print('### Parse error');
@@ -386,18 +388,18 @@ class BluetoothHelper {
       // Umidade // -- i 139
       try {
         for (int i = 0; i < 64; i += 2) {
-          m_4p.add(values[8 + i] as double);
-          f_4p.add(values[8 + i + 1] as double);
-          m_2p.add(values[72 + i] as double);
-          f_2p.add(values[72 + i + 1] as double);
+          m_4p.add(values[8 + i].toDouble());
+          f_4p.add(values[8 + i + 1].toDouble());
+          m_2p.add(values[72 + i].toDouble());
+          f_2p.add(values[72 + i + 1].toDouble());
         }
         measure = MeasurementCollected(
           id: -1,
           apparent_glucose: null,
-          pr_rpm: values[136] as int,
-          spo2: values[137] as int,
-          temperature: values[138] as double,
-          humidity: values[139] as double,
+          pr_rpm: values[136].toInt(),
+          spo2: values[137].toInt(),
+          temperature: values[138].toDouble(),
+          humidity: values[139].toDouble(),
           m_4p: m_4p,
           f_4p: f_4p,
           m_2p: m_2p,
@@ -433,29 +435,34 @@ class BluetoothHelper {
       // SPO2 // -- i 137
       // umidade // -- i 138
       // temperatura // -- i 139
-      for (int d = 0; d < 128; d += 32) {
-        for (int i = 0; i < 16; i += 2) {
-          m_4p.add(values[d + i] as double);
-          f_4p.add(values[d + i + 1] as double);
-          m_2p.add(values[16 + d + i] as double);
-          f_2p.add(values[16 + d + i + 1] as double);
+      try {
+        for (int d = 0; d < 128; d += 32) {
+          for (int i = 0; i < 16; i += 2) {
+            m_4p.add(values[d + i].toDouble());
+            f_4p.add(values[d + i + 1].toDouble());
+            m_2p.add(values[16 + d + i].toDouble());
+            f_2p.add(values[16 + d + i + 1].toDouble());
+          }
         }
+        print(values.length);
+        measure = MeasurementCollected(
+          id: -1,
+          apparent_glucose: null,
+          pr_rpm: values[136].toInt(),
+          spo2: values[137].toInt(),
+          humidity: values[138].toDouble(),
+          temperature: values[139].toDouble(),
+          m_4p: m_4p,
+          f_4p: f_4p,
+          m_2p: m_2p,
+          f_2p: f_2p,
+          maxled: values.sublist(128, 132).cast<double>(),
+          minled: values.sublist(132, 136).cast<double>(),
+          date: DateTime.now(),
+        );
+      } catch (e) {
+        print(e);
       }
-      measure = MeasurementCollected(
-        id: -1,
-        apparent_glucose: null,
-        pr_rpm: values[136] as int,
-        spo2: values[137] as int,
-        humidity: values[138].toDouble(),
-        temperature: values[139].toDouble(),
-        m_4p: m_4p,
-        f_4p: f_4p,
-        m_2p: m_2p,
-        f_2p: f_2p,
-        maxled: values.sublist(128, 132).cast<double>(),
-        minled: values.sublist(132, 136).cast<double>(),
-        date: DateTime.now(),
-      );
     }
 
     /*// não consegue escrever ainda
