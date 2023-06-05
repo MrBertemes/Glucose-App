@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:math';
-// import 'package:flutter_blue/flutter_blue.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:gluco/models/device.dart';
 import 'package:gluco/models/measurement.dart';
@@ -270,11 +269,21 @@ class BluetoothHelper {
   /// Faz a leitura dos dados da medição do dispositivo conectado VERSÃO RANDOM
   Future<MeasurementCollected> collect_rand() async {
     Random random = Random();
+    List<double> maxled = <double>[];
+    List<double> minled = <double>[];
     List<double> m_4p = <double>[];
     List<double> f_4p = <double>[];
-    for (int i = 1; i <= 24; i++) {
+    List<double> m_2p = <double>[];
+    List<double> f_2p = <double>[];
+    for (int i = 1; i <= 4; i++) {
+      maxled.add((random.nextDouble() * 10000).truncateToDouble() / 1000 + 7);
+      minled.add((random.nextDouble() * 10000).truncateToDouble() / 1000 + 3);
+    }
+    for (int i = 1; i <= 32; i++) {
       m_4p.add((random.nextDouble() * 10000).truncateToDouble() / 1000 + 5);
       f_4p.add((random.nextDouble() * 10000).truncateToDouble() / 1000 + 5);
+      m_2p.add((random.nextDouble() * 10000).truncateToDouble() / 1000 + 5);
+      f_2p.add((random.nextDouble() * 10000).truncateToDouble() / 1000 + 5);
     }
     MeasurementCollected measure = MeasurementCollected(
       id: -1,
@@ -284,8 +293,13 @@ class BluetoothHelper {
       temperature: (((random.nextInt(38) + 35) + random.nextDouble()) * 100)
               .truncateToDouble() /
           100,
+      humidity: (random.nextDouble() * 10000).truncateToDouble() / 1000 + 10,
       m_4p: m_4p,
       f_4p: f_4p,
+      m_2p: m_2p,
+      f_2p: f_2p,
+      maxled: maxled,
+      minled: minled,
       date: DateTime.now(),
     );
     // await Future.delayed(Duration(seconds: random.nextInt(2) + 3));
@@ -371,12 +385,11 @@ class BluetoothHelper {
       // Temperatura; // -- i 138
       // Umidade // -- i 139
       try {
-        for (int i = 0; i < 48; i += 2) {
-          // SÃO 32 E NÃO 24 (na vdd 64 e n 48)
+        for (int i = 0; i < 64; i += 2) {
           m_4p.add(values[8 + i] as double);
           f_4p.add(values[8 + i + 1] as double);
-          // m_2p.add(values[72 + i] as double);
-          // f_2p.add(values[72 + i + 1] as double);
+          m_2p.add(values[72 + i] as double);
+          f_2p.add(values[72 + i + 1] as double);
         }
         measure = MeasurementCollected(
           id: -1,
@@ -384,20 +397,20 @@ class BluetoothHelper {
           pr_rpm: values[136] as int,
           spo2: values[137] as int,
           temperature: values[138] as double,
-          // humidity: values[139] as double,
+          humidity: values[139] as double,
           m_4p: m_4p,
           f_4p: f_4p,
-          // m_2p: m_2p,
-          // f_2p: f_2p,
-          // maxled: values.sublist(0, 4).cast<double>(), // talvez dê problema
-          // minled: values.sublist(4, 8).cast<double>(),
+          m_2p: m_2p,
+          f_2p: f_2p,
+          maxled: values.sublist(0, 4).cast<double>(),
+          minled: values.sublist(4, 8).cast<double>(),
           date: DateTime.now(),
         );
       } catch (er) {
         print('### problema de parse $er');
       }
     } else {
-      // VERSAO PATRICK
+      // VERSAO PATRICK (tá alternado mod fase)
       // bioimpedancia quatro fios primeira decada modulo (8) // -- i 0
       // bioimpedancia quatro fios primeira decada fase (8) // -- i 8
       // bioimpedancia dois fios primeira decada modulo (8) // -- i 16
@@ -420,36 +433,27 @@ class BluetoothHelper {
       // SPO2 // -- i 137
       // umidade // -- i 138
       // temperatura // -- i 139
-      /*
-      for (int i = 0; i < 128; i += 32) {
-        m_4p.addAll(values.sublist(i, i + 8).cast<double>());
-        f_4p.addAll(values.sublist(i + 8, i + 16).cast<double>());
-        m_2p.addAll(values.sublist(i + 16, i + 24).cast<double>());
-        f_2p.addAll(
-            values.sublist(i + 24, i + 32).cast<double>()); //////////////
-      }*/
-      for (int i = 0; i < 64; i += 2) {
-        // V2 OS VALORES ESTAVAM ERRADOS
-        m_4p.add(values[i] as double);
-        f_4p.add(values[i + 1] as double);
-        m_2p.add(values[64 + i] as double);
-        f_2p.add(values[64 + i + 1] as double);
+      for (int d = 0; d < 128; d += 32) {
+        for (int i = 0; i < 16; i += 2) {
+          m_4p.add(values[d + i] as double);
+          f_4p.add(values[d + i + 1] as double);
+          m_2p.add(values[16 + d + i] as double);
+          f_2p.add(values[16 + d + i + 1] as double);
+        }
       }
       measure = MeasurementCollected(
         id: -1,
         apparent_glucose: null,
-        pr_rpm: values[136 - 1] as int, // ### nao ta sendo passado o certo
-        spo2: values[137 - 1] as int, // ### nao ta sendo passado o certo
-        // humidity: values[138] as double,
-        temperature: 0.0, // values[139] as double, // ### nao ta sendo passado
-        // m_4p: m_4p,
-        m_4p: m_4p.sublist(0, 24), // questoes de api
-        // f_4p: f_4p,
-        f_4p: f_4p.sublist(0, 24),
-        // m_2p: m_2p,
-        // f_2p: f_2p,
-        // maxled: values.sublist(128, 132).cast<double>(),
-        // minled: values.sublist(132, 136).cast<double>(),
+        pr_rpm: values[136] as int,
+        spo2: values[137] as int,
+        humidity: values[138] as double,
+        temperature: values[139] as double,
+        m_4p: m_4p,
+        f_4p: f_4p,
+        m_2p: m_2p,
+        f_2p: f_2p,
+        maxled: values.sublist(128, 132).cast<double>(),
+        minled: values.sublist(132, 136).cast<double>(),
         date: DateTime.now(),
       );
     }

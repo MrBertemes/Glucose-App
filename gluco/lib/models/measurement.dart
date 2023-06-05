@@ -38,8 +38,16 @@ abstract class Measurement {
 class MeasurementCollected extends Measurement {
   double? apparent_glucose;
   late double temperature;
+  late double humidity;
+  late List<double> maxled;
+  late List<double> minled;
   late List<double> m_4p;
   late List<double> f_4p;
+  late List<double> m_2p;
+  late List<double> f_2p;
+
+  static const _lSize = 4;
+  static const _pSize = 32;
 
   MeasurementCollected({
     required int id,
@@ -47,11 +55,20 @@ class MeasurementCollected extends Measurement {
     required int spo2,
     required int pr_rpm,
     required this.temperature,
+    required this.humidity,
+    required this.maxled,
+    required this.minled,
     required this.m_4p,
     required this.f_4p,
+    required this.m_2p,
+    required this.f_2p,
     required DateTime date,
-  })  : assert(m_4p.length == 24),
-        assert(f_4p.length == 24),
+  })  : assert(maxled.length == _lSize),
+        assert(minled.length == _lSize),
+        assert(m_4p.length == _pSize),
+        assert(f_4p.length == _pSize),
+        assert(m_2p.length == _pSize),
+        assert(f_2p.length == _pSize),
         super(
           id: id,
           spo2: spo2,
@@ -63,11 +80,21 @@ class MeasurementCollected extends Measurement {
       : super.fromMap(json) {
     apparent_glucose = double.parse('${json['glucose']}');
     temperature = double.parse('${json['temperature']}');
+    maxled = <double>[];
+    minled = <double>[];
     m_4p = <double>[];
     f_4p = <double>[];
-    for (int i = 1; i <= 24; i++) {
+    m_2p = <double>[];
+    f_2p = <double>[];
+    for (int i = 1; i <= _lSize; i++) {
+      maxled.add(double.parse('${json['maxled_$i']}')); ///////
+      minled.add(double.parse('${json['minled_$i']}')); ///////
+    }
+    for (int i = 1; i <= _pSize; i++) {
       m_4p.add(double.parse('${json['m${i}_4p']}'));
       f_4p.add(double.parse('${json['f${i}_4p']}'));
+      m_2p.add(double.parse('${json['m${i}_2p']}'));
+      f_2p.add(double.parse('${json['f${i}_2p']}'));
     }
   }
 
@@ -76,9 +103,15 @@ class MeasurementCollected extends Measurement {
     Map<String, dynamic> _data = <String, dynamic>{};
     _data['glucose'] = apparent_glucose;
     _data['temperature'] = temperature;
-    for (int i = 1; i <= 24; i++) {
+    for (int i = 1; i <= _lSize; i++) {
+      _data['maxled_$i'] = maxled[i - 1]; //////
+      _data['minled_$i'] = minled[i - 1]; //////
+    }
+    for (int i = 1; i <= _pSize; i++) {
       _data['m${i}_4p'] = m_4p[i - 1];
       _data['f${i}_4p'] = f_4p[i - 1];
+      _data['m${i}_2p'] = m_2p[i - 1];
+      _data['f${i}_2p'] = f_2p[i - 1];
     }
     _data.addAll(super.toMap());
     return _data;
