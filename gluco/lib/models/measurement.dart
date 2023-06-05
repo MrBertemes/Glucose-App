@@ -80,6 +80,7 @@ class MeasurementCollected extends Measurement {
       : super.fromMap(json) {
     apparent_glucose = double.parse('${json['glucose']}');
     temperature = double.parse('${json['temperature']}');
+    humidity = double.parse('${json['humidity']}');
     maxled = <double>[];
     minled = <double>[];
     m_4p = <double>[];
@@ -87,8 +88,8 @@ class MeasurementCollected extends Measurement {
     m_2p = <double>[];
     f_2p = <double>[];
     for (int i = 1; i <= _lSize; i++) {
-      maxled.add(double.parse('${json['maxled_$i']}')); ///////
-      minled.add(double.parse('${json['minled_$i']}')); ///////
+      maxled.add(double.parse('${json['maxled$i']}'));
+      minled.add(double.parse('${json['minled$i']}'));
     }
     for (int i = 1; i <= _pSize; i++) {
       m_4p.add(double.parse('${json['m${i}_4p']}'));
@@ -103,9 +104,10 @@ class MeasurementCollected extends Measurement {
     Map<String, dynamic> _data = <String, dynamic>{};
     _data['glucose'] = apparent_glucose;
     _data['temperature'] = temperature;
+    _data['humidity'] = humidity;
     for (int i = 1; i <= _lSize; i++) {
-      _data['maxled_$i'] = maxled[i - 1]; //////
-      _data['minled_$i'] = minled[i - 1]; //////
+      _data['maxled$i'] = maxled[i - 1];
+      _data['minled$i'] = minled[i - 1];
     }
     for (int i = 1; i <= _pSize; i++) {
       _data['m${i}_4p'] = m_4p[i - 1];
