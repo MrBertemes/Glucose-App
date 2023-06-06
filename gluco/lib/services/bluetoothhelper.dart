@@ -186,7 +186,7 @@ class BluetoothHelper {
             // ### falta: função para verificar se possui medições nao recebidas
             _yieldConnection();
             _flag = _BluetoothFlags.idle;
-            // _transmit(); ############### esp nao lê o que é escrito
+            _transmit();
           } else {
             device.disconnect();
             status = false;
@@ -310,13 +310,12 @@ class BluetoothHelper {
     // ##### ON CONNECTION LOST CORTAR COLETA
     assert(_connectedDevice != null);
 
-    /*// não consegue escrever ainda
+    // não consegue escrever ainda
     _flag = _BluetoothFlags.requesting;
     Completer<void> flagConfirm = Completer();
     Timer flagTimer =
         Timer.periodic(const Duration(milliseconds: 100), (timer) {
       // a flag é trocada dentro do método _transmit
-      print('opa');
       if (_flag != _BluetoothFlags.requesting) {
         flagConfirm.complete();
         timer.cancel();
@@ -326,7 +325,6 @@ class BluetoothHelper {
     await flagConfirm.future.timeout(const Duration(seconds: 3), onTimeout: () {
       flagTimer.cancel();
     });
-    */
 
     late MeasurementCollected measure;
     List<double> m_4p = [];
@@ -341,9 +339,7 @@ class BluetoothHelper {
     Stream<List<int>> readStream = _connectedDevice!.receiver.value;
     // escuta novos valores do rx
     StreamSubscription<List<int>> streamSubs = readStream.listen((hex) {
-      var c = utf8.decode(hex);
-      // print(c);
-      readBuffer.add(c);
+      readBuffer.add(utf8.decode(hex));
       // if (fim) confirm.complete(); // ### precisa de identificador de fim para nao ficar esperando timeout
     });
     // cancela subscrição se ocorrer timeout
@@ -465,10 +461,8 @@ class BluetoothHelper {
       }
     }
 
-    /*// não consegue escrever ainda
-    ### se ocorrer um erro precisa enviar que deu erro?
+    // ### se ocorrer um erro precisa enviar que deu erro?
     _flag = _BluetoothFlags.received;
-    */
 
     return measure;
   }
